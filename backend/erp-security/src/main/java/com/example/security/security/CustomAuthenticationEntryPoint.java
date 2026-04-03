@@ -30,7 +30,12 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(HttpServletRequest request, 
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException, ServletException {
-        
+
+        if (request.getRequestURI().startsWith("/actuator/health")) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
+
         log.debug("Authentication failed for path: {} - {}", request.getRequestURI(), authException.getMessage());
 
         // Build standardized error response
