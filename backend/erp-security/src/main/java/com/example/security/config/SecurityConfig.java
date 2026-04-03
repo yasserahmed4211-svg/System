@@ -7,6 +7,7 @@ import com.example.security.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -44,7 +45,24 @@ public class SecurityConfig {
     private final CustomAccessDeniedHandler accessDeniedHandler;
     private final CorsProperties corsProperties;
 
+    /**
+     * Dedicated filter chain for Docker healthcheck endpoint.
+     * Highest priority (@Order(1)) — processed before all other chains.
+     * No JWT filter, no auth entry point, no CSRF — just allow through.
+     */
     @Bean
+    @Order(1)
+    public SecurityFilterChain actuatorHealthFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .securityMatcher("/actuator/health", "/actuator/health/**")
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                .build();
+    }
+
+    @Bean
+    @Order(2)
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
