@@ -1,0 +1,26 @@
+.erp-lookup-dialog {
+  &__th {
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    font-size: var(--erp-font-size-sm, 0.875rem);
+    font-weight: var(--erp-font-weight-semibold, 600);
+
+    &:hover {
+      background-color: var(--erp-color-bg-subtle, #f8f9fa);
+    }
+  }
+
+  &__row {
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--erp-color-bg-subtle, #f8f9fa) !important;
+    }
+  }
+}
+
+.table-responsive {
+  max-height: var(--erp-lookup-max-height, 400px);
+  overflow-y: auto;
+}

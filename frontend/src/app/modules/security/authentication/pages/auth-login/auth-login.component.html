@@ -1,0 +1,142 @@
+<div class="auth-main">
+  <div class="auth-wrapper v3">
+    <div class="auth-form">
+      <div class="auth-header d-flex justify-content-between align-items-center">
+        <a href="javascript:"><img src="assets/images/logo-dark.svg" alt="theme logo" /></a>
+        
+        <!-- Language Switcher -->
+        <div class="language-switcher">
+          <button 
+            type="button" 
+            class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2"
+            (click)="languageService.toggleLanguage()"
+            [title]="'AUTH.SWITCH_LANGUAGE' | translate"
+          >
+            <i class="ti ti-language fs-5"></i>
+            <span class="d-none d-sm-inline">{{ languageService.currentLanguage() === 'ar' ? 'English' : 'العربية' }}</span>
+          </button>
+        </div>
+      </div>
+      <div class="my-5">
+        @if (featureFlags.config().showDemoCredentials) {
+        <ul class="nav nav-tabs admin-role d-block">
+          <div class="row g-2">
+            @for (role of roles; track role.role) {
+              <div class="col-sm-6">
+                <li class="nav-item">
+                  <a href="javascript:" class="nav-link" [class.active]="selectedRole === role" (click)="onSelectRole(role)">
+                    {{ role.name }}
+                  </a>
+                </li>
+              </div>
+            }
+          </div>
+        </ul>
+        }
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-end mb-4">
+              <h3 class="mb-0"><b>{{ 'AUTH.LOGIN' | translate }}</b></h3>
+              @if (featureFlags.config().showRegistration) {
+              <a [routerLink]="[this.authenticationService.isLoggedIn() ? '/auth/register' : '/register']" class="link-primary">
+                {{ 'AUTH.NO_ACCOUNT' | translate }}
+              </a>
+              }
+            </div>
+            <form (ngSubmit)="onSubmit()">
+              <div class="form-group mb-3">
+                <label class="form-label" for="username">{{ 'AUTH.USERNAME' | translate }}</label>
+                <input type="text" id="username" class="form-control" [placeholder]="'AUTH.ENTER_USERNAME' | translate" [field]="loginForm.username" />
+                @if (submitted && loginForm.username().errors()) {
+                  <div class="invalid-feedback">
+                    @if (loginForm.username().errors()) {
+                      <div>{{ 'VALIDATION.REQUIRED' | translate }}</div>
+                    }
+                  </div>
+                }
+              </div>
+              <div class="form-group mb-3">
+                <label class="form-label" for="password">{{ 'AUTH.PASSWORD' | translate }}</label>
+                @if (showPassword) {
+                  <input type="password" id="password" class="form-control" [field]="loginForm.password" [placeholder]="'AUTH.ENTER_PASSWORD' | translate" />
+                } @else {
+                  <input type="text" id="password" class="form-control" [field]="loginForm.password" [placeholder]="'AUTH.ENTER_PASSWORD' | translate" />
+                }
+
+                @if (selectedRole.password) {
+                  <i
+                    antIcon
+                    theme="outline"
+                    type="{{ showPassword ? 'eye' : 'eye-invisible' }}"
+                    id="togglePassword"
+                    (click)="togglePasswordVisibility()"
+                  ></i>
+                }
+
+                @if (submitted && loginForm.password().errors()) {
+                  <div class="invalid-feedback">
+                    @if (loginForm.password().errors()) {
+                      <div>{{ 'VALIDATION.REQUIRED' | translate }}</div>
+                    }
+                  </div>
+                }
+              </div>
+              <div class="d-flex mt-1 justify-content-between">
+                <div class="form-check">
+                  <input class="form-check-input input-primary" type="checkbox" id="customCheckc1" checked />
+                  <label class="form-check-label text-muted" for="customCheckc1">{{ 'AUTH.REMEMBER_ME' | translate }}</label>
+                </div>
+                @if (featureFlags.config().showForgotPassword) {
+                <a
+                  [routerLink]="[this.authenticationService.isLoggedIn() ? '/auth/forgot-password' : '/forgot-password']"
+                  class="text-primary"
+                >
+                  {{ 'AUTH.FORGOT_PASSWORD' | translate }}
+                </a>
+                }
+              </div>
+              <div class="d-grid mt-4">
+                <button class="btn btn-primary" type="submit">{{ 'AUTH.LOGIN' | translate }}</button>
+              </div>
+              @if (error) {
+                <div class="alert alert-danger mt-3 mb-0">{{ error | translate }}</div>
+              }
+            </form>
+            @if (featureFlags.config().showSocialLogin) {
+            <div class="saprator mt-3">
+              <span>{{ 'AUTH.LOGIN_WITH' | translate }}</span>
+            </div>
+            <div class="row">
+              @for (platform of socialMedia; track platform) {
+                <div class="col-4">
+                  <div class="d-grid">
+                    <button type="button" class="btn mt-2 btn-light-primary bg-light social-button">
+                      <img [src]="'assets/images/authentication/' + platform.logo" [alt]="platform.name + ' logo'" />
+                      <span class="d-none d-sm-inline-block">{{ platform.name }}</span>
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+      <div class="auth-footer row">
+        <div class="col my-1">
+          <p class="m-0">
+            Copyright ©
+            <a href="https://codedthemes.com/" target="_blank">CodedThemes</a>
+          </p>
+        </div>
+        <div class="col-auto my-1">
+          <ul class="list-inline footer-link mb-0">
+            <li class="list-inline-item me-4"><a href="https://codedthemes.com/" target="_blank">Home</a></li>
+            <li class="list-inline-item me-4"><a href="https://codedthemes.com/privacy-policy/" target="_blank">Privacy Policy</a></li>
+            <li class="list-inline-item"><a href="https://codedthemes.support-hub.io/" target="_blank">Contact us</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

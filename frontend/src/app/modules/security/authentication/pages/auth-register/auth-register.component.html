@@ -1,0 +1,164 @@
+<div class="auth-main">
+  <div class="auth-wrapper v3">
+    <div class="auth-form">
+      <div class="auth-header">
+        <a href="javascript:"><img src="assets/images/logo-dark.svg" alt="logo" /></a>
+      </div>
+      <app-card [showHeader]="false" [padding]="30" cardClass="my-5">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+          <h3 class="mb-0"><b>Sign up</b></h3>
+          <a [routerLink]="[this.authenticationService.isLoggedIn() ? '/auth/login' : '/login']" class="link-primary">
+            Already have an account?
+          </a>
+        </div>
+        <form (ngSubmit)="onSubmit()">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group mb-3">
+                <label class="form-label" for="firstName">First Name*</label>
+                <input
+                  type="text"
+                  id="firstName"
+                  [field]="registerForm.firstName"
+                  class="form-control"
+                  [class.is-invalid]="submitted() && registerForm.firstName().errors().length > 0"
+                  placeholder="First Name"
+                />
+                @if (submitted() && registerForm.firstName().errors().length > 0) {
+                  <div class="invalid-feedback">
+                    @for (error of registerForm.firstName().errors(); track error.kind) {
+                      @if (error.kind === 'required') {
+                        <div>{{ error.message }}</div>
+                      }
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group mb-3">
+                <label class="form-label" for="lastName">Last Name*</label>
+                <input
+                  type="text"
+                  id="lastName"
+                  [field]="registerForm.lastName"
+                  class="form-control"
+                  [class.is-invalid]="submitted() && registerForm.lastName().errors().length > 0"
+                  placeholder="Last Name"
+                />
+                @if (submitted() && registerForm.lastName().errors().length > 0) {
+                  <div class="invalid-feedback">
+                    @for (error of registerForm.lastName().errors(); track error.kind) {
+                      @if (error.kind === 'required') {
+                        <div>{{ error.message }}</div>
+                      }
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label" for="email">Email Address*</label>
+            <input
+              type="email"
+              id="email"
+              [field]="registerForm.email"
+              class="form-control"
+              [class.is-invalid]="submitted() && registerForm.email().errors().length > 0"
+              placeholder="Email Address"
+            />
+            @if (submitted() && registerForm.email().errors().length > 0) {
+              <div class="invalid-feedback">
+                @for (error of registerForm.email().errors(); track error.kind) {
+                  <div>{{ error.message }}</div>
+                }
+              </div>
+            }
+          </div>
+          <div class="form-group mb-3 position-relative">
+            <label class="form-label" for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              class="form-control"
+              [field]="registerForm.password"
+              [class.is-invalid]="submitted() && registerForm.password().errors().length > 0"
+              placeholder="Password (min. 8 characters)"
+            />
+            @if (submitted() && registerForm.password().errors().length > 0) {
+              <div class="invalid-feedback">
+                @for (error of registerForm.password().errors(); track error.kind) {
+                  <div>{{ error.message }}</div>
+                }
+              </div>
+            }
+          </div>
+          @if (error()) {
+            <div class="alert alert-danger" role="alert">
+              {{ error() }}
+            </div>
+          }
+          <p class="mt-4 text-sm text-muted">
+            By Signing up, you agree to our
+            <a href="javascript:" class="text-primary">Terms of Service</a>
+            and
+            <a href="javascript:" class="text-primary">Privacy Policy</a>
+          </p>
+          <div class="d-grid mt-3">
+            <button type="submit" class="btn btn-primary" [disabled]="loading()">
+              @if (loading()) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+              }
+              {{ loading() ? 'Creating Account...' : 'Create Account' }}
+            </button>
+          </div>
+        </form>
+        <div class="saprator mt-3">
+          <span>Sign up with</span>
+        </div>
+        <div class="row">
+          <div class="col-4">
+            <div class="d-grid">
+              <button type="button" class="btn mt-2 btn-light-primary bg-light text-muted">
+                <img src="assets/images/authentication/google.svg" alt="google logo" />
+                <span class="d-none d-sm-inline-block">Google</span>
+              </button>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="d-grid">
+              <button type="button" class="btn mt-2 btn-light-primary bg-light text-muted">
+                <img src="assets/images/authentication/twitter.svg" alt="twitter logo" />
+                <span class="d-none d-sm-inline-block">Twitter</span>
+              </button>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="d-grid">
+              <button type="button" class="btn mt-2 btn-light-primary bg-light text-muted">
+                <img src="assets/images/authentication/facebook.svg" alt="facebook logo" />
+                <span class="d-none d-sm-inline-block">Facebook</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </app-card>
+      <div class="auth-footer row">
+        <div class="col my-1">
+          <p class="m-0">
+            Copyright ©
+            <a href="https://codedthemes.com/" target="_blank">CodedThemes</a>
+          </p>
+        </div>
+        <div class="col-auto my-1">
+          <ul class="list-inline footer-link mb-0">
+            <li class="list-inline-item"><a href="https://codedthemes.com/" target="_blank">Home</a></li>
+            <li class="list-inline-item"><a href="https://codedthemes.com/privacy-policy/" target="_blank">Privacy Policy</a></li>
+            <li class="list-inline-item"><a href="https://codedthemes.support-hub.io/" target="_blank">Contact us</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

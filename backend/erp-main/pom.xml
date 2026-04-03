@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.erp</groupId>
+        <artifactId>erp-system</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>erp-main</artifactId>
+    <packaging>jar</packaging>
+
+    <name>ERP Main Application</name>
+    <description>Unified ERP System - All modules combined</description>
+
+    <dependencies>
+        <!-- All ERP Modules -->
+        <dependency>
+            <groupId>com.erp</groupId>
+            <artifactId>erp-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.erp</groupId>
+            <artifactId>erp-masterdata</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.erp</groupId>
+            <artifactId>erp-finance-gl</artifactId>
+        </dependency>
+
+        <!-- SpringDoc OpenAPI for unified Swagger -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.erp.main.ErpMainApplication</mainClass>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -1,0 +1,106 @@
+<!-- 
+  ========================================
+  UNIFIED BLUEPRINT - PAGE A: SEARCH/LIST
+  ========================================
+  TASK: TASK-FE-PAGES-001
+  REQ:  FE-REQ-PAGES-001
+  
+  Purpose:
+  - Searching
+  - Filtering
+  - Listing records
+  - Triggering actions
+  
+  Contains:
+  - Search / Filters
+  - Result Table (AG Grid)
+  - Add button (navigate to Form Page)
+  - Row-based Edit/Delete actions
+  
+  Prohibitions:
+  - NO forms inside this page
+  - NO modals for primary create/edit
+-->
+
+<app-card [cardTitle]="'PAGES.PAGE_REGISTRY' | translate" [padding]="0">
+  <div class="card-header-right">
+    <button class="btn btn-info btn-sm me-2" (click)="toggleAdvancedFilters()">
+      <i class="ti ti-filter"></i> {{ showAdvancedFilters ? ('USERS.HIDE_FILTERS' | translate) : ('USERS.ADVANCED_FILTERS' | translate) }}
+    </button>
+    <button
+      class="btn btn-success btn-sm me-2"
+      erpPermission="PERM_PAGE_CREATE"
+      (click)="navigateToCreate()"
+    >
+      <i class="ti ti-plus"></i> {{ 'PAGES.CREATE_PAGE' | translate }}
+    </button>
+    <button class="btn btn-primary btn-sm" (click)="refreshData()">
+      <i class="ti ti-refresh"></i> {{ 'COMMON.REFRESH' | translate }}
+    </button>
+  </div>
+
+  <!-- Advanced Filters Panel -->
+  @if (showAdvancedFilters) {
+  <div class="card-body border-bottom bg-light">
+    <erp-specification-filter
+      [availableFields]="availableFields"
+      [availableOperators]="availableOperators"
+      (apply)="onSpecFiltersApply($event)"
+      (clear)="onSpecFiltersClear()"
+    />
+
+    @if (currentFilters.length > 0) {
+    <div class="alert alert-info mt-3 mb-0 py-2">
+      <small>
+        <i class="ti ti-info-circle"></i>
+        <strong>{{ 'USERS.ACTIVE_FILTERS' | translate }}:</strong> {{ currentFilters.length }}
+        @for (filter of currentFilters.slice(0, 3); track $index) {
+          <span class="badge bg-primary ms-1">{{ filter.field }} {{ filter.op }}</span>
+        }
+        @if (currentFilters.length > 3) {
+          <span class="badge bg-secondary ms-1">+{{ currentFilters.length - 3 }}</span>
+        }
+      </small>
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Result Table -->
+  <div class="card-body p-0">
+    @if (showGrid) {
+      @if (!isLoading && hasError) {
+        <div class="p-3">
+          <erp-empty-state
+            icon="ti ti-alert-circle"
+            titleKey="ERRORS.OPERATION_FAILED"
+            messageKey="ERRORS.TRY_AGAIN"
+            actionLabelKey="COMMON.REFRESH"
+            (actionClicked)="refreshData()"
+          />
+        </div>
+      } @else if (!isLoading && rowData.length === 0) {
+        <div class="p-3">
+          <erp-empty-state
+            icon="ti ti-database"
+            titleKey="COMMON.NO_DATA"
+            messageKey="TABLE.NO_ROWS"
+          />
+        </div>
+      } @else {
+        <ag-grid-angular
+          class="ag-theme-alpine"
+          [columnDefs]="columnDefs"
+          [defaultColDef]="defaultColDef"
+          [gridOptions]="gridOptions"
+          [theme]="theme"
+          [rowData]="rowData"
+          [localeText]="agLocaleText"
+          (gridReady)="onGridReady($event)"
+          (paginationChanged)="onPaginationChanged()"
+          [style.height.px]="600"
+        />
+      }
+    }
+  </div>
+</app-card>

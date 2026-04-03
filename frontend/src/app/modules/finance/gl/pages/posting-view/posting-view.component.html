@@ -1,0 +1,190 @@
+<!--
+  GL Posting Detail / View Page
+-->
+
+<app-card [cardTitle]="'GL.VIEW_POSTING' | translate" [padding]="0">
+
+  <div class="card-body">
+    <!-- Loading State -->
+    @if (loading()) {
+      <div class="text-center py-5"><div class="spinner-border"></div></div>
+    }
+
+    <!-- Error State -->
+    @if (!loading() && facade.postingsError()) {
+      <erp-empty-state
+        icon="ti ti-alert-circle"
+        titleKey="ERRORS.OPERATION_FAILED"
+        messageKey="ERRORS.TRY_AGAIN"
+      />
+    }
+
+    <!-- Posting Detail -->
+    @if (!loading() && posting(); as p) {
+      <!-- Header Info -->
+      <erp-section [title]="'GL.POSTING_INFO' | translate">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label class="form-label text-muted">{{ 'GL.POSTING_ID' | translate }}</label>
+            <div class="fw-semibold">{{ p.postingId }}</div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label text-muted">{{ 'GL.DOC_DATE' | translate }}</label>
+            <div class="fw-semibold">{{ p.docDate }}</div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label text-muted">{{ 'GL.POSTING_STATUS' | translate }}</label>
+            <div>
+              <span class="badge"
+                    [class.bg-warning]="p.status === 'READY_FOR_GL'"
+                    [class.bg-primary]="p.status === 'JOURNAL_CREATED'"
+                    [class.bg-info]="p.status === 'READY_FOR_POST'"
+                    [class.bg-success]="p.status === 'POSTED'"
+                    [class.bg-danger]="p.status === 'ERROR'"
+                    [class.bg-secondary]="p.status === 'CANCELLED'"
+                    [class.bg-dark]="p.status === 'REVERSED'">
+                {{ p.status }}
+              </span>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label text-muted">{{ 'GL.TOTAL_AMOUNT' | translate }}</label>
+            <div class="fw-semibold">{{ p.totalAmount | number:'1.2-2' }} {{ p.currencyCode }}</div>
+          </div>
+        </div>
+
+        <div class="row g-3 mt-2">
+          <div class="col-md-3">
+            <label class="form-label text-muted">{{ 'GL.SOURCE_MODULE' | translate }}</label>
+            <div>{{ p.sourceModule }}</div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label text-muted">{{ 'GL.SOURCE_DOC_TYPE' | translate }}</label>
+            <div>{{ p.sourceDocType }}</div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label text-muted">{{ 'GL.SOURCE_DOC_NO' | translate }}</label>
+            <div>{{ p.sourceDocNo || '-' }}</div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label text-muted">{{ 'GL.COMPANY' | translate }}</label>
+            <div>{{ p.companyIdFk }}</div>
+          </div>
+        </div>
+
+        <!-- Linked Journal -->
+        @if (p.finJournalIdFk) {
+          <div class="row g-3 mt-2">
+            <div class="col-md-3">
+              <label class="form-label text-muted">{{ 'GL.LINKED_JOURNAL' | translate }}</label>
+              <div>
+                <a href="javascript:void(0)" (click)="onViewJournal()" class="text-primary">
+                  {{ 'GL.JOURNAL' | translate }} #{{ p.finJournalIdFk }}
+                </a>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Error Message -->
+        @if (p.errorMessage) {
+          <div class="alert alert-danger mt-3">
+            <i class="ti ti-alert-triangle"></i> {{ p.errorMessage }}
+          </div>
+        }
+      </erp-section>
+
+      <!-- Actions -->
+      <div class="d-flex gap-2 mb-4">
+        @if (isReadyForGl) {
+          <button
+            class="btn btn-success"
+            erpPermission="PERM_GL_POSTING_CREATE"
+            (click)="onGenerateJournal()"
+            [disabled]="facade.saving()"
+          >
+            @if (facade.saving()) {
+              <span class="spinner-border spinner-border-sm me-1"></span>
+            }
+            <i class="ti ti-file-plus"></i> {{ 'GL.GENERATE_JOURNAL' | translate }}
+          </button>
+        }
+        @if ((isJournalCreated || isReadyForPost || isPosted) && p.finJournalIdFk) {
+          <button class="btn btn-outline-primary" (click)="onViewJournal()">
+            <i class="ti ti-file-text"></i> {{ 'GL.VIEW_JOURNAL' | translate }}
+          </button>
+        }
+      </div>
+
+      <!-- Detail Lines Table -->
+      @if (p.details && p.details.length > 0) {
+        <erp-section [title]="'GL.POSTING_DETAILS' | translate">
+          <div class="table-responsive">
+            <table class="table table-striped table-sm mb-0">
+              <thead>
+                <tr>
+                  <th>{{ 'GL.LINE_NO' | translate }}</th>
+                  <th>{{ 'GL.BUSINESS_SIDE' | translate }}</th>
+                  <th class="text-end">{{ 'GL.AMOUNT' | translate }}</th>
+                  <th>{{ 'GL.SIGN' | translate }}</th>
+                  <th>{{ 'COMMON.DESCRIPTION' | translate }}</th>
+                  <th>{{ 'GL.CUSTOMER' | translate }}</th>
+                  <th>{{ 'GL.SUPPLIER' | translate }}</th>
+                  <th>{{ 'GL.COST_CENTER' | translate }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (line of p.details; track line.postingDtlId) {
+                  <tr>
+                    <td>{{ line.lineNo }}</td>
+                    <td>{{ line.businessSide }}</td>
+                    <td class="text-end">{{ line.amount | number:'1.2-2' }}</td>
+                    <td>{{ line.sign === 1 ? '+' : '-' }}</td>
+                    <td>{{ line.description || '-' }}</td>
+                    <td>{{ line.customerIdFk || '-' }}</td>
+                    <td>{{ line.supplierIdFk || '-' }}</td>
+                    <td>{{ line.costCenterIdFk || '-' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </erp-section>
+      } @else {
+        <erp-empty-state
+          icon="ti ti-list"
+          titleKey="GL.NO_POSTING_DETAILS"
+          messageKey="GL.NO_POSTING_DETAILS_MSG"
+        />
+      }
+
+      <!-- Audit Info -->
+      <erp-section [title]="'COMMON.AUDIT_INFO' | translate">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label class="form-label text-muted">{{ 'COMMON.CREATED_BY' | translate }}</label>
+            <div>{{ p.createdBy || '-' }}</div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label text-muted">{{ 'COMMON.CREATED_AT' | translate }}</label>
+            <div>{{ p.createdAt || '-' }}</div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label text-muted">{{ 'COMMON.UPDATED_BY' | translate }}</label>
+            <div>{{ p.updatedBy || '-' }}</div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label text-muted">{{ 'COMMON.UPDATED_AT' | translate }}</label>
+            <div>{{ p.updatedAt || '-' }}</div>
+          </div>
+        </div>
+      </erp-section>
+    }
+  </div>
+
+  <erp-action-bar
+    [showSave]="false"
+    [showCancel]="false"
+    (backClicked)="goBack()"
+  />
+</app-card>

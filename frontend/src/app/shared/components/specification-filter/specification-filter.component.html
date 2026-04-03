@@ -1,0 +1,69 @@
+<div class="erp-spec-filter">
+  <div class="d-flex align-items-center justify-content-between mb-2">
+    <div class="fw-semibold">{{ 'FILTER.ADVANCED_FILTERS' | translate }}</div>
+    <div class="d-flex gap-2">
+      <button type="button" class="btn btn-sm btn-outline-primary" (click)="addRow()">
+        <i class="ti ti-plus"></i>
+        {{ 'COMMON.ADD' | translate }}
+      </button>
+      <button type="button" class="btn btn-sm btn-outline-secondary" (click)="clearAll()">
+        <i class="ti ti-x"></i>
+        {{ 'COMMON.CLEAR' | translate }}
+      </button>
+      <button type="button" class="btn btn-sm btn-primary" (click)="onApply()">
+        <i class="ti ti-check"></i>
+        {{ 'FILTER.APPLY' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="row g-2 align-items-end mb-2" *ngFor="let row of rows; trackBy: trackById">
+    <div class="col-md-4">
+      <label class="form-label small mb-1">{{ 'FILTER.FIELD' | translate }}</label>
+      <select class="form-select form-select-sm" [(ngModel)]="row.field" (ngModelChange)="onFieldChanged(row)">
+        <option value="" disabled>{{ 'COMMON.SELECT' | translate }}</option>
+        <option *ngFor="let f of availableFields" [value]="f.value">{{ f.label | translate }}</option>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label small mb-1">{{ 'FILTER.OPERATOR' | translate }}</label>
+      <select class="form-select form-select-sm" [(ngModel)]="row.operator">
+        <option *ngFor="let op of getOperatorsForField(row.field)" [ngValue]="op.value">{{ op.label | translate }}</option>
+      </select>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label small mb-1">{{ 'FILTER.VALUE' | translate }}</label>
+      <ng-container *ngIf="needsValue(row.operator); else noValue">
+        <ng-container *ngIf="getFieldOptions(row.field) as opts; else freeText">
+          <select class="form-select form-select-sm" [(ngModel)]="row.value">
+            <option *ngFor="let opt of opts" [ngValue]="opt.value">{{ opt.label | translate }}</option>
+          </select>
+        </ng-container>
+        <ng-template #freeText>
+          <input type="text" class="form-control form-control-sm" [(ngModel)]="row.value" [placeholder]="'FILTER.ENTER_VALUE' | translate" />
+        </ng-template>
+      </ng-container>
+      <ng-template #noValue>
+        <input type="text" class="form-control form-control-sm" value="-" disabled />
+      </ng-template>
+    </div>
+
+    <div class="col-md-1">
+      <button
+        type="button"
+        class="btn btn-sm btn-outline-danger w-100"
+        (click)="removeRow(row.id)"
+        [disabled]="rows.length === 1"
+        [title]="'COMMON.REMOVE' | translate"
+      >
+        <i class="ti ti-trash"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="form-text mt-2">
+    {{ 'FILTER.NOTES_IN_VALUES' | translate }}
+  </div>
+</div>

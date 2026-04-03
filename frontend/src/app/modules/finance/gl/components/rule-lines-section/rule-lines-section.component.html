@@ -1,0 +1,103 @@
+<div class="d-flex justify-content-end mb-3">
+  <button
+    type="button"
+    class="btn btn-sm"
+    [ngClass]="variant === 'debit' ? 'btn-outline-success' : 'btn-outline-danger'"
+    (click)="addLine.emit()"
+  >
+    <i class="ti ti-plus"></i> {{ addButtonKey | translate }}
+  </button>
+</div>
+
+<div class="card-body p-0">
+  @if (loading) {
+    <div class="text-center py-4">
+      <span class="spinner-border"></span>
+    </div>
+  } @else if (lines.length === 0) {
+    <div class="p-3">
+      <erp-empty-state
+        icon="ti ti-list"
+        titleKey="GL.NO_LINES"
+        [messageKey]="addButtonKey"
+      />
+    </div>
+  } @else {
+    <div class="rule-cards-container">
+      @for (line of lines; track $index; let i = $index) {
+        <div
+          class="rule-card"
+          [ngClass]="'rule-card--' + variant"
+        >
+          <!-- Card Header: Priority badge + action buttons -->
+          <div class="rule-card__header">
+            <span
+              class="rule-card__priority badge"
+              [ngClass]="variant === 'debit' ? 'bg-success' : 'bg-danger'"
+            >
+              #{{ line.priority }}
+            </span>
+            <div class="rule-card__actions">
+              <button
+                type="button"
+                class="btn btn-sm btn-icon btn-outline-primary"
+                [title]="'COMMON.EDIT' | translate"
+                (click)="editLine.emit({ line: line, index: i })"
+              >
+                <i class="ti ti-edit"></i>
+              </button>
+              <button
+                type="button"
+                class="btn btn-sm btn-icon btn-outline-danger"
+                [title]="'COMMON.DELETE' | translate"
+                (click)="removeLine.emit(i)"
+              >
+                <i class="ti ti-trash"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card Body: Line details as key-value fields -->
+          <div class="rule-card__body">
+            <div class="rule-card__field">
+              <span class="rule-card__label">{{ 'GL.ACCOUNT_ID' | translate }}</span>
+              <span class="rule-card__value">
+                @if (asDto(line); as dto) {
+                  {{ dto.accountName }} <span class="text-muted">({{ dto.accountCode }})</span>
+                } @else {
+                  #{{ line.accountIdFk }}
+                }
+              </span>
+            </div>
+
+            <div class="rule-card__field">
+              <span class="rule-card__label">{{ 'GL.AMOUNT_SOURCE_TYPE' | translate }}</span>
+              <span class="rule-card__value">{{ resolveLabel(amountSourceTypeOptions, line.amountSourceType) }}</span>
+            </div>
+
+            @if (line.amountSourceValue != null) {
+              <div class="rule-card__field">
+                <span class="rule-card__label">{{ 'GL.AMOUNT_SOURCE_VALUE' | translate }}</span>
+                <span class="rule-card__value">{{ line.amountSourceValue }}</span>
+              </div>
+            }
+
+            @if (line.entityType) {
+              <div class="rule-card__field">
+                <span class="rule-card__label">{{ 'GL.ENTITY_TYPE' | translate }}</span>
+                <span class="rule-card__value">{{ resolveLabel(entityTypeOptions, line.entityType) }}</span>
+              </div>
+            }
+
+            @if (line.paymentTypeCode != null) {
+              <div class="rule-card__field">
+                <span class="rule-card__label">{{ 'GL.PAYMENT_TYPE' | translate }}</span>
+                <span class="rule-card__value">{{ resolveLabel(paymentTypeOptions, line.paymentTypeCode) }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

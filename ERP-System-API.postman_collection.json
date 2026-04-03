@@ -1,0 +1,1586 @@
+{
+  "info": {
+    "name": "ERP System API",
+    "_postman_id": "erp-system-api-v3",
+    "description": "Complete API collection for ERP System - erp-security module\n\n📦 Modules Covered:\n- Authentication (login, refresh, logout)\n- User Management (CRUD, roles, search)\n- Role Management (CRUD, toggle active, pages, copy permissions)\n- Permission Management (create, list)\n- Pages Registry (CRUD, activate, deactivate)\n- Menu Management (user menu)\n\n🔥 v3.0.0 - Full erp-security coverage:\n- Added login-token endpoint (returns full user info)\n- Added GET /users/{userId} endpoint\n- Added PUT /users/{userId} endpoint\n- Added DELETE /users/{userId} endpoint\n- Added GET /roles/{roleId} endpoint\n- Added PUT /roles/{roleId} endpoint\n- Added PUT /roles/{roleId}/toggle-active endpoint\n- Added POST /roles/{roleId}/copy-from/{sourceRoleId} endpoint\n- Updated Role→Pages endpoints to match actual implementation\n- Menu endpoints simplified (SEC_MENU_ITEM removed)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "3.0.0"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "description": "APIs for user authentication and token management",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Login successful\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Access token is present\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.accessToken).to.be.a('string');",
+                  "    pm.expect(jsonData.accessToken.length).to.be.above(50);",
+                  "    pm.environment.set(\"accessToken\", jsonData.accessToken);",
+                  "});",
+                  "",
+                  "pm.test(\"Expires in 900 seconds\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.expiresIn).to.eql(900);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Authenticates user and returns JWT access token. Use this token in the Authorize button above."
+          },
+          "response": []
+        },
+        {
+          "name": "Login with Full User Info",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Login successful\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Full user info returned\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('accessToken');",
+                  "    pm.expect(jsonData).to.have.property('refreshToken');",
+                  "    pm.expect(jsonData).to.have.property('userId');",
+                  "    pm.expect(jsonData).to.have.property('username');",
+                  "    pm.expect(jsonData).to.have.property('roles');",
+                  "    pm.expect(jsonData).to.have.property('permissions');",
+                  "    pm.environment.set(\"accessToken\", jsonData.accessToken);",
+                  "    pm.environment.set(\"userId\", jsonData.userId);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login-token",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login-token"]
+            },
+            "description": "Authenticates user and returns access token, refresh token, and complete user information including roles and permissions. Recommended for frontend login."
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Token refreshed successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"New access token received\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.accessToken).to.be.a('string');",
+                  "    pm.environment.set(\"accessToken\", jsonData.accessToken);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "refresh"]
+            },
+            "description": "Refreshes the access token using the refresh token cookie"
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Logout successful\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.environment.unset(\"accessToken\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "logout"]
+            },
+            "description": "Logs out the user and invalidates all tokens"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User Management",
+      "description": "APIs for managing users, roles, and permissions",
+      "item": [
+        {
+          "name": "List All Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Users list retrieved successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains pagination\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('content');",
+                  "    pm.expect(jsonData).to.have.property('totalPages');",
+                  "    pm.expect(jsonData).to.have.property('totalElements');",
+                  "});",
+                  "",
+                  "pm.test(\"Users have required fields\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.content.length > 0) {",
+                  "        pm.expect(jsonData.content[0]).to.have.property('id');",
+                  "        pm.expect(jsonData.content[0]).to.have.property('username');",
+                  "        pm.expect(jsonData.content[0]).to.have.property('enabled');",
+                  "        pm.expect(jsonData.content[0]).to.have.property('roles');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users?page=0&size=20&sort=id,asc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "Page number (zero-based)"
+                },
+                {
+                  "key": "size",
+                  "value": "20",
+                  "description": "Page size (max: 100)"
+                },
+                {
+                  "key": "sort",
+                  "value": "id,asc",
+                  "description": "Sort: fieldName,direction. Fields: id, username, enabled, createdAt, updatedAt"
+                }
+              ]
+            },
+            "description": "Get paginated list of users for current tenant"
+          },
+          "response": []
+        },
+        {
+          "name": "Create User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User created successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Username matches request\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    var requestData = JSON.parse(pm.request.body.raw);",
+                  "    pm.expect(jsonData.username).to.eql(requestData.username);",
+                  "});",
+                  "",
+                  "pm.test(\"User has default ROLE_USER\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.roles).to.be.an('array');",
+                  "    pm.expect(jsonData.roles.length).to.be.above(0);",
+                  "});",
+                  "",
+                  "// Save userId for later use",
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"userId\", jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"test.user\",\n  \"password\": \"TestPass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            },
+            "description": "Create a new user with username and password"
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User updated successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Updated fields reflected\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('username');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"test.user.updated\",\n  \"password\": \"NewPass456!\",\n  \"enabled\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}"]
+            },
+            "description": "Update user information (username, password, enabled status). All fields are optional."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User deleted successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}"]
+            },
+            "description": "Delete a user if they have no child relationships (e.g., active refresh tokens)"
+          },
+          "response": []
+        },
+        {
+          "name": "Assign Roles to User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Roles assigned successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"User has assigned roles\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.roles).to.be.an('array');",
+                  "    pm.expect(jsonData.roles.length).to.be.above(0);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roleNames\": [\"ROLE_USER\", \"ROLE_ADMIN\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}/roles",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}", "roles"]
+            },
+            "description": "Assign roles to a user (FULL_REPLACE mode - removes existing roles and assigns new ones)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get User Roles",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User roles retrieved successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is array of strings\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "    if (jsonData.length > 0) {",
+                  "        pm.expect(jsonData[0]).to.be.a('string');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}/roles",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}", "roles"]
+            },
+            "description": "Get list of role names assigned to user. Returns: [\"ROLE_ADMIN\", \"ROLE_USER\"]"
+          },
+          "response": []
+        },
+        {
+          "name": "Search Users (Dynamic)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Search results retrieved successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains pagination\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('content');",
+                  "    pm.expect(jsonData).to.have.property('totalPages');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"filters\": [\n    {\n      \"field\": \"username\",\n      \"op\": \"LIKE\",\n      \"value\": \"admin\"\n    },\n    {\n      \"field\": \"enabled\",\n      \"op\": \"EQ\",\n      \"value\": true\n    }\n  ],\n  \"page\": 0,\n  \"size\": 20,\n  \"sortBy\": \"createdAt\",\n  \"sortDir\": \"DESC\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/search",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "search"]
+            },
+            "description": "Advanced user search with dynamic filters.\n\nAllowed Fields: id, username, enabled, createdAt, tenantId\n\nOperators: EQ, NE, GT, GE, LT, LE, LIKE, IN, IS_NULL, IS_NOT_NULL, BETWEEN"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Role Management",
+      "description": "إدارة الأدوار والصلاحيات (Role Access Control)",
+      "item": [
+        {
+          "name": "List All Roles",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Roles list retrieved successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains pagination\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('content');",
+                  "    pm.expect(jsonData).to.have.property('totalPages');",
+                  "});",
+                  "",
+                  "pm.test(\"Roles have required fields\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.content.length > 0) {",
+                  "        pm.expect(jsonData.content[0]).to.have.property('id');",
+                  "        pm.expect(jsonData.content[0]).to.have.property('name');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/roles?page=0&size=20&sort=id,asc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "roles"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "Page number (zero-based)"
+                },
+                {
+                  "key": "size",
+                  "value": "20",
+                  "description": "Page size (max: 100)"
+                },
+                {
+                  "key": "sort",
+                  "value": "id,asc",
+                  "description": "Sort: fieldName,direction. Fields: id, name, createdAt, updatedAt"
+                }
+              ]
+            },
+            "description": "Get paginated list of roles for current tenant"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Role by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Role retrieved successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Role has required fields\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('name');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/roles/{{roleId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "roles", "{{roleId}}"]
+            },
+            "description": "Retrieve a single role by its ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Role",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Role created successfully\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Role name matches request\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    var requestData = JSON.parse(pm.request.body.raw);",
+                  "    pm.expect(jsonData.name).to.eql(requestData.name);",
+                  "});",
+                  "",
+                  "// Save roleId for later use",
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"roleId\", jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"ROLE_MANAGER\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/roles",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "roles"]
+            },
+            "description": "Create a new role (permissions assigned via /pages endpoints)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Role",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Role updated successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Updated fields reflected\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('name');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"ROLE_SENIOR_MANAGER\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/roles/{{roleId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "roles", "{{roleId}}"]
+            },
+            "description": "Update an existing role's basic information"
+          },
+          "response": []
+        },
+        {
+          "name": "Toggle Role Active Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Role status toggled successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has active field\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('active');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/roles/{{roleId}}/toggle-active",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "roles", "{{roleId}}", "toggle-active"]
+            },
+            "description": "Enable or disable a role"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Role",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Role deleted successfully\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/roles/{{roleId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "roles", "{{roleId}}"]
+            },
+            "description": "Delete a role permanently"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Role → Pages RBAC",
+      "description": "Role-Based Access Control for Pages (Master/Detail relationship)",
+      "item": [
+        {
+          "name": "Get Role Pages",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Role pages retrieved successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test(\"Each page has CRUD flags\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.length > 0) {",
+                  "        pm.expect(jsonData[0]).to.have.property('pageCode');",
+                  "        pm.expect(jsonData[0]).to.have.property('create');",
+                  "        pm.expect(jsonData[0]).to.have.property('update');",
+                  "        pm.expect(jsonData[0]).to.have.property('delete');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/roles/{{roleId}}/pages",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "roles", "{{roleId}}", "pages"]
+            },
+            "description": "Get list of assigned pages for this role with CRUD permission flags (create, update, delete). VIEW is always implicit."
+          },
+          "response": []
+        },
+        {
+          "name": "Add Page to Role",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Page added to role successfully\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pageCode\": \"USER\",\n  \"permissions\": [\"CREATE\", \"UPDATE\", \"DELETE\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/roles/{{roleId}}/pages",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "roles", "{{roleId}}", "pages"]
+            },
+            "description": "Add a page to a role with specific CRUD permissions. VIEW is ALWAYS added automatically. Use permissions: CREATE, UPDATE, DELETE"
+          },
+          "response": []
+        },
+        {
+          "name": "Sync Role Pages (Replace Mode)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Role pages synced successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assignments\": [\n    {\n      \"pageCode\": \"USER\",\n      \"permissions\": [\"CREATE\", \"UPDATE\", \"DELETE\"]\n    },\n    {\n      \"pageCode\": \"ROLE\",\n      \"permissions\": []\n    },\n    {\n      \"pageCode\": \"INVOICE\",\n      \"permissions\": [\"CREATE\"]\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/roles/{{roleId}}/pages",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "roles", "{{roleId}}", "pages"]
+            },
+            "description": "SYNC MODE: Replace ALL page assignments for this role. Every listed page MUST keep VIEW. CRUD permissions must match exactly the request."
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Page from Role",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Page removed from role successfully\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/roles/{{roleId}}/pages/USER",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "roles", "{{roleId}}", "pages", "USER"]
+            },
+            "description": "Remove a page from the role completely (removes VIEW + CREATE + UPDATE + DELETE for that page)"
+          },
+          "response": []
+        },
+        {
+          "name": "Copy Permissions from Another Role",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Permissions copied successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/roles/{{roleId}}/copy-from/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "roles", "{{roleId}}", "copy-from", "1"]
+            },
+            "description": "Copy all pages and CRUD permissions from source role. VIEW is auto-added. Existing assignments may be replaced (SYNC)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Permission Management",
+      "description": "APIs for managing system permissions",
+      "item": [
+        {
+          "name": "List All Permissions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Permissions list retrieved successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains pagination\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('content');",
+                  "    pm.expect(jsonData).to.have.property('totalPages');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/permissions?page=0&size=20&sort=id,asc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "permissions"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "Page number (zero-based)"
+                },
+                {
+                  "key": "size",
+                  "value": "20",
+                  "description": "Page size (max: 100)"
+                },
+                {
+                  "key": "sort",
+                  "value": "id,asc",
+                  "description": "Sort: fieldName,direction. Fields: id, name, module, createdAt, updatedAt"
+                }
+              ]
+            },
+            "description": "Get paginated list of permissions for current tenant"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Permission",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Permission created successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Save permissionId",
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"permissionId\", jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"PERM_INVOICE_CREATE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/permissions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "permissions"]
+            },
+            "description": "Create a new permission manually. Note: Permissions are auto-generated when creating Pages."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Pages Registry",
+      "description": "إدارة الصفحات (Pages/Screens) - Each page auto-generates 4 CRUD permissions",
+      "item": [
+        {
+          "name": "List All Pages",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Pages retrieved successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains pagination\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('content');",
+                  "    pm.expect(jsonData).to.have.property('totalPages');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pages?page=0&size=20&sort=displayOrder,asc&module=&active=&search=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pages"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "Page number (zero-based)"
+                },
+                {
+                  "key": "size",
+                  "value": "20",
+                  "description": "Page size (max: 100)"
+                },
+                {
+                  "key": "sort",
+                  "value": "displayOrder,asc",
+                  "description": "Sort specification"
+                },
+                {
+                  "key": "module",
+                  "value": "",
+                  "description": "Filter by module name (e.g., SECURITY, FINANCE)",
+                  "disabled": true
+                },
+                {
+                  "key": "active",
+                  "value": "",
+                  "description": "Filter by activation status (true/false)",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search keyword for page names (Arabic/English) or code",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get paginated list of pages with optional filters (module, active status, search keyword)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Active Pages",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Active pages retrieved successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pages/active",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pages", "active"]
+            },
+            "description": "Get all active pages for dropdowns (used in Role Access Control 'Add Page' dropdown)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Page by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Page retrieved successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Page has required fields\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('pageCode');",
+                  "    pm.expect(jsonData).to.have.property('nameAr');",
+                  "    pm.expect(jsonData).to.have.property('nameEn');",
+                  "    pm.expect(jsonData).to.have.property('route');",
+                  "    pm.expect(jsonData).to.have.property('active');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pages/{{pageId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pages", "{{pageId}}"]
+            },
+            "description": "Retrieve a single page by its ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Page",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Page created successfully\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"pageId\", jsonData.id);",
+                  "    pm.expect(jsonData).to.have.property('pageCode');",
+                  "    pm.expect(jsonData).to.have.property('permissionKeys');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pageCode\": \"INVOICE\",\n  \"nameAr\": \"الفواتير\",\n  \"nameEn\": \"Invoices\",\n  \"route\": \"/invoices/list\",\n  \"icon\": \"pi pi-file\",\n  \"module\": \"BILLING\",\n  \"parentId\": null,\n  \"displayOrder\": 10,\n  \"active\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pages",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pages"]
+            },
+            "description": "Register a new page/screen and auto-generate 4 CRUD permissions (PERM_{CODE}_VIEW, CREATE, UPDATE, DELETE)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Page",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Page updated successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameAr\": \"إدارة الفواتير\",\n  \"nameEn\": \"Invoice Management\",\n  \"route\": \"/invoices/list\",\n  \"icon\": \"pi pi-file\",\n  \"module\": \"BILLING\",\n  \"parentId\": null,\n  \"displayOrder\": 5,\n  \"active\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pages/{{pageId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pages", "{{pageId}}"]
+            },
+            "description": "Update an existing page (pageCode cannot be changed)"
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate Page",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Page deactivated successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Page is now inactive\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.active).to.eql(false);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pages/{{pageId}}/deactivate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pages", "{{pageId}}", "deactivate"]
+            },
+            "description": "Deactivate a page (soft delete - sets active = false)"
+          },
+          "response": []
+        },
+        {
+          "name": "Reactivate Page",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Page reactivated successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Page is now active\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.active).to.eql(true);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pages/{{pageId}}/reactivate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pages", "{{pageId}}", "reactivate"]
+            },
+            "description": "Reactivate a previously deactivated page (sets active = true)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Menu Management",
+      "description": "APIs for user menu retrieval based on permissions",
+      "item": [
+        {
+          "name": "Get User Menu (Current User)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User menu retrieved successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Menu is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test(\"Menu items have required fields\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.length > 0) {",
+                  "        pm.expect(jsonData[0]).to.have.property('id');",
+                  "        pm.expect(jsonData[0]).to.have.property('nameEn');",
+                  "        pm.expect(jsonData[0]).to.have.property('nameAr');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/menu/user-menu",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "menu", "user-menu"]
+            },
+            "description": "Returns menu tree structure for current logged-in user. Shows only pages where user has VIEW permission. Called immediately after login to build Angular menu."
+          },
+          "response": []
+        },
+        {
+          "name": "Get User Menu (By User ID - Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User menu retrieved successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Menu is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Tenant-ID",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/menu/user-menu/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "menu", "user-menu", "{{userId}}"]
+            },
+            "description": "Admin: View menu structure for any user. Useful for debugging permission issues."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:7272",
+      "type": "string"
+    },
+    {
+      "key": "tenantId",
+      "value": "default",
+      "type": "string"
+    }
+  ]
+}

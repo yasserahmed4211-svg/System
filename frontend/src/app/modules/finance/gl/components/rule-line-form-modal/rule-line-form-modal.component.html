@@ -1,0 +1,146 @@
+<ng-template #lineModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">
+      {{ editingLine ? ('GL.EDIT_LINE' | translate) : ('GL.ADD_LINE' | translate) }}
+    </h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body">
+    <form [formGroup]="lineForm">
+      <div class="row g-3">
+        <!-- Account (Lookup) -->
+        <div class="col-md-6">
+          <erp-form-field
+            labelKey="GL.ACCOUNT_ID"
+            [control]="lineForm.get('accountIdFk')"
+            [required]="true"
+          >
+            <erp-lookup-field
+              formControlName="accountIdFk"
+              [config]="accountLookupConfig"
+            ></erp-lookup-field>
+          </erp-form-field>
+        </div>
+
+        <!-- Entry Side -->
+        <div class="col-md-6">
+          <erp-form-field
+            labelKey="GL.ENTRY_SIDE"
+            [control]="lineForm.get('entrySide')"
+            [required]="true"
+          >
+            <select
+              class="form-select"
+              formControlName="entrySide"
+              [class.is-invalid]="!!(lineForm.get('entrySide')?.invalid && lineForm.get('entrySide')?.touched)"
+            >
+              <option [ngValue]="null" disabled>{{ 'COMMON.SELECT' | translate }}</option>
+              @for (side of entrySideOptions; track side.value) {
+                <option [value]="side.value">{{ side.label }}</option>
+              }
+            </select>
+          </erp-form-field>
+        </div>
+
+        <!-- Priority -->
+        <div class="col-md-6">
+          <erp-form-field
+            labelKey="GL.PRIORITY"
+            [control]="lineForm.get('priority')"
+            [required]="true"
+          >
+            <input
+              type="number"
+              class="form-control"
+              formControlName="priority"
+              min="1"
+              [class.is-invalid]="!!(lineForm.get('priority')?.invalid && lineForm.get('priority')?.touched)"
+            />
+          </erp-form-field>
+        </div>
+
+        <!-- Amount Source Type -->
+        <div class="col-md-6">
+          <erp-form-field
+            labelKey="GL.AMOUNT_SOURCE_TYPE"
+            [control]="lineForm.get('amountSourceType')"
+            [required]="true"
+          >
+            <select
+              class="form-select"
+              formControlName="amountSourceType"
+              [class.is-invalid]="!!(lineForm.get('amountSourceType')?.invalid && lineForm.get('amountSourceType')?.touched)"
+            >
+              <option [ngValue]="null" disabled>{{ 'COMMON.SELECT' | translate }}</option>
+              @for (ast of amountSourceTypeOptions; track ast.value) {
+                <option [value]="ast.value">{{ ast.label }}</option>
+              }
+            </select>
+          </erp-form-field>
+        </div>
+
+        <!-- Amount Source Value (conditional) -->
+        @if (showAmountValue) {
+          <div class="col-md-6">
+            <erp-form-field
+              labelKey="GL.AMOUNT_SOURCE_VALUE"
+              [control]="lineForm.get('amountSourceValue')"
+              [required]="true"
+            >
+              <input
+                type="number"
+                class="form-control"
+                formControlName="amountSourceValue"
+                step="0.01"
+                [class.is-invalid]="!!(lineForm.get('amountSourceValue')?.invalid && lineForm.get('amountSourceValue')?.touched)"
+              />
+            </erp-form-field>
+          </div>
+        }
+
+        <!-- Payment Type -->
+        <div class="col-md-6">
+          <erp-form-field
+            labelKey="GL.PAYMENT_TYPE"
+            [control]="lineForm.get('paymentTypeCode')"
+          >
+            <select class="form-select" formControlName="paymentTypeCode">
+              <option [ngValue]="null">{{ 'COMMON.SELECT' | translate }}</option>
+              @for (pt of paymentTypeOptions; track pt.value) {
+                <option [value]="pt.value">{{ pt.label }}</option>
+              }
+            </select>
+          </erp-form-field>
+        </div>
+
+        <!-- Entity Type -->
+        <div class="col-md-6">
+          <erp-form-field
+            labelKey="GL.ENTITY_TYPE"
+            [control]="lineForm.get('entityType')"
+          >
+            <select class="form-select" formControlName="entityType">
+              <option [ngValue]="null">{{ 'COMMON.SELECT' | translate }}</option>
+              @for (et of entityTypeOptions; track et.value) {
+                <option [value]="et.value">{{ et.label }}</option>
+              }
+            </select>
+          </erp-form-field>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">
+      {{ 'COMMON.CANCEL' | translate }}
+    </button>
+    <button type="button" class="btn btn-primary" [disabled]="saving" (click)="onSave()">
+      @if (saving) {
+        <span class="spinner-border spinner-border-sm me-1"></span>
+      }
+      {{ 'COMMON.SAVE' | translate }}
+    </button>
+  </div>
+</ng-template>

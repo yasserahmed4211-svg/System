@@ -1,0 +1,165 @@
+// ─── Dashboard Welcome Banner ────────────────────────────────
+.dashboard-welcome {
+  margin-bottom: 1.5rem;
+}
+
+.welcome-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.welcome-text {
+  h2 {
+    margin: 0 0 0.25rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+}
+
+.welcome-icon {
+  font-size: 3rem;
+  color: var(--bs-primary, #4680ff);
+  opacity: 0.3;
+}
+
+// ─── Section Title ───────────────────────────────────────────
+.section-title {
+  margin-bottom: 1rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--bs-body-color, #212529);
+}
+
+// ─── Quick Access Grid ───────────────────────────────────────
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+// ─── Individual Card ─────────────────────────────────────────
+.dashboard-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: var(--bs-body-bg, #fff);
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--bs-primary, #4680ff);
+    outline-offset: 2px;
+  }
+}
+
+.card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 0.5rem;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.card-info {
+  flex: 1;
+  min-width: 0;
+
+  h6 {
+    margin: 0 0 0.15rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--bs-secondary-color, rgba(33, 37, 41, 0.75));
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.card-arrow {
+  font-size: 0.75rem;
+  color: var(--bs-secondary-color, rgba(33, 37, 41, 0.75));
+  transition: transform 0.15s ease;
+
+  .dashboard-card:hover & {
+    transform: translateX(3px);
+  }
+
+  [dir='rtl'] & {
+    transform: scaleX(-1);
+  }
+
+  [dir='rtl'] .dashboard-card:hover & {
+    transform: scaleX(-1) translateX(3px);
+  }
+}
+
+// ─── Card Color Variants ─────────────────────────────────────
+.card-users .card-icon {
+  background: rgba(70, 128, 255, 0.12);
+  color: #4680ff;
+}
+
+.card-roles .card-icon {
+  background: rgba(23, 162, 184, 0.12);
+  color: #17a2b8;
+}
+
+.card-pages .card-icon {
+  background: rgba(108, 117, 125, 0.12);
+  color: #6c757d;
+}
+
+.card-master .card-icon {
+  background: rgba(255, 193, 7, 0.12);
+  color: #d4a005;
+}
+
+.card-gl .card-icon {
+  background: rgba(40, 167, 69, 0.12);
+  color: #28a745;
+}
+
+.card-rules .card-icon {
+  background: rgba(220, 53, 69, 0.12);
+  color: #dc3545;
+}
+
+// ─── Card hover accent borders ──────────────────────────────
+.card-users:hover  { border-color: #4680ff; }
+.card-roles:hover  { border-color: #17a2b8; }
+.card-pages:hover  { border-color: #6c757d; }
+.card-master:hover { border-color: #d4a005; }
+.card-gl:hover     { border-color: #28a745; }
+.card-rules:hover  { border-color: #dc3545; }

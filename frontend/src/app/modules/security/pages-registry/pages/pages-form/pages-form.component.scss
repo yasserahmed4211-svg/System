@@ -1,0 +1,46 @@
+/**
+ * Unified Blueprint - Page B (Form)
+ * Styling for Pages Form Component
+ */
+
+:host {
+  display: block;
+}
+
+::ng-deep {
+  .card-header-right {
+    position: absolute;
+    left: 20px;
+    top: 15px;
+    z-index: 1;
+  }
+}
+
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.form-control,
+.form-select {
+  border-radius: 0.25rem;
+}
+
+.is-invalid {
+  border-color: #dc3545;
+}
+
+.invalid-feedback {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.text-danger {
+  color: #dc3545;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}

@@ -1,0 +1,112 @@
+<ng-template #detailModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">
+      {{ editingDetail ? ('MASTER_LOOKUPS.EDIT_DETAIL' | translate) : ('MASTER_LOOKUPS.ADD_DETAIL' | translate) }}
+    </h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="detailForm">
+      <div class="row">
+        <!-- Code (immutable on edit) -->
+        <div class="col-md-6 mb-3">
+          <erp-form-field
+            labelKey="MASTER_LOOKUPS.DETAIL_CODE"
+            [control]="detailForm.get('code')"
+            [required]="true"
+            [hintKey]="editingDetail ? 'MASTER_LOOKUPS.CODE_READONLY_HINT' : undefined"
+          >
+            <input
+              type="text"
+              id="detailCode"
+              formControlName="code"
+              class="form-control text-uppercase"
+              maxlength="50"
+              [class.is-invalid]="!!(detailForm.get('code')?.invalid && (detailForm.get('code')?.touched || detailForm.get('code')?.dirty))"
+            />
+          </erp-form-field>
+        </div>
+
+        <!-- Sort Order -->
+        <div class="col-md-6 mb-3">
+          <erp-form-field
+            labelKey="MASTER_LOOKUPS.SORT_ORDER"
+            [control]="detailForm.get('sortOrder')"
+          >
+            <input
+              type="number"
+              id="sortOrder"
+              formControlName="sortOrder"
+              class="form-control"
+              min="0"
+              [class.is-invalid]="!!(detailForm.get('sortOrder')?.invalid && (detailForm.get('sortOrder')?.touched || detailForm.get('sortOrder')?.dirty))"
+            />
+          </erp-form-field>
+        </div>
+
+        <!-- Name Arabic -->
+        <div class="col-md-6 mb-3">
+          <erp-form-field
+            labelKey="MASTER_LOOKUPS.DETAIL_NAME_AR"
+            [control]="detailForm.get('nameAr')"
+            [required]="true"
+          >
+            <input
+              type="text"
+              id="nameAr"
+              formControlName="nameAr"
+              class="form-control"
+              maxlength="200"
+              [class.is-invalid]="!!(detailForm.get('nameAr')?.invalid && (detailForm.get('nameAr')?.touched || detailForm.get('nameAr')?.dirty))"
+            />
+          </erp-form-field>
+        </div>
+
+        <!-- Name English -->
+        <div class="col-md-6 mb-3">
+          <erp-form-field
+            labelKey="MASTER_LOOKUPS.DETAIL_NAME_EN"
+            [control]="detailForm.get('nameEn')"
+          >
+            <input
+              type="text"
+              id="nameEn"
+              formControlName="nameEn"
+              class="form-control"
+              maxlength="200"
+              [class.is-invalid]="!!(detailForm.get('nameEn')?.invalid && (detailForm.get('nameEn')?.touched || detailForm.get('nameEn')?.dirty))"
+            />
+          </erp-form-field>
+        </div>
+
+        <!-- Extra Value -->
+        <div class="col-12 mb-3">
+          <erp-form-field
+            labelKey="MASTER_LOOKUPS.EXTRA_VALUE"
+            [control]="detailForm.get('extraValue')"
+          >
+            <input
+              type="text"
+              id="extraValue"
+              formControlName="extraValue"
+              class="form-control"
+              maxlength="500"
+              [class.is-invalid]="!!(detailForm.get('extraValue')?.invalid && (detailForm.get('extraValue')?.touched || detailForm.get('extraValue')?.dirty))"
+            />
+          </erp-form-field>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">
+      {{ 'COMMON.CANCEL' | translate }}
+    </button>
+    <button type="button" class="btn btn-primary" [disabled]="saving" (click)="onSave()">
+      @if (saving) {
+        <span class="spinner-border spinner-border-sm me-1"></span>
+      }
+      {{ 'COMMON.SAVE' | translate }}
+    </button>
+  </div>
+</ng-template>

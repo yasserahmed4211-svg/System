@@ -1,0 +1,19 @@
+<div class="erp-notification-container" aria-live="polite" aria-atomic="true">
+  @for (n of notifications(); track n.id) {
+    <div class="alert d-flex align-items-center justify-content-between shadow-sm"
+         [class]="'alert d-flex align-items-center justify-content-between shadow-sm ' + cssClass(n.type)">
+      <div class="me-3" style="word-break: break-word;">
+        {{ n.messageKey | translate : n.messageParams }}
+      </div>
+
+      @if (n.dismissible) {
+        <button
+          type="button"
+          class="btn-close"
+          [attr.aria-label]="'COMMON.CLOSE' | translate"
+          (click)="dismiss(n.id)"
+        ></button>
+      }
+    </div>
+  }
+</div>

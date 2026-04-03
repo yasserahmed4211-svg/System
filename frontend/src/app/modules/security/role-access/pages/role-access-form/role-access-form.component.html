@@ -1,0 +1,216 @@
+<app-card [cardTitle]="'ROLE_ACCESS.TITLE' | translate" [padding]="20">
+
+  <div class="card-body">
+    <erp-section titleKey="ROLE_ACCESS.INFO">
+      <form [formGroup]="roleForm" class="row">
+        <div class="col-md-6 mb-3">
+          <erp-form-field labelKey="ROLE_ACCESS.ROLE_NAME" [control]="roleForm.get('name')" [required]="true">
+            <input
+              type="text"
+              class="form-control"
+              formControlName="name"
+              [placeholder]="'ROLE_ACCESS.ROLE_NAME_PLACEHOLDER' | translate"
+              [class.is-invalid]="!!(roleForm.get('name')?.invalid && (roleForm.get('name')?.touched || roleForm.get('name')?.dirty))"
+            />
+          </erp-form-field>
+        </div>
+
+        <div class="col-md-3 mb-3 d-flex align-items-end">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" formControlName="active" />
+            <label class="form-check-label">{{ 'ROLE_ACCESS.IS_ACTIVE' | translate }}</label>
+          </div>
+        </div>
+
+        <div class="col-md-3 mb-3 d-flex align-items-end" *ngIf="!isEditMode">
+          <button
+            type="button"
+            class="btn btn-success w-100"
+            data-testid="role-access-create-role"
+            erpPermission="ROLE.CREATE"
+            [disabled]="isSaving"
+            (click)="onCreateRole()"
+          >
+            <i class="ti ti-plus"></i>
+            {{ 'ROLE_ACCESS.CREATE_ROLE' | translate }}
+          </button>
+        </div>
+      </form>
+    </erp-section>
+
+    @if (isEditMode) {
+    <erp-section titleKey="ROLE_ACCESS.PAGES_ACCESS">
+      <div class="table-responsive">
+        <table class="table table-sm table-hover align-middle">
+          <thead>
+            <tr>
+              <th class="col-page-name">{{ 'ROLE_ACCESS.PAGE_NAME' | translate }}</th>
+              <th class="text-center col-perm">{{ 'ROLE_ACCESS.CREATE' | translate }}</th>
+              <th class="text-center col-perm">{{ 'ROLE_ACCESS.UPDATE' | translate }}</th>
+              <th class="text-center col-perm">{{ 'ROLE_ACCESS.DELETE' | translate }}</th>
+              <th class="text-center col-perm">{{ 'ROLE_ACCESS.ALL' | translate }}</th>
+              <th class="col-actions"></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @if (permissions.length === 0) {
+              <tr>
+                <td colspan="6" class="text-muted py-4 text-center">
+                  {{ 'ROLE_ACCESS.NO_PAGES_ASSIGNED' | translate }}
+                </td>
+              </tr>
+            } @else {
+              @for (p of permissions; track p.pageCode) {
+                <tr>
+                  <td>
+                    <div class="fw-semibold">{{ p.pageCode }}</div>
+                    <small class="text-muted">{{ 'COMMON.VIEW' | translate }}: {{ 'COMMON.AUTO' | translate }}</small>
+                  </td>
+                  <td class="text-center">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      erpPermission="ROLE.UPDATE"
+                      [checked]="p.create"
+                      (change)="p.create = $any($event.target).checked"
+                    />
+                  </td>
+                  <td class="text-center">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      erpPermission="ROLE.UPDATE"
+                      [checked]="p.update"
+                      (change)="p.update = $any($event.target).checked"
+                    />
+                  </td>
+                  <td class="text-center">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      erpPermission="ROLE.UPDATE"
+                      [checked]="p.delete"
+                      (change)="p.delete = $any($event.target).checked"
+                    />
+                  </td>
+                  <td class="text-center">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      erpPermission="ROLE.UPDATE"
+                      [checked]="isAllChecked(p)"
+                      (change)="onToggleAllForRow(p, $any($event.target).checked)"
+                    />
+                  </td>
+                  <td class="text-end">
+                    <button
+                      class="btn btn-sm btn-outline-danger"
+                      erpPermission="ROLE.UPDATE"
+                      (click)="confirmRemovePage(p.pageCode)"
+                    >
+                      <i class="ti ti-x"></i>
+                    </button>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    </erp-section>
+    }
+  </div>
+
+  @if (isEditMode) {
+    <erp-action-bar
+      [saveKey]="'COMMON.SAVE'"
+      [loading]="isSaving"
+      [showCancel]="false"
+      (saveClicked)="onSavePermissions()"
+      (backClicked)="navigateBack()"
+    >
+      <button actionBarEnd
+        type="button"
+        class="btn btn-outline-secondary btn-sm"
+        data-testid="role-access-copy-from"
+        erpPermission="ROLE.UPDATE"
+        (click)="openCopyFromModal(copyFromModal)"
+      >
+        <i class="ti ti-copy me-1"></i>
+        {{ 'ROLE_ACCESS.COPY_FROM' | translate }}
+      </button>
+      <button actionBarEnd
+        type="button"
+        class="btn btn-outline-primary btn-sm"
+        data-testid="role-access-add-page"
+        erpPermission="ROLE.UPDATE"
+        (click)="openAddPagesModal(addPagesModal)"
+      >
+        <i class="ti ti-plus me-1"></i>
+        {{ 'ROLE_ACCESS.ADD_PAGE' | translate }}
+      </button>
+    </erp-action-bar>
+  } @else {
+    <erp-action-bar
+      [showSave]="false"
+      [showCancel]="false"
+      (backClicked)="navigateBack()"
+    />
+  }
+</app-card>
+
+<ng-template #addPagesModal>
+  <div class="modal-header">
+    <h5 class="modal-title">{{ 'ROLE_ACCESS.SELECT_PAGES' | translate }}</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="addPagesModalRef?.close()"></button>
+  </div>
+  <div class="modal-body">
+    <erp-dual-list
+      [availableItems]="dualListAvailableItems"
+      [selectedItems]="dualListSelectedItems"
+      (selectedChange)="onPagesSelectionChanged($event)"
+    />
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-outline-secondary" (click)="addPagesModalRef?.close()">{{ 'COMMON.CANCEL' | translate }}</button>
+    <button
+      class="btn btn-primary"
+      data-testid="role-access-add-selected-pages"
+      (click)="addSelectedPages({ create: false, update: false, delete: false })"
+    >
+      {{ 'ROLE_ACCESS.ADD_SELECTED' | translate }}
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #copyFromModal>
+  <div class="modal-header">
+    <h5 class="modal-title">{{ 'ROLE_ACCESS.COPY_PERMISSIONS_TITLE' | translate }}</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="copyFromModalRef?.close()"></button>
+  </div>
+  <div class="modal-body">
+    <p class="text-muted mb-2">{{ 'ROLE_ACCESS.COPY_PERMISSIONS_DESC' | translate }}</p>
+
+    <select
+      class="form-select"
+      data-testid="role-access-copy-source"
+      [value]="selectedSourceRoleId ?? ''"
+      (change)="selectedSourceRoleId = $any($event.target).value ? +$any($event.target).value : null"
+    >
+      <option value="">{{ 'COMMON.SELECT' | translate }}</option>
+      <option *ngFor="let r of availableRolesToCopy" [value]="r.id">{{ r.roleName }}</option>
+    </select>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-outline-secondary" (click)="copyFromModalRef?.close()">{{ 'COMMON.CANCEL' | translate }}</button>
+    <button
+      class="btn btn-primary"
+      data-testid="role-access-copy-confirm"
+      [disabled]="!selectedSourceRoleId"
+      (click)="onCopyFromConfirm()"
+    >
+      {{ 'ROLE_ACCESS.COPY_PERMISSIONS' | translate }}
+    </button>
+  </div>
+</ng-template>

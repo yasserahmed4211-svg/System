@@ -1,0 +1,10 @@
+<section class="erp-section">
+  <header class="erp-section__header" *ngIf="titleKey || descriptionKey">
+    <h3 *ngIf="titleKey" class="erp-section__title">{{ titleKey | translate }}</h3>
+    <p *ngIf="descriptionKey" class="erp-section__description">{{ descriptionKey | translate }}</p>
+  </header>
+
+  <div class="erp-section__body">
+    <ng-content></ng-content>
+  </div>
+</section>

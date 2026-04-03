@@ -1,0 +1,201 @@
+<!-- 
+  ========================================
+  UNIFIED BLUEPRINT - PAGE B: FORM PAGE
+  ========================================
+  TASK: TASK-FE-PAGES-001
+  REQ:  FE-REQ-PAGES-001
+  
+  Purpose:
+  - Creating or editing a single record
+  
+  Contains:
+  - Form-only interface
+  - Save / Cancel actions
+  
+  Prohibitions:
+  - NO tables
+  - NO search
+  - NO modals
+  
+  Behavior:
+  - Save → Persist → Notify → Navigate back
+  - Cancel → Navigate back
+-->
+
+<app-card [cardTitle]="pageTitleKey | translate" [padding]="20">
+
+  <div class="card-body">
+    @if (loading) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">{{ 'COMMON.LOADING' | translate }}</span>
+      </div>
+    </div>
+    } @else {
+    <form [formGroup]="pageForm" (ngSubmit)="onSave()">
+      <erp-section [titleKey]="pageTitleKey">
+        <div class="row">
+          <!-- Page Code -->
+          <div class="col-md-6 mb-3">
+            <erp-form-field
+              labelKey="PAGES.PAGE_CODE"
+              [control]="pageForm.get('pageCode')"
+              [required]="true"
+              [hintKey]="isEditMode ? 'PAGES.PAGE_CODE_READONLY_HINT' : undefined"
+            >
+              <input
+                type="text"
+                id="pageCode"
+                formControlName="pageCode"
+                class="form-control"
+                [class.is-invalid]="!!(pageForm.get('pageCode')?.invalid && (pageForm.get('pageCode')?.touched || pageForm.get('pageCode')?.dirty))"
+              />
+            </erp-form-field>
+          </div>
+
+          <!-- Display Order -->
+          <div class="col-md-6 mb-3">
+            <erp-form-field
+              labelKey="PAGES.DISPLAY_ORDER"
+              [control]="pageForm.get('displayOrder')"
+              [required]="true"
+            >
+              <input
+                type="number"
+                id="displayOrder"
+                formControlName="displayOrder"
+                class="form-control"
+                min="0"
+                [class.is-invalid]="!!(pageForm.get('displayOrder')?.invalid && (pageForm.get('displayOrder')?.touched || pageForm.get('displayOrder')?.dirty))"
+              />
+            </erp-form-field>
+          </div>
+
+          <!-- Name (English) -->
+          <div class="col-md-6 mb-3">
+            <erp-form-field
+              labelKey="PAGES.PAGE_NAME_EN"
+              [control]="pageForm.get('nameEn')"
+              [required]="true"
+            >
+              <input
+                type="text"
+                id="nameEn"
+                formControlName="nameEn"
+                class="form-control"
+                [class.is-invalid]="!!(pageForm.get('nameEn')?.invalid && (pageForm.get('nameEn')?.touched || pageForm.get('nameEn')?.dirty))"
+              />
+            </erp-form-field>
+          </div>
+
+          <!-- Name (Arabic) -->
+          <div class="col-md-6 mb-3">
+            <erp-form-field
+              labelKey="PAGES.PAGE_NAME_AR"
+              [control]="pageForm.get('nameAr')"
+              [required]="true"
+            >
+              <input
+                type="text"
+                id="nameAr"
+                formControlName="nameAr"
+                class="form-control"
+                dir="rtl"
+                [class.is-invalid]="!!(pageForm.get('nameAr')?.invalid && (pageForm.get('nameAr')?.touched || pageForm.get('nameAr')?.dirty))"
+              />
+            </erp-form-field>
+          </div>
+
+          <!-- Route -->
+          <div class="col-md-6 mb-3">
+            <erp-form-field
+              labelKey="PAGES.ROUTE"
+              [control]="pageForm.get('route')"
+              [required]="true"
+            >
+              <input
+                type="text"
+                id="route"
+                formControlName="route"
+                class="form-control"
+                [class.is-invalid]="!!(pageForm.get('route')?.invalid && (pageForm.get('route')?.touched || pageForm.get('route')?.dirty))"
+              />
+            </erp-form-field>
+          </div>
+
+          <!-- Icon -->
+          <div class="col-md-6 mb-3">
+            <erp-form-field
+              labelKey="PAGES.ICON"
+              [control]="pageForm.get('icon')"
+            >
+              <input
+                type="text"
+                id="icon"
+                formControlName="icon"
+                class="form-control"
+              />
+            </erp-form-field>
+          </div>
+
+          <!-- Module -->
+          <div class="col-md-6 mb-3">
+            <erp-form-field
+              labelKey="PAGES.MODULE"
+              [control]="pageForm.get('module')"
+            >
+              <select id="module" formControlName="module" class="form-select">
+                <option value="">{{ 'PAGES.SELECT_MODULE' | translate }}</option>
+                @for (mod of modules; track mod) {
+                <option [value]="mod">{{ mod }}</option>
+                }
+              </select>
+            </erp-form-field>
+          </div>
+
+          <!-- Parent Page -->
+          <div class="col-md-6 mb-3">
+            <erp-form-field
+              labelKey="PAGES.PARENT_PAGE"
+              [control]="pageForm.get('parentId')"
+            >
+              <select id="parentId" formControlName="parentId" class="form-select">
+                <option [ngValue]="null">{{ 'PAGES.NO_PARENT' | translate }}</option>
+                @for (page of activePages; track page.id) {
+                <option [ngValue]="page.id">
+                  {{ translate.currentLang === 'ar' ? page.nameAr : page.nameEn }}
+                </option>
+                }
+              </select>
+            </erp-form-field>
+          </div>
+
+          <!-- Active Status -->
+          <div class="col-md-12 mb-3">
+            <div class="form-check form-switch">
+              <input
+                type="checkbox"
+                id="active"
+                formControlName="active"
+                class="form-check-input"
+              />
+              <label for="active" class="form-check-label">
+                {{ 'PAGES.IS_ACTIVE' | translate }}
+              </label>
+            </div>
+          </div>
+        </div>
+      </erp-section>
+
+      <erp-action-bar
+        [saveKey]="isEditMode ? 'COMMON.UPDATE' : 'COMMON.SAVE'"
+        [loading]="facade.saving()"
+        [disabled]="pageForm.invalid || loading"
+        [showCancel]="false"
+        (saveClicked)="onSave()"
+        (backClicked)="onCancel()"
+      />
+    </form>
+    }
+  </div>
+</app-card>

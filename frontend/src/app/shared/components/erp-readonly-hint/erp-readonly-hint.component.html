@@ -1,0 +1,11 @@
+<div class="erp-readonly-hint">
+  <div class="erp-readonly-hint__label" *ngIf="labelKey">{{ labelKey | translate }}</div>
+
+  <div class="erp-readonly-hint__value" *ngIf="hasValue; else placeholder">
+    {{ value }}
+  </div>
+
+  <ng-template #placeholder>
+    <div class="erp-readonly-hint__placeholder">{{ placeholderKey | translate }}</div>
+  </ng-template>
+</div>

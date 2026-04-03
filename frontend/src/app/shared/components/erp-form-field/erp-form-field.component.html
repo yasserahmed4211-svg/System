@@ -1,0 +1,16 @@
+<div class="erp-form-field">
+  <label *ngIf="labelKey" class="erp-form-field__label">
+    <span>{{ labelKey | translate }}</span>
+    <span *ngIf="required" class="erp-form-field__required">*</span>
+  </label>
+
+  <div class="erp-form-field__control">
+    <ng-content></ng-content>
+  </div>
+
+  <small *ngIf="hintKey" class="erp-form-field__hint">{{ hintKey | translate }}</small>
+
+  <div *ngIf="showError" class="erp-form-field__error">
+    <small>{{ error?.key | translate: error?.params }}</small>
+  </div>
+</div>

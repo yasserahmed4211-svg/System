@@ -1,0 +1,24 @@
+.erp-section {
+  border: 1px solid var(--erp-color-border, #dee2e6);
+  border-radius: var(--erp-section-radius, 0.5rem);
+  padding: var(--erp-section-padding, 1rem);
+}
+
+.erp-section__header {
+  margin-bottom: var(--erp-section-header-gap, 0.75rem);
+}
+
+.erp-section__title {
+  margin: 0;
+  font-size: var(--erp-section-title-size, 1.1rem);
+  font-weight: var(--erp-font-weight-semibold, 600);
+}
+
+.erp-section__description {
+  margin: var(--erp-spacing-xxs, 0.25rem) 0 0;
+  color: var(--erp-color-text-muted, rgba(33, 37, 41, 0.75));
+}
+
+.erp-section__body {
+  display: block;
+}

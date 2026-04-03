@@ -1,0 +1,40 @@
+services:
+  # ============================================
+  # Backend — Spring Boot
+  # ============================================
+  backend:
+    build:
+      context: ..
+      dockerfile: deploy/backend/Dockerfile
+    container_name: erp-backend
+
+    # نستخدم host فقط للـ DB (مؤقت)
+    network_mode: host
+
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - DB_URL=${DB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
+
+    restart: unless-stopped
+
+  # ============================================
+  # Frontend — Angular + Nginx
+  # ============================================
+  frontend:
+    build:
+      context: ..
+      dockerfile: deploy/frontend/Dockerfile
+    container_name: erp-frontend
+
+    # ❗ frontend لازم NOT host mode
+    ports:
+      - 80:80
+
+    depends_on:
+      - backend
+
+    restart: unless-stopped

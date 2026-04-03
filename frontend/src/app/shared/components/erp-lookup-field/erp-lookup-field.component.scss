@@ -1,0 +1,10 @@
+:host {
+  display: block;
+}
+
+.input-group {
+  .form-control[readonly] {
+    background-color: var(--bs-body-bg, #fff);
+    cursor: pointer;
+  }
+}

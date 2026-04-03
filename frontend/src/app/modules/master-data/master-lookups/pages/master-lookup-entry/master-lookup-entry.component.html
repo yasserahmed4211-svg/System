@@ -1,0 +1,121 @@
+<app-card [cardTitle]="pageTitleKey | translate" [padding]="20">
+
+  <div class="card-body">
+    @if (loading()) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">{{ 'COMMON.LOADING' | translate }}</span>
+      </div>
+    </div>
+    } @else {
+    <form [formGroup]="lookupForm" (ngSubmit)="save()">
+      <erp-section [titleKey]="'MASTER_LOOKUPS.BASIC_INFO'">
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <erp-form-field
+              labelKey="MASTER_LOOKUPS.LOOKUP_KEY"
+              [control]="lookupForm.get('lookupKey')"
+              [required]="true"
+              [hintKey]="isEditMode() ? 'MASTER_LOOKUPS.LOOKUP_KEY_READONLY_HINT' : undefined"
+            >
+              <input
+                type="text"
+                id="lookupKey"
+                formControlName="lookupKey"
+                class="form-control text-uppercase"
+                maxlength="50"
+                (input)="onLookupKeyInput($event)"
+                [class.is-invalid]="!!(lookupForm.get('lookupKey')?.invalid && (lookupForm.get('lookupKey')?.touched || lookupForm.get('lookupKey')?.dirty))"
+              />
+            </erp-form-field>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <erp-form-field
+              labelKey="MASTER_LOOKUPS.LOOKUP_NAME"
+              [control]="lookupForm.get('lookupName')"
+              [required]="true"
+            >
+              <input
+                type="text"
+                id="lookupName"
+                formControlName="lookupName"
+                class="form-control"
+                maxlength="200"
+                [class.is-invalid]="!!(lookupForm.get('lookupName')?.invalid && (lookupForm.get('lookupName')?.touched || lookupForm.get('lookupName')?.dirty))"
+              />
+            </erp-form-field>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <erp-form-field
+              labelKey="MASTER_LOOKUPS.LOOKUP_NAME_EN"
+              [control]="lookupForm.get('lookupNameEn')"
+            >
+              <input
+                type="text"
+                id="lookupNameEn"
+                formControlName="lookupNameEn"
+                class="form-control"
+                maxlength="200"
+                [class.is-invalid]="!!(lookupForm.get('lookupNameEn')?.invalid && (lookupForm.get('lookupNameEn')?.touched || lookupForm.get('lookupNameEn')?.dirty))"
+              />
+            </erp-form-field>
+          </div>
+
+          <div class="col-12 mb-3">
+            <erp-form-field
+              labelKey="MASTER_LOOKUPS.DESCRIPTION"
+              [control]="lookupForm.get('description')"
+            >
+              <textarea
+                id="description"
+                formControlName="description"
+                class="form-control"
+                rows="3"
+                maxlength="500"
+                [class.is-invalid]="!!(lookupForm.get('description')?.invalid && (lookupForm.get('description')?.touched || lookupForm.get('description')?.dirty))"
+              ></textarea>
+            </erp-form-field>
+          </div>
+        </div>
+      </erp-section>
+
+      <erp-action-bar
+        [saveKey]="isEditMode() ? 'COMMON.UPDATE' : 'COMMON.SAVE'"
+        [loading]="facade.saving()"
+        [disabled]="lookupForm.invalid"
+        [showCancel]="false"
+        (saveClicked)="save()"
+        (backClicked)="onCancel()"
+      />
+    </form>
+    }
+  </div>
+</app-card>
+
+<!-- Lookup Details Section -->
+<app-card
+  [cardTitle]="'MASTER_LOOKUPS.LOOKUP_DETAILS' | translate"
+  class="mt-4"
+  *erpPermission="'PERM_MASTER_LOOKUP_VIEW'"
+>
+  <app-lookup-details-section
+    [details]="facade.lookupDetails()"
+    [loading]="facade.detailsLoading()"
+    [currentSort]="facade.detailsSort()"
+    (addDetail)="openDetailModal()"
+    (editDetail)="openDetailModal($event)"
+    (toggleActive)="toggleDetailActive($event)"
+    (deleteDetail)="deleteDetail($event)"
+    (sortChange)="sortDetails($event)"
+  />
+</app-card>
+
+<!-- Detail Form Modal (self-contained) -->
+<app-lookup-detail-form-modal
+  #detailFormModal
+  [masterLookupId]="lookupId() ?? 0"
+  [saving]="facade.detailSaving()"
+  (saveDetail)="onDetailSave($event)"
+/>

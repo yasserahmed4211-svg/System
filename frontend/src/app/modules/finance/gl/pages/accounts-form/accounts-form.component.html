@@ -1,0 +1,261 @@
+<!--
+  ========================================
+  BLUEPRINT LEVEL 2 – PAGE B: FORM
+  ========================================
+  TASK: TASK-FE-GL-001
+  REQ:  FE-REQ-GL-001 §3.4
+  SCREEN: GL-SCR-001 – Chart of Accounts Entry/Edit
+-->
+
+<app-card [cardTitle]="pageTitleKey | translate" [padding]="20">
+  <div class="card-header-right">
+    @if (isEditMode) {
+    <button class="btn btn-sm btn-outline-secondary me-2" (click)="navigateToTree()"
+            title="{{ 'GL.VIEW_IN_TREE' | translate }}">
+      <i class="ti ti-binary-tree me-1"></i>{{ 'GL.VIEW_IN_TREE' | translate }}
+    </button>
+    }
+  </div>
+
+  <div class="card-body">
+    <!-- Breadcrumb (edit mode only) -->
+    @if (isEditMode && breadcrumb.length > 0) {
+    <nav aria-label="Account hierarchy breadcrumb" class="mb-3">
+      <ol class="breadcrumb account-breadcrumb">
+        <li class="breadcrumb-item">
+          <a role="button" (click)="onCancel()">
+            <i class="ti ti-chart-dots me-1"></i>{{ 'GL.CHART_OF_ACCOUNTS' | translate }}
+          </a>
+        </li>
+        @for (item of breadcrumb; track $index; let last = $last) {
+        <li class="breadcrumb-item" [class.active]="last">
+          @if (!last && item.pk) {
+          <a role="button" (click)="navigateToBreadcrumb(item)">{{ item.name }}</a>
+          } @else {
+          {{ item.name }}
+          }
+        </li>
+        }
+      </ol>
+    </nav>
+    }
+
+    @if (loading) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">{{ 'COMMON.LOADING' | translate }}</span>
+      </div>
+    </div>
+    } @else {
+    <form [formGroup]="accountForm" (ngSubmit)="onSave()">
+
+      <!-- ══ Section 1: Basic Information ══ -->
+      <erp-section titleKey="GL.BASIC_INFO">
+        <div class="row">
+          <!-- Account Code (Auto-generated, read-only) -->
+          @if (isEditMode && generatedAccountNo) {
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">
+              <i class="ti ti-hash me-1 text-primary"></i>{{ 'GL.ACCOUNT_CODE' | translate }}
+            </label>
+            <div class="form-control bg-light account-code-display" readonly>
+              <i class="ti ti-lock me-1 text-muted" style="font-size: 0.8rem;"></i>
+              {{ generatedAccountNo }}
+            </div>
+            <small class="text-muted">
+              <i class="ti ti-info-circle"></i> {{ 'GL.ACCOUNT_CODE_AUTO_HINT' | translate }}
+            </small>
+          </div>
+          } @else if (!isEditMode) {
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">
+              <i class="ti ti-hash me-1 text-primary"></i>{{ 'GL.ACCOUNT_CODE' | translate }}
+            </label>
+            <div class="form-control bg-light text-muted fst-italic">
+              <i class="ti ti-sparkles me-1"></i>{{ 'GL.ACCOUNT_CODE_AUTO_GENERATED' | translate }}
+            </div>
+            <small class="text-muted">
+              <i class="ti ti-info-circle"></i> {{ 'GL.ACCOUNT_CODE_AUTO_HINT' | translate }}
+            </small>
+          </div>
+          }
+
+          <!-- Account Name -->
+          <div class="col-md-6 mb-3">
+            <erp-form-field
+              labelKey="GL.ACCOUNT_NAME"
+              [control]="accountForm.get('accountChartName')"
+              [required]="true"
+            >
+              <input
+                type="text"
+                id="accountChartName"
+                formControlName="accountChartName"
+                class="form-control"
+                [class.is-invalid]="!!(accountForm.get('accountChartName')?.invalid && (accountForm.get('accountChartName')?.touched || accountForm.get('accountChartName')?.dirty))"
+              />
+            </erp-form-field>
+          </div>
+
+          <!-- Account Type -->
+          <div class="col-md-6 mb-3">
+            <erp-form-field
+              labelKey="GL.ACCOUNT_TYPE"
+              [control]="isAccountTypeInherited ? null : accountForm.get('accountType')"
+              [required]="!isAccountTypeInherited"
+            >
+              @if (isAccountTypeInherited) {
+              <!-- Read-only: inherited from parent -->
+              <div class="form-control bg-light d-flex align-items-center justify-content-between">
+                <span class="fw-semibold">{{ inheritedAccountTypeLabel }}</span>
+                <span class="badge bg-info-subtle text-info ms-2 d-flex align-items-center">
+                  <i class="ti ti-lock me-1" style="font-size: 0.7rem;"></i>
+                  {{ 'GL.ACCOUNT_TYPE_INHERITED' | translate }}
+                </span>
+              </div>
+              <small class="text-info mt-1 d-block">
+                <i class="ti ti-info-circle me-1"></i>{{ 'GL.ACCOUNT_TYPE_INHERITED' | translate }}
+              </small>
+              } @else {
+              <select id="accountType" formControlName="accountType" class="form-select"
+                [class.is-invalid]="!!(accountForm.get('accountType')?.invalid && (accountForm.get('accountType')?.touched || accountForm.get('accountType')?.dirty))"
+                (change)="onAccountTypeChange()">
+                <option [ngValue]="null">{{ 'COMMON.SELECT' | translate }}</option>
+                @for (type of accountTypeOptions; track type.value) {
+                <option [value]="type.value">{{ type.label }}</option>
+                }
+              </select>
+              @if (accountTypeChangeWarning) {
+              <div class="alert alert-warning py-1 px-2 mt-1 mb-0 d-flex align-items-center">
+                <i class="ti ti-alert-triangle me-2"></i>
+                <small>{{ 'GL.ACCOUNT_TYPE_CHANGE_WARNING' | translate }}</small>
+              </div>
+              }
+              }
+            </erp-form-field>
+          </div>
+        </div>
+      </erp-section>
+
+      <!-- ══ Section 2: Hierarchy ══ -->
+      <erp-section titleKey="GL.HIERARCHY_SECTION">
+        <div class="row">
+          <!-- Parent Account (Modal Selection) -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">
+              <i class="ti ti-sitemap me-1 text-info"></i>{{ 'GL.PARENT_ACCOUNT' | translate }}
+            </label>
+            <div class="input-group">
+              <div class="form-control bg-light d-flex align-items-center"
+                   [class.text-muted]="!selectedParentLabel"
+                   [class.fst-italic]="!selectedParentLabel">
+                @if (selectedParentLabel) {
+                  @if (selectedParentPk && isEditMode) {
+                  <a role="button" class="parent-link" (click)="navigateToParent()">
+                    <i class="ti ti-external-link me-1" style="font-size: 0.75rem;"></i>{{ selectedParentLabel }}
+                  </a>
+                  } @else {
+                  <span>{{ selectedParentLabel }}</span>
+                  }
+                } @else {
+                  <span><i class="ti ti-crown me-1"></i>{{ 'GL.NO_PARENT' | translate }}</span>
+                }
+              </div>
+              <button type="button" class="btn btn-outline-primary" (click)="openParentModal()"
+                      [title]="'GL.SELECT_PARENT_ACCOUNT' | translate">
+                <i class="ti ti-search"></i>
+              </button>
+              @if (selectedParentLabel) {
+              <button type="button" class="btn btn-outline-danger" (click)="clearParentSelection()"
+                      [title]="'GL.CLEAR_PARENT' | translate">
+                <i class="ti ti-x"></i>
+              </button>
+              }
+            </div>
+            <small class="text-muted">
+              <i class="ti ti-info-circle"></i> {{ 'GL.PARENT_ACCOUNT_HINT' | translate }}
+            </small>
+          </div>
+
+          <!-- Current Level Info (edit mode) -->
+          @if (isEditMode && currentAccount) {
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">
+              <i class="ti ti-layers-intersect me-1 text-secondary"></i>{{ 'GL.LEVEL' | translate }}
+            </label>
+            <div class="form-control bg-light">
+              <span class="badge bg-primary rounded-pill me-2">{{ currentAccount.level }}</span>
+              {{ 'GL.LEVEL' | translate }} {{ currentAccount.level }}
+            </div>
+          </div>
+          }
+        </div>
+      </erp-section>
+
+      <!-- ══ Section 3: Organization & Control ══ -->
+      <erp-section titleKey="GL.CONTROL_SECTION">
+        <div class="row">
+          <!-- Organization -->
+          <div class="col-md-6 mb-3">
+            <erp-form-field
+              labelKey="GL.ORGANIZATION"
+              [control]="accountForm.get('organizationFk')"
+              [required]="true"
+              [hintKey]="isEditMode ? 'GL.ORG_READONLY_HINT' : undefined"
+            >
+              <input
+                type="number"
+                id="organizationFk"
+                formControlName="organizationFk"
+                class="form-control"
+                [class.is-invalid]="!!(accountForm.get('organizationFk')?.invalid && (accountForm.get('organizationFk')?.touched || accountForm.get('organizationFk')?.dirty))"
+                (change)="onOrganizationChange()"
+              />
+            </erp-form-field>
+          </div>
+
+          <!-- Sub-Organization -->
+          <div class="col-md-6 mb-3">
+            <erp-form-field
+              labelKey="GL.SUB_ORGANIZATION"
+              [control]="accountForm.get('organizationSubFk')"
+            >
+              <input
+                type="number"
+                id="organizationSubFk"
+                formControlName="organizationSubFk"
+                class="form-control"
+              />
+            </erp-form-field>
+          </div>
+
+          <!-- Active Status -->
+          <div class="col-md-12 mb-3">
+            <div class="form-check form-switch">
+              <input
+                type="checkbox"
+                id="isActive"
+                formControlName="isActive"
+                class="form-check-input"
+              />
+              <label for="isActive" class="form-check-label">
+                {{ 'GL.IS_ACTIVE' | translate }}
+              </label>
+            </div>
+          </div>
+        </div>
+      </erp-section>
+
+      <!-- Action Bar (sticky bottom) -->
+      <erp-action-bar
+        [saveKey]="isEditMode ? 'COMMON.UPDATE' : 'COMMON.SAVE'"
+        [loading]="facade.saving()"
+        [disabled]="accountForm.invalid"
+        [showCancel]="false"
+        (saveClicked)="onSave()"
+        (backClicked)="onCancel()"
+      />
+    </form>
+    }
+  </div>
+</app-card>

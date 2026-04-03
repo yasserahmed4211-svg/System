@@ -1,0 +1,967 @@
+@use 'sass:map';
+@use 'sass:color';
+
+body.mantis-dark {
+  & {
+    --bs-body-bg: #{$dark-layout-color-light};
+    --bs-body-bg-rgb: #{to-rgb($dark-layout-color-light)};
+    --pc-heading-color: #fafafa;
+
+    --pc-sidebar-background: #{$dark-layout-color-light};
+    --pc-sidebar-color: rgba(255, 255, 255, 0.5);
+    --pc-sidebar-shadow: none;
+    --pc-sidebar-caption-color: #{$dark-sidebar-caption};
+    --pc-sidebar-shadow: #{$dark-sidebar-shadow};
+
+    // header
+    --pc-header-background: #{$dark-layout-color-light};
+    --pc-header-color: #{$dark-header-color};
+    --pc-header-shadow: #{$dark-header-shadow};
+    --pc-active-background: #{color.adjust($dark-layout-color, $lightness: 3%)};
+
+    // card
+    --pc-card-box-shadow: none;
+
+    // horizontal menu
+    --pc-header-submenu-background: #{color.adjust($dark-layout-color, $lightness: 10%)};
+    --pc-header-submenu-color: var(--bs-body-color);
+
+    --bs-heading-color: #fafafa;
+    --bs-body-color: #bfbfbf;
+    --bs-body-color-rgb: to-rgb(#bfbfbf);
+    --bs-border-color: #{color.adjust($dark-layout-color, $lightness: 15%)};
+    --pc-border-color: rgba(255, 255, 255, 0.05);
+
+    //table
+    --pc-table-header-background: rgba(0, 0, 0, 0.2);
+  }
+
+  .pc-sidebar {
+    border-color: var(--pc-border-color);
+
+    a {
+      color: var(--bs-body-color);
+    }
+
+    .navbar-content {
+      .coded-inner-navbar {
+        li {
+          &.coded-menu-caption {
+            color: var(--pc-sidebar-color);
+          }
+        }
+      }
+    }
+
+    .nav-card {
+      background: $gray-900;
+    }
+
+    .user-profile-section {
+      border-color: var(--pc-border-color);
+    }
+
+    .coded-inner-navbar {
+      > app-nav-group {
+        > app-nav-collapse {
+          .coded-hasmenu {
+            &.active,
+            &:focus,
+            &:hover {
+              > a {
+                background: var(--pc-border-color);
+              }
+
+              &.coded-trigger {
+                .coded-submenu {
+                  > app-nav-item {
+                    li {
+                      &.active,
+                      &:focus,
+                      &:hover {
+                        > a {
+                          background: var(--pc-border-color);
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          .coded-submenu > app-nav-item li {
+            &.active {
+              > a {
+                background: var(--pc-border-color);
+                color: rgb(255 255 255 / 87%);
+              }
+            }
+          }
+        }
+
+        > app-nav-item {
+          li {
+            &.nav-item {
+              &.active,
+              &:focus,
+              &:hover {
+                background: var(--pc-border-color);
+              }
+
+              &.active {
+                > a {
+                  color: rgb(255 255 255 / 87%);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    &.theme-horizontal {
+      .m-header {
+        border-color: var(--pc-border-color);
+        background: var(--pc-header-background);
+      }
+
+      .navbar-content {
+        border-color: var(--pc-border-color);
+      }
+    }
+  }
+
+  .pc-header {
+    border-color: var(--pc-border-color);
+
+    .pc-head-link {
+      background: var(--pc-header-background);
+
+      &:hover,
+      &::before {
+        background: $gray-600;
+      }
+    }
+
+    .pc-mega-menu .pc-mega-dropdown .row.g-0 > .col:not(.image-block) {
+      border-right-color: #{color.adjust($dark-layout-color, $alpha: -0.5)};
+    }
+
+    .dropdown-user-profile .drp-tabs {
+      .nav-item {
+        .nav-link {
+          color: var(--bs-body-color);
+
+          &.active {
+            background: transparent;
+          }
+        }
+      }
+    }
+  }
+
+  .pc-container {
+    background: #{$dark-layout-color};
+  }
+
+  .pc-footer {
+    background: #{$dark-layout-color};
+  }
+
+  .page-header {
+    .breadcrumb-item {
+      &:last-child {
+        a {
+          color: $white;
+        }
+      }
+    }
+  }
+
+  // customize
+  .menu-styler {
+    .list-group-flush {
+      background: #{$dark-layout-color-light};
+    }
+
+    .pct-content {
+      .btn {
+        color: var(--bs-body-color) !important;
+      }
+
+      .theme-color > a {
+        background: #{$dark-layout-color-light};
+        color: var(--bs-body-color);
+      }
+
+      .theme-color > a span:nth-child(2) {
+        color: var(--bs-body-color);
+      }
+    }
+  }
+
+  // common background
+  .custom-select,
+  .dataTable-selector,
+  .dataTable-input,
+  .sticky-action,
+  .card,
+  .cal-month-view,
+  .cal-week-view,
+  .cal-day-view,
+  .ng-select .ng-select-container,
+  .NgxEditor__MenuBar,
+  dp-calendar-nav.dp-material .dp-nav-header-btn,
+  dp-day-calendar .dp-day-calendar-container,
+  dp-day-calendar.dp-material .dp-calendar-month,
+  dp-calendar-nav.dp-material .dp-calendar-nav-left,
+  dp-calendar-nav.dp-material .dp-calendar-nav-right,
+  dp-calendar-nav.dp-material .dp-calendar-secondary-nav-left,
+  dp-calendar-nav.dp-material .dp-calendar-secondary-nav-right,
+  dp-month-calendar .dp-month-calendar-container,
+  file-upload {
+    background: var(--pc-sidebar-background);
+  }
+
+  .form-control {
+    background-color: var(--pc-sidebar-background);
+  }
+
+  h6,
+  .h6,
+  h5,
+  .h5,
+  h4,
+  .h4,
+  h3,
+  .h3,
+  h2,
+  .h2,
+  h1,
+  .h1 {
+    color: rgb(255 255 255 / 87%);
+  }
+
+  .card .card-header h5,
+  .card .card-header .h5 {
+    color: rgb(255 255 255 / 87%);
+  }
+
+  a {
+    color: var(--bs-body-color);
+  }
+
+  // card css
+  .card {
+    border-color: var(--pc-border-color);
+
+    .card-header {
+      border-bottom-color: var(--pc-border-color);
+    }
+
+    .card-body.pc-component {
+      border-color: var(--pc-border-color);
+    }
+
+    .card-footer {
+      border-top-color: var(--pc-border-color);
+    }
+  }
+
+  // form scss
+  .form-control,
+  .form-select {
+    border-color: rgba(255, 255, 255, 0.15);
+    color: var(--bs-body-color);
+
+    option {
+      background: $gray-700;
+    }
+
+    &::placeholder {
+      color: var(--bs-body-color);
+      opacity: 0.5;
+    }
+
+    &.color-select {
+      color: $black;
+    }
+  }
+
+  .mat-mdc-icon-button,
+  .mat-mdc-checkbox .mdc-form-field,
+  .mat-tree-node,
+  .mat-nested-tree-node,
+  .mat-mdc-button:not(:disabled) {
+    color: var(--bs-body-color);
+  }
+
+  .mat-tree {
+    background-color: #{color.adjust($dark-layout-color, $lightness: 10%)};
+  }
+
+  .custom-select,
+  .datatable-selector,
+  .datatable-input,
+  .form-select,
+  .form-control {
+    background-color: #{color.adjust($dark-layout-color, $lightness: 10%)};
+    color: var(--bs-body-color);
+
+    &:not(:focus) {
+      border-color: #{color.adjust($dark-layout-color, $lightness: 15%)};
+    }
+
+    &.is-valid {
+      border-color: var(--bs-success);
+    }
+
+    &.is-invalid {
+      border-color: var(--bs-danger);
+    }
+  }
+
+  .form-control {
+    background-color: transparent;
+  }
+
+  .form-control-plaintext {
+    color: var(--bs-body-color);
+  }
+
+  select.form-control,
+  select.custom-select,
+  select.datatable-selector,
+  select.datatable-input,
+  .form-select:not([multiple]) {
+    background-color: #{color.adjust($dark-layout-color, $lightness: 10%)};
+    background-image: escape-svg(
+      url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='#6f747f' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/></svg>")
+    );
+    background-repeat: no-repeat;
+    background-size: $form-select-bg-size;
+  }
+
+  .was-validated .form-control:valid,
+  .was-validated .datatable-input:valid,
+  .was-validated .custom-select:valid,
+  .was-validated .dataTable-selector:valid,
+  .was-validated .dataTable-input:valid,
+  .form-control.is-valid,
+  .is-valid.datatable-input,
+  .is-valid.custom-select,
+  .is-valid.dataTable-selector,
+  .is-valid.dataTable-input {
+    border-color: #52c41a;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2352c41a' d='M2.3 6.73.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-size: calc(0.75em + 0.65rem) calc(0.75em + 0.65rem);
+  }
+
+  .was-validated .form-control:invalid,
+  .was-validated .datatable-input:invalid,
+  .was-validated .custom-select:invalid,
+  .was-validated .dataTable-selector:invalid,
+  .was-validated .dataTable-input:invalid,
+  .form-control.is-invalid,
+  .is-invalid.datatable-input,
+  .is-invalid.custom-select,
+  .is-invalid.dataTable-selector,
+  .is-invalid.dataTable-input {
+    border-color: #ff4d4f;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23ff4d4f'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23ff4d4f' stroke='none'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-size: calc(0.75em + 0.65rem) calc(0.75em + 0.65rem);
+  }
+
+  .form-check-input:not(:checked),
+  .input-group-text {
+    background-color: #{color.adjust($dark-layout-color, $lightness: 10%)};
+    color: var(--bs-body-color);
+    border-color: #{color.adjust($dark-layout-color, $lightness: 15%)};
+  }
+
+  .form-control {
+    &::file-selector-button {
+      background-color: #{color.adjust($dark-layout-color, $lightness: 10%)};
+      color: var(--bs-body-color);
+      border-color: #{color.adjust($dark-layout-color, $lightness: 15%)};
+    }
+
+    &:hover:not(:disabled):not([readonly])::file-selector-button {
+      background-color: #{color.adjust($dark-layout-color, $lightness: 10%)};
+    }
+  }
+
+  .ng2-tag-input__text-input {
+    background-color: transparent;
+  }
+
+  @each $color, $value in $theme-colors {
+    .alert-#{$color} {
+      color: $value;
+      background: #{color.adjust($value, $alpha: -0.8)};
+      border-color: #{color.adjust($value, $alpha: -0.8)};
+
+      .alert-link {
+        color: $value;
+      }
+
+      @if ($color == 'dark') {
+        color: var(--bs-body-color);
+        background-color: #{color.adjust($dark-layout-color, $lightness: 10%)};
+        border-color: #{color.adjust($dark-layout-color, $lightness: 15%)};
+
+        .alert-link {
+          color: var(--bs-body-color);
+        }
+      }
+    }
+
+    .badge.bg-light-#{$color} {
+      background: #{color.adjust($value, $alpha: -0.8)};
+      color: $value;
+      border-color: #{color.adjust($value, $alpha: -0.8)};
+    }
+
+    .icon-svg-#{$color} {
+      fill: #{color.adjust($value, $alpha: -0.8)};
+      stroke: $value;
+    }
+
+    .bg-light-#{$color} {
+      background: #{color.adjust($value, $alpha: -0.8)};
+    }
+
+    .btn-light-#{$color}:not(:hover) {
+      background: #{color.adjust($value, $alpha: -0.8)} !important;
+      border-color: #{color.adjust($value, $alpha: -0.8)};
+
+      @if ($color == 'dark') {
+        color: var(--bs-body-color);
+      }
+    }
+
+    .btn-link-#{$color} {
+      &:not(:disabled):not(.disabled).active,
+      &:not(:disabled):not(.disabled):active,
+      &:active,
+      &:focus,
+      &:hover {
+        background: #{color.adjust($value, $alpha: -0.8)};
+        border-color: #{color.adjust($value, $alpha: -0.8)};
+      }
+    }
+
+    .form-check {
+      .form-check-input {
+        &.input-light-#{$color} {
+          &:checked {
+            border-color: #{color.adjust($value, $alpha: -0.8)};
+            background-color: #{color.adjust($value, $alpha: -0.8)};
+
+            @if ($color == 'dark') {
+              border-color: #{color.adjust($white, $alpha: -0.8)};
+
+              &[type='checkbox'] {
+                background-image: escape-svg(
+                  url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path fill='none' stroke='#{$white}' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/></svg>")
+                );
+              }
+
+              &[type='radio'] {
+                background-image: escape-svg(
+                  url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'><circle r='2' fill='#{$white}'/></svg>")
+                );
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // bootstrap overlap
+  .btn-link-dark,
+  .btn-link-secondary,
+  .bg-light-secondary,
+  .btn-light-secondary {
+    color: var(--bs-body-color);
+  }
+
+  .list-group {
+    --bs-list-group-bg: transparent;
+    --bs-list-group-border-color: var(--pc-border-color);
+    --bs-list-group-color: var(--bs-body-color);
+    --bs-list-group-disabled-bg: rgba(255, 255, 255, 0.03);
+  }
+
+  .dropdown-menu {
+    --bs-dropdown-bg: #{color.adjust($dark-layout-color, $lightness: 5%)};
+    --bs-dropdown-link-color: var(--bs-body-color);
+    --bs-dropdown-divider-bg: var(--bs-border-color);
+  }
+
+  .dropdown-item:hover,
+  .dropdown-item:focus {
+    --bs-dropdown-link-hover-color: var(--bs-dropdown-link-color);
+    color: var(--bs-dropdown-link-color);
+  }
+
+  .modal {
+    --bs-modal-header-border-color: rgba(255, 255, 255, 0.03);
+    --bs-modal-footer-border-color: rgba(255, 255, 255, 0.03);
+    --bs-modal-bg: #{color.adjust($dark-layout-color, $lightness: 5%)};
+  }
+
+  .pagination {
+    --bs-pagination-bg: transparent;
+    --bs-pagination-border-color: rgba(255, 255, 255, 0.1);
+    --bs-pagination-disabled-bg: transparent;
+    --bs-pagination-disabled-border-color: var(--pc-border-color);
+  }
+
+  .offcanvas,
+  .offcanvas-xxl,
+  .offcanvas-xl,
+  .offcanvas-lg,
+  .offcanvas-md,
+  .offcanvas-sm {
+    --bs-offcanvas-bg: #{color.adjust($dark-layout-color, $lightness: 5%)};
+  }
+
+  .progress {
+    --bs-progress-bg: var(--pc-border-color);
+    background: var(--pc-border-color);
+  }
+
+  .nav-tabs {
+    --bs-nav-tabs-link-active-color: var(--bs-heading-color);
+    --bs-nav-tabs-link-active-bg: rgba(0, 0, 0, 0.2);
+    --bs-nav-tabs-link-active-border-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.3);
+    --bs-nav-tabs-link-hover-border-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.3);
+    --bs-nav-tabs-border-color: rgba(0, 0, 0, 0.3);
+  }
+
+  .accordion {
+    --bs-accordion-color: var(--bs-body-color);
+    --bs-accordion-btn-color: var(--bs-body-color);
+    --bs-accordion-bg: transparent;
+    border: var(--bs-accordion-border-width) solid var(--bs-accordion-border-color);
+  }
+
+  .table {
+    --bs-table-color: var(--bs-body-color);
+    --bs-table-striped-color: var(--bs-body-color);
+    --bs-table-active-color: var(--bs-body-color);
+    --bs-table-hover-color: var(--bs-body-color);
+    --bs-table-border-color: #{color.adjust($dark-layout-color, $lightness: 15%)};
+
+    thead th {
+      color: var(--bs-body-color);
+      background: rgba(0, 0, 0, 0.2);
+      border-color: rgba(0, 0, 0, 0.2);
+    }
+
+    > :not(:last-child) > :last-child > *,
+    td,
+    th {
+      border-color: #{color.adjust($dark-layout-color, $lightness: 15%)};
+    }
+
+    > :not(caption) > * > * {
+      background-color: transparent;
+      color: var(--bs-body-color);
+    }
+  }
+
+  .table-hover tbody tr:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .btn-close {
+    $btn-close-bg: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' fill='#{$white}' viewBox='0 0 16 16'><path d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/></svg>");
+    background: transparent escape-svg($btn-close-bg) center / $btn-close-width auto no-repeat;
+
+    &.btn-close-white {
+      filter: none;
+    }
+  }
+
+  .form-select {
+    color: var(--bs-body-color);
+  }
+
+  .list-group-item-action:hover,
+  .list-group-item-action:focus {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--bs-body-color);
+  }
+
+  @each $name, $value in $preset-colors {
+    &[part='#{$name}'] {
+      $pc-primary: map.get($value, 'primary');
+      $pctheme-colors: (
+        'primary': $pc-primary
+      );
+
+      .pc-mega-menu {
+        .pc-mega-dropdown {
+          .image-block {
+            background:
+              url('../../../../assets/images/mega-menu/back.svg'),
+              linear-gradient(183.77deg, #{shade-color($pc-primary, 40%)} 11.46%, #{$pc-primary} 100.33%);
+          }
+        }
+      }
+    }
+  }
+
+  /// plugin
+  .apexcharts-legend-text {
+    color: var(--bs-body-color) !important;
+  }
+
+  .apexcharts-theme-light .apexcharts-selection-icon:not(.apexcharts-selected):hover svg,
+  .apexcharts-theme-light .apexcharts-zoom-icon:not(.apexcharts-selected):hover svg,
+  .apexcharts-theme-light .apexcharts-zoomin-icon:hover svg,
+  .apexcharts-theme-light .apexcharts-zoomout-icon:hover svg,
+  .apexcharts-theme-light .apexcharts-reset-icon:hover svg,
+  .apexcharts-theme-light .apexcharts-menu-icon:hover svg {
+    fill: var(--bs-body-color) !important;
+  }
+
+  .apexcharts-theme-light .apexcharts-menu-item:hover {
+    background: var(--pc-sidebar-background) !important;
+  }
+
+  text {
+    fill: var(--bs-body-color) !important;
+  }
+
+  .apexcharts-datalabels,
+  .apexcharts-data-labels {
+    text {
+      fill: $white !important;
+    }
+  }
+
+  .apexcharts-menu {
+    background: $gray-800;
+    border-color: $gray-600;
+  }
+
+  // widget
+  .latest-update-card .card-body .latest-update-box:after,
+  .task-card .card-body:after {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  // application
+
+  .chat-message {
+    background: var(--pc-sidebar-background);
+
+    .message-in {
+      .msg-content {
+        background: linear-gradient(var(--pc-border-color), var(--pc-border-color));
+      }
+    }
+
+    .message-out {
+      .msg-content {
+        p {
+          color: $gray-800;
+        }
+      }
+    }
+  }
+
+  .show.dropdown {
+    .dropdown-menu {
+      background-image: linear-gradient(var(--pc-border-color), var(--pc-border-color));
+    }
+  }
+
+  // user
+  .profile-edit {
+    background: var(--pc-sidebar-background);
+
+    &:hover {
+      background: $gray-600;
+    }
+  }
+
+  .profile-wave-card {
+    background: rgb(17, 26, 44);
+  }
+
+  .ng-select .ng-select-container {
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .card-type {
+    border-color: var(--bs-border-color) !important;
+    color: var(--bs-body-color) !important;
+
+    &.add-card.active {
+      background: var(--bs-primary) !important;
+      color: var(--bs-body-color) !important;
+    }
+
+    &.active {
+      border: 1px solid var(--bs-primary) !important;
+    }
+  }
+
+  .profile-tabs .nav-item .nav-link {
+    color: var(--bs-body-color);
+    background: transparent;
+  }
+
+  .profile-tabs .nav-item.show .nav-link,
+  .profile-tabs .nav-link.active {
+    color: var(--bs-primary);
+  }
+
+  .ng-dropdown-panel .ng-dropdown-panel-items .ng-option,
+  .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-selected,
+  .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-selected.ng-option-marked {
+    background: #{$dark-layout-color};
+    color: var(--bs-body-color);
+  }
+
+  .chat-wrapper .chat-user_list .form-search i {
+    color: var(--bs-body-color);
+  }
+
+  // e-commerce
+  .ecomm-prod-slider {
+    .carousel-inner,
+    .carousel-inner img {
+      background: $gray-900;
+    }
+
+    .product-carousel-indicators {
+      .toggle-img {
+        background: $gray-900;
+        border-color: $gray-700;
+      }
+    }
+  }
+
+  .rel-prod-card {
+    .media {
+      &:hover {
+        background: rgb(255 255 255 / 8%);
+      }
+    }
+
+    img {
+      background: var(--pc-sidebar-background);
+    }
+  }
+
+  .rel-prod-list {
+    &::-webkit-scrollbar-thumb {
+      background: $gray-700;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: $gray-700;
+    }
+  }
+
+  .product-list-img {
+    background: var(--pc-sidebar-background);
+  }
+
+  .form-search.product-search i {
+    color: var(--bs-body-color);
+  }
+
+  .prod-likes .prod-likes-icon,
+  .product-whitelist .prod-likes-icon {
+    stroke: var(--pc-sidebar-color);
+    fill: var(--pc-sidebar-color);
+  }
+
+  .product-details-modal {
+    .product-images {
+      background: $gray-700;
+    }
+  }
+
+  .checkout-tabs {
+    .nav-item {
+      .nav-link {
+        color: var(--bs-body-color);
+      }
+    }
+  }
+
+  .cart-product-img {
+    img {
+      background: var(--pc-sidebar-background);
+    }
+  }
+
+  // calender
+  .cal-month-view {
+    .cal-cell-row:hover,
+    .cal-cell-row .cal-cell:hover,
+    .cal-cell.cal-has-events.cal-open {
+      background-color: var(--pc-header-background);
+    }
+  }
+
+  .cal-month-view .cal-day-cell.cal-weekend .cal-day-number {
+    color: #f67e7e;
+  }
+
+  .cal-week-view .cal-hour-odd,
+  .cal-week-view .cal-time-events .cal-day-columns:not(.cal-resize-active) .cal-hour-segment:hover {
+    background-color: var(--pc-header-background);
+  }
+
+  .cal-week-view .cal-hour:not(:last-child) .cal-hour-segment,
+  .cal-week-view .cal-hour:last-child :not(:last-child) .cal-hour-segment {
+    border-color: var(--bs-border-color);
+  }
+
+  .NgxEditor__MenuItem .NgxEditor__MenuItem--Icon:hover,
+  .NgxEditor__Dropdown:hover,
+  .NgxEditor__Dropdown .NgxEditor__Dropdown--Item:hover {
+    background-color: var(--pc-sidebar-background);
+  }
+
+  .ngb-dp-weekdays,
+  .ngb-dp-month-name,
+  .ngb-dp-header {
+    background-color: var(--pc-sidebar-background);
+  }
+
+  .ngb-dp-day {
+    .btn-light {
+      color: var(--bs-body-color);
+    }
+  }
+
+  dp-day-calendar.dp-material {
+    .dp-calendar-day {
+      background: var(--pc-sidebar-background);
+    }
+
+    .dp-selected {
+      background: var(--bs-primary);
+    }
+  }
+
+  dp-calendar-nav.dp-material .dp-calendar-nav-container,
+  dp-day-calendar.dp-material .dp-calendar-wrapper,
+  .dp-popup {
+    border-color: var(--bs-border-color);
+  }
+
+  // color picker
+  .color-picker {
+    background-color: var(--pc-sidebar-background);
+
+    input {
+      background: var(--pc-sidebar-background);
+      color: var(--bs-body-color);
+    }
+  }
+
+  // form select
+  .ng-select.ng-select-multiple .ng-select-container .ng-value-container .ng-input > input,
+  .ng-select .ng-select-container {
+    color: var(--bs-body-color);
+  }
+
+  .ng-dropdown-panel {
+    border-color: var(--bs-border-color);
+  }
+
+  // text-editor
+  .ql-picker-options {
+    background: var(--bs-gray-900);
+    color: var(--bs-body-color);
+  }
+
+  .ql-toolbar.ql-snow,
+  .ql-container.ql-snow {
+    border-color: var(--bs-border-color);
+  }
+
+  .ql-editor.ql-blank::before {
+    color: var(--pc-heading-color);
+  }
+
+  .ql-snow {
+    .ql-picker {
+      color: var(--bs-body-color);
+    }
+
+    .ql-stroke {
+      stroke: var(--bs-body-color);
+
+      &.ql-fill {
+        fill: var(--bs-body-color);
+      }
+    }
+
+    .ql-fill {
+      fill: var(--bs-body-color);
+    }
+  }
+
+  .NgxEditor {
+    background: var(--pc-sidebar-background);
+    color: var(--bs-body-color);
+    border-color: var(--bs-border-color);
+  }
+
+  .NgxEditor__MenuBar {
+    border: 1px solid var(--bs-border-color);
+  }
+
+  .NgxEditor__Popup,
+  .NgxEditor__Dropdown .NgxEditor__Dropdown--DropdownMenu {
+    background: #{color.adjust($dark-layout-color, $lightness: 10%)};
+    border: 1px solid var(--bs-body-color);
+  }
+
+  // form layouts
+  .card.action-footer {
+    .card-footer {
+      background: #{color.adjust($dark-layout-color, $lightness: 10%)};
+    }
+  }
+
+  // file upload
+  .file-info,
+  .remove-btn {
+    color: var(--bs-body-color);
+  }
+
+  .uploader__modal {
+    background: var(--pc-active-background);
+  }
+
+  .uploader__submitted-file__container {
+    background: var(--bs-gray);
+  }
+
+  // table
+  .dataTable-top {
+    .btn {
+      color: $white;
+    }
+  }
+}
+
+html.dark {
+  color-scheme: dark;
+}

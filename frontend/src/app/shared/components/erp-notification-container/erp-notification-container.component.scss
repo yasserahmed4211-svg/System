@@ -1,0 +1,16 @@
+.erp-notification-container {
+  position: fixed;
+  top: var(--erp-notification-offset, 1rem);
+  right: var(--erp-notification-offset, 1rem);
+  width: var(--erp-notification-width, min(420px, calc(100vw - 2rem)));
+  z-index: var(--erp-notification-z, 2000);
+}
+
+[dir="rtl"] .erp-notification-container {
+  right: auto;
+  left: var(--erp-notification-offset, 1rem);
+}
+
+.erp-notification-container .alert {
+  margin-bottom: var(--erp-notification-gap, 0.75rem);
+}

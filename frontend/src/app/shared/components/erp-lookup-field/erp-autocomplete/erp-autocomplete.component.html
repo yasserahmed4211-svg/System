@@ -1,0 +1,57 @@
+<div class="erp-autocomplete position-relative">
+  <!-- Search Input -->
+  <div class="input-group">
+    <input
+      #searchInput
+      type="text"
+      class="form-control"
+      [attr.placeholder]="(config.placeholderKey || 'LOOKUP.SEARCH_PLACEHOLDER') | translate"
+      [ngModel]="displayValue"
+      (ngModelChange)="onInputChange($event)"
+      (focus)="onFocus()"
+      (keydown)="onKeyDown($event)"
+      autocomplete="off"
+    />
+    <!-- Clear Button -->
+    @if (displayValue) {
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        (click)="clearInput()"
+        [attr.aria-label]="'LOOKUP.CLEAR' | translate"
+      >
+        <i class="ti ti-x"></i>
+      </button>
+    }
+    <!-- Loading Indicator -->
+    @if (isLoading()) {
+      <span class="input-group-text">
+        <span class="spinner-border spinner-border-sm" role="status"></span>
+      </span>
+    }
+  </div>
+
+  <!-- Dropdown Results -->
+  @if (isOpen()) {
+    <ul class="erp-autocomplete__dropdown list-group position-absolute w-100 shadow-sm" role="listbox">
+      @for (item of results(); track trackByItemId($index, item)) {
+        <li
+          class="list-group-item list-group-item-action"
+          [class.active]="highlightedIndex() === $index"
+          role="option"
+          [attr.aria-selected]="highlightedIndex() === $index"
+          (click)="selectItem(item)"
+          (mouseenter)="highlightedIndex.set($index)"
+        >
+          {{ item.display }}
+        </li>
+      }
+
+      @if (!hasResults() && !isLoading()) {
+        <li class="list-group-item text-muted text-center">
+          {{ 'LOOKUP.NO_RESULTS' | translate }}
+        </li>
+      }
+    </ul>
+  }
+</div>

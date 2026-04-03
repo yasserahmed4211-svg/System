@@ -1,0 +1,42 @@
+@if (config.mode === 'quick') {
+  <!-- Quick Mode: Inline Autocomplete -->
+  <erp-autocomplete
+    [config]="config"
+    [displayValue]="displayText()"
+    (itemSelected)="onAutocompleteSelected($event)"
+    (cleared)="onAutocompleteCleared()"
+  ></erp-autocomplete>
+} @else {
+  <!-- Advanced Mode: Input with Dialog Trigger -->
+  <div class="input-group">
+    <input
+      type="text"
+      class="form-control"
+      [value]="displayText()"
+      [attr.placeholder]="(config.placeholderKey || 'LOOKUP.SEARCH_PLACEHOLDER') | translate"
+      [disabled]="isDisabled()"
+      readonly
+    />
+    <!-- Search Button (opens dialog) -->
+    <button
+      type="button"
+      class="btn btn-outline-primary"
+      [disabled]="isDisabled()"
+      (click)="openDialog()"
+      [attr.aria-label]="'LOOKUP.OPEN_DIALOG' | translate"
+    >
+      <i class="ti ti-search"></i>
+    </button>
+    <!-- Clear Button -->
+    @if (selectedId() && !isDisabled()) {
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        (click)="clearSelection()"
+        [attr.aria-label]="'LOOKUP.CLEAR' | translate"
+      >
+        <i class="ti ti-x"></i>
+      </button>
+    }
+  </div>
+}

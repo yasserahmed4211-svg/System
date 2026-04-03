@@ -1,0 +1,62 @@
+<app-card [cardTitle]="'ROLE_ACCESS.TITLE' | translate" [padding]="0">
+  <div class="card-header-right">
+    <button class="btn btn-info btn-sm me-2" (click)="toggleAdvancedFilters()">
+      <i class="ti ti-filter"></i> {{ showAdvancedFilters ? ('USERS.HIDE_FILTERS' | translate) : ('USERS.ADVANCED_FILTERS' | translate) }}
+    </button>
+    <button
+      class="btn btn-success btn-sm me-2"
+      data-testid="role-access-add-role"
+      erpPermission="ROLE.CREATE"
+      (click)="navigateToCreate()"
+    >
+      <i class="ti ti-plus"></i> {{ 'ROLE_ACCESS.ADD_ROLE' | translate }}
+    </button>
+    <button class="btn btn-primary btn-sm" data-testid="role-access-refresh" (click)="refreshData()">
+      <i class="ti ti-refresh"></i> {{ 'COMMON.REFRESH' | translate }}
+    </button>
+  </div>
+
+  @if (showAdvancedFilters) {
+    <div class="card-body border-bottom bg-light">
+      <erp-specification-filter
+        [availableFields]="availableFields"
+        [availableOperators]="availableOperators"
+        (apply)="onSpecFiltersApply($event)"
+        (clear)="onSpecFiltersClear()"
+      />
+    </div>
+  }
+
+  <div class="card-body p-0">
+    @if (showGrid) {
+      @if (!isLoading && hasError) {
+        <div class="p-3">
+          <erp-empty-state
+            icon="ti ti-alert-circle"
+            titleKey="ERRORS.OPERATION_FAILED"
+            messageKey="ERRORS.TRY_AGAIN"
+            actionLabelKey="COMMON.REFRESH"
+            (actionClicked)="refreshData()"
+          />
+        </div>
+      } @else if (!isLoading && rowData.length === 0) {
+        <div class="p-3">
+          <erp-empty-state icon="ti ti-database" titleKey="COMMON.NO_DATA" messageKey="ROLE_ACCESS.NO_ROLES" />
+        </div>
+      } @else {
+        <ag-grid-angular
+          class="ag-theme-alpine"
+          [columnDefs]="columnDefs"
+          [defaultColDef]="defaultColDef"
+          [gridOptions]="gridOptions"
+          [theme]="theme"
+          [rowData]="rowData"
+          [localeText]="agLocaleText"
+          (gridReady)="onGridReady($event)"
+          (paginationChanged)="onPaginationChanged()"
+          [style.height.px]="600"
+        />
+      }
+    }
+  </div>
+</app-card>

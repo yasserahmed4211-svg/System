@@ -1,0 +1,184 @@
+<!--
+  ========================================
+  BLUEPRINT LEVEL 2 – PAGE B: FORM
+  ========================================
+  TASK: TASK-FE-GL-001
+  REQ:  FE-REQ-GL-001 §4.3 – §4.5
+  SCREEN: GL-SCR-002 – Accounting Rules Entry/Edit
+-->
+
+<app-card [cardTitle]="pageTitle() | translate" [padding]="20">
+  <div class="card-body">
+    <!-- Save Error -->
+    @if (saveError) {
+      <div class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+        <i class="ti ti-alert-triangle" aria-hidden="true"></i>
+        {{ saveError | translate }}
+      </div>
+    }
+
+    @if (showValidationErrors && form.invalid) {
+      <div class="alert alert-warning" data-validation-error="true" role="alert">
+        <div class="fw-semibold mb-2">{{ 'GL.RULE_FORM_INVALID' | translate }}</div>
+        <ul class="mb-0 ps-3">
+          @for (summaryKey of validationSummaryKeys; track summaryKey) {
+            <li>{{ summaryKey | translate }}</li>
+          }
+        </ul>
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <!-- ══════════ Header Section ══════════ -->
+      <erp-section titleKey="GL.RULE_DETAILS">
+        <div class="row g-3">
+          <!-- Company ID -->
+          <div class="col-md-4">
+            <erp-form-field
+              labelKey="GL.COMPANY_ID"
+              [control]="form.get('companyId')"
+              [required]="true"
+            >
+              <input
+                type="number"
+                class="form-control"
+                formControlName="companyId"
+                [class.is-invalid]="isFieldInvalid('companyId')"
+                [placeholder]="'GL.COMPANY_ID' | translate"
+              />
+            </erp-form-field>
+          </div>
+
+          <!-- Source Module -->
+          <div class="col-md-4">
+            <erp-form-field
+              labelKey="GL.SOURCE_MODULE"
+              [control]="form.get('sourceUnit')"
+              [required]="true"
+            >
+              <select class="form-select" formControlName="sourceUnit"
+                [class.is-invalid]="isFieldInvalid('sourceUnit')">
+                <option [ngValue]="null" disabled>{{ 'COMMON.SELECT' | translate }}</option>
+                @for (module of sourceModuleOptions; track module.value) {
+                  <option [value]="module.value">{{ module.label }}</option>
+                }
+              </select>
+            </erp-form-field>
+          </div>
+
+          <!-- Source Doc Type -->
+          <div class="col-md-4">
+            <erp-form-field
+              labelKey="GL.DOC_TYPE"
+              [control]="form.get('documentType')"
+              [required]="true"
+            >
+              <select class="form-select" formControlName="documentType"
+                [class.is-invalid]="isFieldInvalid('documentType')">
+                <option [ngValue]="null" disabled>{{ 'COMMON.SELECT' | translate }}</option>
+                @for (docType of sourceDocTypeOptions; track docType.value) {
+                  <option [value]="docType.value">{{ docType.label }}</option>
+                }
+              </select>
+            </erp-form-field>
+          </div>
+
+          <!-- Is Active -->
+          <div class="col-md-4">
+            <div class="form-check mt-4">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="isActiveCheck"
+                formControlName="isActive"
+              />
+              <label class="form-check-label" for="isActiveCheck">
+                {{ 'COMMON.ACTIVE' | translate }}
+              </label>
+            </div>
+          </div>
+        </div>
+      </erp-section>
+
+      <!-- ══════════ Lines Section – Dual Column Builder ══════════ -->
+      <erp-section titleKey="GL.RULE_LINES" class="mt-3">
+        <div class="row g-3">
+          <!-- Debit Column -->
+          <div class="col-md-6">
+            <div class="rule-column rule-column--debit" [class.rule-column--invalid]="isArrayInvalid('debitLines')">
+              <h6 class="rule-column__title rule-column__title--debit">
+                <i class="ti ti-arrow-up-right"></i>
+                {{ 'GL.DEBIT_RULES' | translate }}
+                <span class="badge bg-success ms-auto">{{ debitLines.length }}</span>
+              </h6>
+              <app-rule-lines-section
+                [lines]="debitLines"
+                [variant]="'debit'"
+                [addButtonKey]="'GL.ADD_DEBIT_LINE'"
+                [amountSourceTypeOptions]="amountSourceTypeOptions"
+                [entityTypeOptions]="entityTypeOptions"
+                [paymentTypeOptions]="paymentTypeOptions"
+                (addLine)="openAddLineForSide('DEBIT')"
+                (editLine)="onEditLineSided($event)"
+                (removeLine)="onRemoveLineSided($event, 'DEBIT')"
+              />
+              @if (isArrayInvalid('debitLines')) {
+                <div class="rule-column__error" data-validation-error="true">
+                  {{ 'GL.DEBIT_LINE_REQUIRED' | translate }}
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Credit Column -->
+          <div class="col-md-6">
+            <div class="rule-column rule-column--credit" [class.rule-column--invalid]="isArrayInvalid('creditLines')">
+              <h6 class="rule-column__title rule-column__title--credit">
+                <i class="ti ti-arrow-down-left"></i>
+                {{ 'GL.CREDIT_RULES' | translate }}
+                <span class="badge bg-danger ms-auto">{{ creditLines.length }}</span>
+              </h6>
+              <app-rule-lines-section
+                [lines]="creditLines"
+                [variant]="'credit'"
+                [addButtonKey]="'GL.ADD_CREDIT_LINE'"
+                [amountSourceTypeOptions]="amountSourceTypeOptions"
+                [entityTypeOptions]="entityTypeOptions"
+                [paymentTypeOptions]="paymentTypeOptions"
+                (addLine)="openAddLineForSide('CREDIT')"
+                (editLine)="onEditLineSided($event)"
+                (removeLine)="onRemoveLineSided($event, 'CREDIT')"
+              />
+              @if (isArrayInvalid('creditLines')) {
+                <div class="rule-column__error" data-validation-error="true">
+                  {{ 'GL.CREDIT_LINE_REQUIRED' | translate }}
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </erp-section>
+
+      <!-- Line Form Modal (self-contained, emits save events) -->
+      <app-rule-line-form-modal
+        [accountLookupConfig]="accountLookupConfig"
+        [entrySideOptions]="entrySideOptions"
+        [amountSourceTypeOptions]="amountSourceTypeOptions"
+        [entityTypeOptions]="entityTypeOptions"
+        [paymentTypeOptions]="paymentTypeOptions"
+        [saving]="isSaving"
+        (saveLine)="onLineSaved($event)"
+      />
+
+      <!-- ══════════ Action Bar (sticky bottom) ══════════ -->
+      <erp-action-bar
+        [saveKey]="isEditMode() ? 'COMMON.UPDATE' : 'COMMON.SAVE'"
+        [loading]="isSaving"
+        [disabled]="form.invalid"
+        [showCancel]="false"
+        (saveClicked)="onSubmit()"
+        (backClicked)="navigateBack()"
+      />
+    </form>
+  </div>
+</app-card>

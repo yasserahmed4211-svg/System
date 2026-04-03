@@ -1,0 +1,271 @@
+/**======================================================================
+=========================================================================
+Template Name: MAntis Angular - Angular Admin Template
+Author: codedThemes
+Support: https://codedthemes.support-hub.io/
+File: style.css
+=========================================================================
+=================================================================================== */
+
+@import 'node_modules/bootstrap/scss/functions';
+@import 'node_modules/bootstrap/scss/variables';
+@import 'node_modules/bootstrap/scss/variables-dark';
+
+@import 'scss/settings/color-variables';
+@import 'scss/settings/theme-variables';
+@import 'scss/settings/bootstrap-variables';
+
+// bootstrap import
+@import 'scss/bootstrap/bootstrap.scss';
+
+// main framework
+@import 'scss/theme/generic.scss';
+@import 'scss/theme/general.scss';
+
+@import 'scss/theme/components/components.scss';
+
+// theme
+@import 'scss/theme/layouts/menu/sidebar.scss';
+@import 'scss/theme/layouts/navbar/navbar.scss';
+@import 'scss/theme/layouts/pc-common.scss';
+@import 'scss/theme/layouts/breadcrumb/breadcrumb.scss';
+@import 'scss/theme/layouts/footer/footer.scss';
+@import 'scss/theme/layouts/menu/horizontal.scss';
+@import 'scss/theme/layouts/menu/compact.scss';
+
+// isRTLMode
+@import 'scss/theme/layouts/RTL/rtl.scss';
+
+@import 'scss/theme/layouts/dark-mode/dark.scss';
+
+@import 'scss/theme/style-preset.scss';
+
+// ERP Design System (tokens layer)
+@import 'scss/erp/erp-tokens';
+
+body.mantis-ltr {
+  @import 'node_modules/bootstrap/scss/utilities';
+  @import 'node_modules/bootstrap/scss/utilities/api';
+}
+body.mantis-rtl {
+  @import 'scss/theme/layouts/RTL/style-rtl-utility.scss';
+  @import 'node_modules/bootstrap/scss/utilities/api';
+}
+
+// font
+@import 'scss/fonts/feather.css';
+@import 'scss/fonts/fontawesome.css';
+@import 'scss/fonts/material.css';
+@import 'scss/fonts/tabler-icons.min.css';
+
+// ============================================
+// RTL (Right-to-Left) Enhancements
+// ============================================
+
+[dir="rtl"],
+body.mantis-rtl {
+  // Typography
+  text-align: right;
+  
+  // Navigation Sidebar
+  .pc-sidebar {
+    left: auto !important;
+    right: 0 !important;
+    border-left: 1px solid var(--pc-sidebar-border);
+    border-right: none;
+  }
+  
+  // Main Container
+  .pc-container {
+    margin-left: 0 !important;
+    margin-right: var(--pc-sidebar-width, 280px) !important;
+  }
+  
+  // Navbar collapsed state
+  .pc-sidebar.navbar-collapsed ~ .pc-container {
+    margin-right: 80px !important;
+    margin-left: 0 !important;
+  }
+  
+  // Menu Items
+  .pc-navbar > app-nav-group > app-nav-item > li > a,
+  .pc-navbar .pc-link {
+    text-align: right;
+    padding-left: 15px;
+    padding-right: 30px;
+  }
+  
+  .pc-navbar .pc-arrow {
+    left: 15px;
+    right: auto;
+  }
+  
+  .pc-navbar .pc-micon {
+    margin-left: 15px;
+    margin-right: 0;
+  }
+  
+  // Submenu
+  .pc-submenu {
+    padding-left: 0;
+    padding-right: 30px;
+  }
+  
+  // Dropdowns
+  .dropdown-menu-end {
+    --bs-position: start;
+    left: 0 !important;
+    right: auto !important;
+  }
+  
+  // Form Controls
+  .form-control,
+  .form-select {
+    text-align: right;
+  }
+  
+  // Input Groups
+  .input-group {
+    flex-direction: row-reverse;
+    
+    > .form-control,
+    > .form-select {
+      border-radius: var(--bs-border-radius);
+    }
+  }
+  
+  // Buttons with icons
+  .btn i + span,
+  .btn span + i {
+    margin-left: 0;
+    margin-right: 0.5rem;
+  }
+  
+  // Icons that should mirror
+  .mirror-rtl {
+    transform: scaleX(-1);
+  }
+  
+  // AG Grid RTL
+  .ag-root-wrapper,
+  .ag-root,
+  ag-grid-angular {
+    direction: rtl !important;
+  }
+  
+  .ag-header-cell-label {
+    flex-direction: row-reverse;
+  }
+  
+  .ag-cell {
+    text-align: right;
+  }
+  
+  .ag-header-cell-text {
+    text-align: right;
+  }
+  
+  .ag-floating-filter-input {
+    text-align: right;
+  }
+  
+  // Modal and Dialog adjustments
+  .modal-header {
+    flex-direction: row-reverse;
+    
+    .btn-close {
+      margin: 0;
+      margin-left: 0;
+      margin-right: auto;
+    }
+  }
+  
+  .modal-title {
+    text-align: right;
+  }
+  
+  .modal-body {
+    text-align: right;
+  }
+  
+  .modal-footer {
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+  }
+  
+  // List Items
+  .list-group-item {
+    text-align: right;
+  }
+  
+  // Breadcrumb
+  .breadcrumb {
+    flex-direction: row-reverse;
+  }
+  
+  .breadcrumb-item + .breadcrumb-item::before {
+    float: right;
+    padding-left: 0.5rem;
+    padding-right: 0;
+    content: "\\";
+  }
+  
+  // Cards
+  .card-header,
+  .card-body,
+  .card-footer {
+    text-align: right;
+  }
+  
+  .card-header-right {
+    left: 10px;
+    right: auto;
+  }
+  
+  // Tables
+  th, td {
+    text-align: right;
+  }
+  
+  // Alerts
+  .alert {
+    text-align: right;
+  }
+  
+  // Pagination
+  .pagination {
+    flex-direction: row-reverse;
+  }
+  
+  // Checkbox and Radio
+  .form-check {
+    padding-left: 0;
+    padding-right: 1.5em;
+    
+    .form-check-input {
+      float: right;
+      margin-left: 0;
+      margin-right: -1.5em;
+    }
+  }
+  
+  // Toasts
+  .toast {
+    text-align: right;
+  }
+  
+  // Badges
+  .badge {
+    margin-left: 0;
+    margin-right: 0.25rem;
+  }
+}
+
+// Arabic Font Family Support
+[lang="ar"] {
+  font-family: 'Segoe UI', 'Arial', 'Tahoma', sans-serif;
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: inherit;
+  }
+}

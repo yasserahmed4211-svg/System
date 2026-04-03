@@ -1,0 +1,11 @@
+/**
+ * ERP Styles Entry Point
+ * 
+ * Import this file in the main styles.scss to include all ERP styling foundation.
+ * 
+ * @requirement FE-REQ-SHARED-001
+ * @task TASK-FE-SHARED-001
+ */
+
+@use 'erp-tokens';
+@use 'erp-ui';

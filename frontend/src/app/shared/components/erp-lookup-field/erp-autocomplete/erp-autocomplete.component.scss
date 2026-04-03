@@ -1,0 +1,29 @@
+.erp-autocomplete {
+  &__dropdown {
+    z-index: var(--erp-autocomplete-z, 1050);
+    max-height: var(--erp-autocomplete-max-height, 280px);
+    overflow-y: auto;
+    border: 1px solid var(--erp-color-border, #dee2e6);
+    border-top: none;
+    border-radius: 0 0 var(--erp-autocomplete-radius, 0.375rem) var(--erp-autocomplete-radius, 0.375rem);
+    background: var(--erp-color-bg, #fff);
+
+    .list-group-item {
+      cursor: pointer;
+      padding: var(--erp-autocomplete-item-padding-block, 0.5rem) var(--erp-autocomplete-item-padding-inline, 0.75rem);
+      font-size: var(--erp-font-size-sm, 0.875rem);
+      border-left: none;
+      border-right: none;
+
+      &.active {
+        background-color: var(--erp-color-primary, #4680ff);
+        color: #fff;
+        border-color: var(--erp-color-primary, #4680ff);
+      }
+
+      &:hover:not(.active) {
+        background-color: var(--erp-color-bg-subtle, #f8f9fa);
+      }
+    }
+  }
+}

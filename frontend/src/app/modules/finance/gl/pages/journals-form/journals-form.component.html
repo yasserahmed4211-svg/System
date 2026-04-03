@@ -1,0 +1,307 @@
+<!--
+  GL Journal Create / Edit / View Page
+-->
+
+<app-card [cardTitle]="pageTitle() | translate" [padding]="20">
+  <div class="card-body">
+    <!-- Save Error -->
+    @if (saveError) {
+      <div class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+        <i class="ti ti-alert-triangle" aria-hidden="true"></i>
+        {{ saveError | translate }}
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <!-- ══════════ Header Section ══════════ -->
+      <erp-section titleKey="GL.JOURNAL_DETAILS">
+        <div class="row g-3">
+          <!-- Journal No (readonly, edit/view only) -->
+          @if (isEditMode() || isViewMode()) {
+            <div class="col-md-3">
+              <erp-form-field labelKey="GL.JOURNAL_NO">
+                <input
+                  type="text"
+                  class="form-control"
+                  [value]="currentJournal()?.journalNo || ''"
+                  readonly
+                />
+              </erp-form-field>
+            </div>
+          }
+
+          @if (isEditMode() || isViewMode()) {
+            <div class="col-md-3">
+              <erp-form-field labelKey="GL.JOURNAL_STATUS">
+                <input
+                  type="text"
+                  class="form-control"
+                  [value]="getStatusLabel()"
+                  readonly
+                />
+              </erp-form-field>
+            </div>
+          }
+
+          <!-- Journal Date -->
+          <div class="col-md-3">
+            <erp-form-field
+              labelKey="GL.JOURNAL_DATE"
+              [control]="form.get('journalDate')"
+              [required]="true"
+            >
+              <input
+                type="date"
+                class="form-control"
+                formControlName="journalDate"
+                [class.is-invalid]="isFieldInvalid('journalDate')"
+              />
+            </erp-form-field>
+          </div>
+
+          <!-- Journal Type (preset to MANUAL, disabled) -->
+          <div class="col-md-3">
+            <erp-form-field
+              labelKey="GL.JOURNAL_TYPE"
+              [control]="form.get('journalTypeIdFk')"
+            >
+              <select class="form-select" formControlName="journalTypeIdFk">
+                <option [ngValue]="null" disabled>{{ 'COMMON.SELECT' | translate }}</option>
+                @for (type of journalTypeOptions; track type.value) {
+                  <option [value]="type.value">{{ type.label }}</option>
+                }
+              </select>
+            </erp-form-field>
+          </div>
+
+          <!-- Description -->
+          <div class="col-md-6">
+            <erp-form-field
+              labelKey="COMMON.DESCRIPTION"
+              [control]="form.get('description')"
+            >
+              <textarea
+                class="form-control"
+                formControlName="description"
+                rows="2"
+                [placeholder]="'COMMON.DESCRIPTION' | translate"
+              ></textarea>
+            </erp-form-field>
+          </div>
+
+          <!-- Source Module -->
+          <div class="col-md-3">
+            <erp-form-field
+              labelKey="GL.SOURCE_MODULE"
+              [control]="form.get('sourceModuleIdFk')"
+            >
+              <select class="form-select" formControlName="sourceModuleIdFk">
+                <option [ngValue]="null">{{ 'COMMON.SELECT' | translate }}</option>
+                @for (module of sourceModuleOptions; track module.value) {
+                  <option [value]="module.value">{{ module.label }}</option>
+                }
+              </select>
+            </erp-form-field>
+          </div>
+
+          <!-- Source Doc Type -->
+          <div class="col-md-3">
+            <erp-form-field
+              labelKey="GL.DOC_TYPE"
+              [control]="form.get('sourceDocTypeId')"
+            >
+              <input
+                type="text"
+                class="form-control"
+                formControlName="sourceDocTypeId"
+                [placeholder]="'GL.DOC_TYPE' | translate"
+              />
+            </erp-form-field>
+          </div>
+        </div>
+      </erp-section>
+
+      <!-- ══════════ Totals Summary ══════════ -->
+      @if (linesArray.length > 0) {
+        <div class="row g-3 mt-2">
+          <div class="col-md-4">
+            <div class="totals-card totals-card--debit">
+              <span class="totals-card__label">{{ 'GL.TOTAL_DEBIT' | translate }}</span>
+              <span class="totals-card__value">{{ totalDebit() | number:'1.2-2' }}</span>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="totals-card totals-card--credit">
+              <span class="totals-card__label">{{ 'GL.TOTAL_CREDIT' | translate }}</span>
+              <span class="totals-card__value">{{ totalCredit() | number:'1.2-2' }}</span>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="totals-card" [class.totals-card--balanced]="isBalanced()" [class.totals-card--unbalanced]="!isBalanced()">
+              <span class="totals-card__label">{{ 'GL.BALANCE' | translate }}</span>
+              <span class="totals-card__value">
+                @if (isBalanced()) {
+                  <i class="ti ti-check-circle"></i> {{ 'GL.BALANCED' | translate }}
+                } @else {
+                  <i class="ti ti-alert-circle"></i> {{ 'GL.NOT_BALANCED' | translate }}
+                  ({{ (totalDebit() - totalCredit()) | number:'1.2-2' }})
+                }
+              </span>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- ══════════ Lines Section ══════════ -->
+      <erp-section titleKey="GL.JOURNAL_LINES" class="mt-3">
+        @if (isEditable() && !isAutomatic()) {
+          <div class="mb-2">
+            <button type="button" class="btn btn-sm btn-outline-success" (click)="addLine()">
+              <i class="ti ti-plus"></i> {{ 'GL.ADD_LINE' | translate }}
+            </button>
+          </div>
+        }
+
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm align-middle">
+            <thead class="table-light">
+              <tr>
+                <th style="width: 40px">#</th>
+                <th>{{ 'GL.ACCOUNT' | translate }} *</th>
+                <th style="width: 140px">{{ 'GL.DEBIT' | translate }}</th>
+                <th style="width: 140px">{{ 'GL.CREDIT' | translate }}</th>
+                <th>{{ 'COMMON.DESCRIPTION' | translate }}</th>
+                <th style="width: 130px">{{ 'GL.CUSTOMER' | translate }}</th>
+                <th style="width: 130px">{{ 'GL.SUPPLIER' | translate }}</th>
+                <th style="width: 130px">{{ 'GL.COST_CENTER' | translate }}</th>
+                @if (isEditable() && !isAutomatic()) {
+                  <th style="width: 60px"></th>
+                }
+              </tr>
+            </thead>
+            <tbody formArrayName="lines">
+              @for (line of linesArray.controls; track $index; let i = $index) {
+                <tr [formGroupName]="i">
+                  <td class="text-center text-muted">{{ i + 1 }}</td>
+
+                  <!-- Account Lookup -->
+                  <td>
+                    <erp-lookup-field
+                      [config]="accountLookupConfig"
+                      formControlName="accountIdFk"
+                      (itemSelected)="onAccountSelected(i, $event)"
+                    />
+                    @if (isLineFieldInvalid(i, 'accountIdFk')) {
+                      <small class="text-danger">{{ 'VALIDATION.REQUIRED' | translate }}</small>
+                    }
+                  </td>
+
+                  <!-- Debit Amount -->
+                  <td>
+                    <input
+                      type="number"
+                      class="form-control form-control-sm"
+                      formControlName="debitAmount"
+                      min="0"
+                      step="0.01"
+                      [placeholder]="'0.00'"
+                    />
+                  </td>
+
+                  <!-- Credit Amount -->
+                  <td>
+                    <input
+                      type="number"
+                      class="form-control form-control-sm"
+                      formControlName="creditAmount"
+                      min="0"
+                      step="0.01"
+                      [placeholder]="'0.00'"
+                    />
+                  </td>
+
+                  <!-- Description -->
+                  <td>
+                    <input
+                      type="text"
+                      class="form-control form-control-sm"
+                      formControlName="description"
+                      [placeholder]="'COMMON.DESCRIPTION' | translate"
+                    />
+                  </td>
+
+                  <!-- Customer ID -->
+                  <td>
+                    <input
+                      type="number"
+                      class="form-control form-control-sm"
+                      formControlName="customerIdFk"
+                    />
+                  </td>
+
+                  <!-- Supplier ID -->
+                  <td>
+                    <input
+                      type="number"
+                      class="form-control form-control-sm"
+                      formControlName="supplierIdFk"
+                    />
+                  </td>
+
+                  <!-- Cost Center ID -->
+                  <td>
+                    <input
+                      type="number"
+                      class="form-control form-control-sm"
+                      formControlName="costCenterIdFk"
+                    />
+                  </td>
+
+                  <!-- Remove Button -->
+                  @if (isEditable() && !isAutomatic()) {
+                    <td class="text-center">
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-danger"
+                        [title]="'COMMON.DELETE' | translate"
+                        (click)="removeLine(i)"
+                      >
+                        <i class="ti ti-trash"></i>
+                      </button>
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        @if (linesArray.length === 0) {
+          <erp-empty-state
+            icon="ti ti-list"
+            titleKey="GL.JOURNAL_NO_LINES"
+            messageKey="GL.JOURNAL_ADD_LINE_HINT"
+          />
+        }
+      </erp-section>
+
+      <!-- Action Bar (sticky bottom) -->
+      @if (isEditable()) {
+        <erp-action-bar
+          [saveKey]="isEditMode() ? 'COMMON.UPDATE' : 'COMMON.SAVE'"
+          [loading]="isSaving"
+          [disabled]="isAutomatic() ? !!form.get('journalDate')?.invalid : (form.invalid || !isBalanced())"
+          [showCancel]="false"
+          (saveClicked)="onSubmit()"
+          (backClicked)="navigateBack()"
+        />
+      } @else {
+        <erp-action-bar
+          [showSave]="false"
+          [showCancel]="false"
+          (backClicked)="navigateBack()"
+        />
+      }
+    </form>
+  </div>
+</app-card>

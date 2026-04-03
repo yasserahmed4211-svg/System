@@ -1,0 +1,241 @@
+<ul class="list-unstyled">
+  <li class="pc-h-item pc-mega-menu" ngbDropdown placement="auto">
+    <a href="javascript:" class="pc-head-link arrow-none me-0" ngbDropdownToggle>
+      <i antIcon type="windows" theme="outline"></i>
+    </a>
+    <div class="pc-h-dropdown pc-mega-dropdown" ngbDropdownMenu>
+      <div class="row g-0">
+        <div class="col-4 d-none d-sm-block">
+          <div class="col image-block">
+            <h2 class="text-white">Explore Components</h2>
+            <p class="text-white my-4">Try our pre made component pages to check how it feels and suits as per your need.</p>
+            <div class="row align-items-end">
+              <div class="col-auto">
+                <div class="btn btn btn-light">
+                  View All
+                  <i class="" antIcon theme="outline" type="arrow-right"></i>
+                </div>
+              </div>
+              <div class="col">
+                <img src="assets/images/mega-menu/chart.svg" alt="image" class="img-fluid img-charts" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-8">
+          <div class="row p-4">
+            @for (megaMenu of megaMenus; track megaMenu) {
+              <div class="col">
+                <h6 class="mega-title">{{ megaMenu.name }}</h6>
+                <ul class="pc-mega-list">
+                  @for (list of megaMenu.children; track list) {
+                    <div>
+                      <li>
+                        <a class="dropdown-item" [routerLink]="[list.url]" target="_blank">
+                          <span class="dot-badge"></span>
+                          {{ list.title }}
+                        </a>
+                      </li>
+                    </div>
+                  }
+                </ul>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </li>
+  <li class="dropdown pc-h-item" ngbDropdown>
+    <a href="javascript:" class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" ngbDropdownToggle>
+      <i antIcon type="translation" theme="outline"></i>
+      <span class="ms-1 d-none d-md-inline">{{ languageService.isArabic() ? 'ع' : 'EN' }}</span>
+    </a>
+    <div class="dropdown-menu dropdown-menu-end pc-h-dropdown" ngbDropdownMenu>
+      <a href="javascript:" (click)="useLanguage('en')" class="dropdown-item" [class.active]="languageService.isEnglish()">
+        <span class="d-flex align-items-center">
+          <span class="me-2">🇬🇧</span>
+          English
+          @if (languageService.isEnglish()) {
+            <i antIcon type="check" theme="outline" class="ms-auto text-success"></i>
+          }
+        </span>
+      </a>
+      <a href="javascript:" (click)="useLanguage('ar')" class="dropdown-item" [class.active]="languageService.isArabic()">
+        <span class="d-flex align-items-center">
+          <span class="me-2">🇸🇦</span>
+          العربية
+          @if (languageService.isArabic()) {
+            <i antIcon type="check" theme="outline" class="ms-auto text-success"></i>
+          }
+        </span>
+      </a>
+    </div>
+  </li>
+  <li class="dropdown pc-h-item" ngbDropdown #notificationDrop="ngbDropdown">
+    <a href="javascript:" class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" ngbDropdownToggle>
+      <i antIcon type="bell" theme="outline"></i>
+      <span class="badge bg-primary pc-h-badge">3</span>
+    </a>
+    <div class="dropdown-menu dropdown-notification dropdown-menu-end pc-h-dropdown" ngbDropdownMenu>
+      <div class="dropdown-header d-flex align-items-center justify-content-between">
+        <h5 class="m-0">Notification</h5>
+        <a href="javascript:" class="bg-transparent" (click)="notificationDrop.close()">
+          <i class="text-success d-flex f-20" antIcon theme="outline" type="check-circle"></i>
+        </a>
+      </div>
+      <div class="dropdown-divider"></div>
+      <app-scrollbar [customStyle]="{ height: '280px' }">
+        <div class="dropdown-header p-0 text-wrap header-notification-scroll">
+          <div class="list-group list-group-flush w-100">
+            @for (item of notifications; track item) {
+              <a class="list-group-item list-group-item-action">
+                <div class="d-flex">
+                  <div class="flex-shrink-0">
+                    <div [ngClass]="item.avatarClass">
+                      @if (item.iconClass?.startsWith('ti ')) {
+                        <i class="d-flex" [class]="item.iconClass"></i>
+                      } @else {
+                        <i class="d-flex" antIcon theme="outline" [type]="item.iconClass"></i>
+                      }
+                    </div>
+                  </div>
+                  <div class="flex-grow-1 ms-3">
+                    <span class="float-end text-muted">{{ item.time }}</span>
+                    <p class="text-body mb-0" [innerHTML]="item.message"></p>
+                    <span class="text-muted">{{ item.date }}</span>
+                  </div>
+                </div>
+              </a>
+            }
+          </div>
+        </div>
+      </app-scrollbar>
+      <div class="dropdown-divider"></div>
+      <div class="text-center py-2">
+        <a class="btn btn-link link-primary py-0">View all</a>
+      </div>
+    </div>
+  </li>
+  <li class="pc-h-item" ngbDropdown #messageDrop="ngbDropdown">
+    <a href="javascript:" class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" ngbDropdownToggle>
+      <i antIcon type="mail" theme="outline"></i>
+    </a>
+    <div class="dropdown-menu dropdown-notification dropdown-menu-end pc-h-dropdown" ngbDropdownMenu>
+      <div class="dropdown-header d-flex align-items-center justify-content-between">
+        <h5 class="m-0">Message</h5>
+        <a href="javascript:" (click)="messageDrop.close()" class="bg-transparent">
+          <i class="d-felx f-18 text-danger" antIcon theme="outline" type="close"></i>
+        </a>
+      </div>
+      <div class="dropdown-divider"></div>
+      <app-scrollbar [customStyle]="{ height: '280px' }">
+        <div class="dropdown-header p-0 text-wrap header-notification-scroll">
+          <div class="list-group list-group-flush w-100">
+            @for (message of messageList; track message) {
+              <a class="list-group-item list-group-item-action">
+                <div class="d-flex">
+                  <div class="flex-shrink-0">
+                    <img src="{{ message.userImage }}" alt="user-image" class="user-avatar" />
+                  </div>
+                  <div class="flex-grow-1 ms-3">
+                    <span class="float-end text-muted">{{ message.timestamp }}</span>
+                    <p class="text-body mb-0">
+                      @if (message.boldText) {
+                        <b>{{ message.boldText }}</b>
+                      }
+                      {{ message.normalText }}
+                    </p>
+                    <span class="text-muted">{{ message.dateInfo }}</span>
+                  </div>
+                </div>
+              </a>
+            }
+          </div>
+        </div>
+      </app-scrollbar>
+      <div class="dropdown-divider"></div>
+      <div class="text-center py-2">
+        <a class="btn btn-link link-primary py-0">View all</a>
+      </div>
+    </div>
+  </li>
+  <li class="dropdown pc-h-item" (click)="toggleFullscreen()">
+    <a href="javascript:" class="pc-head-link me-0">
+      @if (screenFull === true) {
+        <i antIcon type="fullscreen" theme="outline"></i>
+      } @else {
+        <i antIcon type="fullscreen-exit" theme="outline"></i>
+      }
+    </a>
+  </li>
+  <li class="dropdown pc-h-item">
+    <a href="javascript:" class="pc-head-link me-0" [ngClass]="{ open: styleSelectorToggle }" (click)="customize()">
+      <i class="settings" antIcon type="setting" theme="outline"></i>
+    </a>
+  </li>
+  <li class="dropdown pc-h-item header-user-profile" ngbDropdown>
+    <a href="javascript:" class="pc-head-link user-login-info dropdown-toggle arrow-none me-0" ngbDropdownToggle>
+      <img src="assets/images/user/avatar-2.jpg" alt="user-image" class="user-avatar me-2" />
+      <span class="f-w-600">{{ this.authenticationService.currentUserName }}</span>
+    </a>
+    <div class="dropdown-menu dropdown-user-profile dropdown-menu-end pc-h-dropdown" ngbDropdownMenu>
+      <div class="dropdown-header">
+        <div class="d-flex mb-1">
+          <div class="flex-shrink-0">
+            <img src="assets/images/user/avatar-2.jpg" alt="user-image" class="user-avatar wid-35" />
+          </div>
+          <div class="flex-grow-1 ms-3 text-start">
+            <h6 class="mb-0">{{ this.authenticationService.currentUserName }}</h6>
+            <span>UI/UX Designer</span>
+          </div>
+          <a href="javascript:" class="bg-transparent" (click)="logout()">
+            <i class="d-flex f-20" antIcon theme="outline" type="logout"></i>
+          </a>
+        </div>
+      </div>
+      <ul ngbNav #nav="ngbNav" class="nav drp-tabs nav-fill nav-tabs">
+        <li ngbNavItem="1">
+          <a ngbNavLink>
+            <i antIcon theme="outline" type="user" class="me-2"></i>
+            Profile
+          </a>
+          <ng-template ngbNavContent>
+            @for (task of profile; track task) {
+              <div>
+                <a href="javascript:" class="dropdown-item">
+                  <i class="text-muted" antIcon theme="outline" type="{{ task.icon }}"></i>
+                  <span>{{ task.title }}</span>
+                </a>
+              </div>
+            }
+            <div>
+              <a href="javascript:" class="dropdown-item" (click)="logout()">
+                <i class="text-muted" antIcon theme="outline" type="logout"></i>
+                <span>Logout</span>
+              </a>
+            </div>
+          </ng-template>
+        </li>
+        <li ngbNavItem="2">
+          <a ngbNavLink>
+            <i class="me-2" antIcon theme="outline" type="setting"></i>
+            Setting
+          </a>
+          <ng-template ngbNavContent>
+            @for (task of setting; track task) {
+              <div>
+                <a href="javascript:" class="dropdown-item">
+                  <i class="text-muted" antIcon theme="outline" type="{{ task.icon }}"></i>
+                  <span>{{ task.title }}</span>
+                </a>
+              </div>
+            }
+          </ng-template>
+        </li>
+      </ul>
+      <div [ngbNavOutlet]="nav"></div>
+    </div>
+  </li>
+</ul>
+<!-- [Mobile Media Block end] -->

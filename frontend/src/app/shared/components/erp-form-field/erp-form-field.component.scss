@@ -1,0 +1,23 @@
+.erp-form-field {
+  display: grid;
+  gap: var(--erp-form-label-gap, 0.35rem);
+}
+
+.erp-form-field__label {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--erp-spacing-xxs, 0.25rem);
+  font-weight: var(--erp-font-weight-semibold, 600);
+}
+
+.erp-form-field__required {
+  color: var(--erp-color-danger, #dc3545);
+}
+
+.erp-form-field__hint {
+  color: var(--erp-color-text-muted, rgba(33, 37, 41, 0.75));
+}
+
+.erp-form-field__error {
+  color: var(--erp-color-danger, #dc3545);
+}

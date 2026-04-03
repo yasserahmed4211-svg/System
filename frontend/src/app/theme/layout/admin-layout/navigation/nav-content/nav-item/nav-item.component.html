@@ -1,0 +1,91 @@
+@if (!item().hidden) {
+  @if (item().url && !item().external) {
+    @if (themeLayout === 'vertical') {
+      <li
+        [ngClass]="item().classes!"
+        [routerLinkActive]="['active']"
+        ngbTooltip="{{ !isEnabled ? 'You do not have permission to access this page ' : '' }}"
+      >
+        <a
+          class="nav-link"
+          [ngClass]="{ disabled: !isEnabled }"
+          [target]="item().target ? '_blank' : '_self'"
+          [routerLink]="[item().url]"
+          (click)="closeOtherMenu($event)"
+        >
+          @if (!isEnabled) {
+            <span class="coded-micon" [ngClass]="{ disabled: !isEnabled }">
+              <i antIcon type="lock" theme="outline"></i>
+            </span>
+          } @else {
+            <ng-container *ngTemplateOutlet="itemIcon"></ng-container>
+          }
+
+          @if (item().icon) {
+            <span class="coded-mtext">{{ item().title | translate }}</span>
+          } @else {
+            @if (!isEnabled) {
+              <span class="coded-micon" [ngClass]="{ disabled: !isEnabled }">
+                <i antIcon type="lock" theme="outline"></i>
+              </span>
+            }
+            {{ item().title | translate }}
+          }
+        </a>
+      </li>
+    } @else if (themeLayout === 'horizontal') {
+      <li [ngClass]="item().classes!" [routerLinkActive]="['active']">
+        <a
+          class="nav-link"
+          [target]="item().target ? '_blank' : '_self'"
+          [ngClass]="{ disabled: !isEnabled }"
+          [routerLink]="[item().url]"
+          (click)="closeOtherMenu($event)"
+        >
+          <ng-container *ngTemplateOutlet="itemIcon"></ng-container>
+          @if (item().icon) {
+            <span class="coded-mtext">{{ item().title | translate }}</span>
+          } @else {
+            {{ item().title | translate }}
+          }
+        </a>
+      </li>
+    } @else if (themeLayout === 'compact') {
+      <li [ngClass]="item().classes!" [routerLinkActive]="['active']">
+        <a
+          class="nav-link"
+          [target]="item().target ? '_blank' : '_self'"
+          [ngClass]="{ disabled: !isEnabled }"
+          [routerLink]="[item().url]"
+          (click)="closeOtherMenu($event); subMenuCollapse()"
+        >
+          <ng-container *ngTemplateOutlet="itemIcon"></ng-container>
+          @if (item().icon) {
+            <span class="coded-mtext">{{ item().title | translate }}</span>
+          } @else {
+            {{ item().title | translate }}
+          }
+        </a>
+      </li>
+    }
+  }
+  @if (item().url && item().external) {
+    <li [ngClass]="item().classes!">
+      <a [target]="item().target ? '_blank' : '_self'" [href]="item().url">
+        <ng-container *ngTemplateOutlet="itemIcon"></ng-container>
+        @if (item().icon) {
+          <span class="coded-mtext">{{ item().title | translate }}</span>
+        } @else {
+          {{ item().title | translate }}
+        }
+      </a>
+    </li>
+  }
+  <ng-template #itemIcon>
+    @if (item().icon) {
+      <span class="coded-micon">
+        <i antIcon [type]="item().icon | safeAntIcon" theme="outline"></i>
+      </span>
+    }
+  </ng-template>
+}

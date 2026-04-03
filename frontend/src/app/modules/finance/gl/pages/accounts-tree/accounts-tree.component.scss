@@ -1,0 +1,337 @@
+/**
+ * GL Chart of Accounts – Management Console
+ */
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* ── Header Buttons (matching user-management style) ─── */
+
+::ng-deep {
+  .card-header-right {
+    position: absolute;
+    left: 20px;
+    top: 15px;
+    z-index: 1;
+  }
+}
+
+/* ── Filter Panel ───────────────────────────────── */
+
+.filter-panel {
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 0.375rem;
+  padding: 0.75rem;
+  background: var(--bs-light, #f8f9fa);
+  animation: slideDown 0.2s ease-out;
+}
+
+/* ── Sticky Toolbar ─────────────────────────────── */
+
+.tree-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bs-body-bg, #fff);
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.toolbar-separator {
+  display: inline-block;
+  width: 1px;
+  height: 24px;
+  background: var(--bs-border-color, #dee2e6);
+  margin: 0 0.25rem;
+  vertical-align: middle;
+}
+
+/* ── Quick Filter ───────────────────────────────── */
+
+.quick-filter-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-width: 200px;
+}
+
+.quick-filter-icon {
+  position: absolute;
+  left: 8px;
+  color: var(--bs-secondary, #6c757d);
+  font-size: 0.875rem;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.quick-filter-input {
+  padding-left: 30px !important;
+  padding-right: 28px !important;
+  font-size: 0.8125rem;
+}
+
+.quick-filter-clear {
+  position: absolute;
+  right: 4px;
+  color: var(--bs-secondary, #6c757d);
+  font-size: 0.75rem;
+  line-height: 1;
+
+  &:hover {
+    color: var(--bs-danger, #dc3545);
+  }
+}
+
+/* ── Saving Indicator ───────────────────────────── */
+
+.saving-indicator {
+  color: var(--bs-primary, #0d6efd);
+  font-weight: 500;
+  animation: pulse-fade 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-fade {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ── Tree Container ─────────────────────────────── */
+
+.tree-container {
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  max-height: calc(100vh - 320px);
+  min-height: 400px;
+  overflow-y: auto;
+  overflow-x: auto;
+  background: var(--bs-body-bg, #fff);
+}
+
+/* ── Tree Node Row ──────────────────────────────── */
+
+.tree-node-row {
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.5rem;
+  margin: 1px 0;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  min-height: 36px;
+
+  &:hover {
+    background-color: rgba(13, 110, 253, 0.06);
+
+    .tree-action-buttons {
+      opacity: 1;
+    }
+  }
+}
+
+.tree-node-root {
+  border-inline-start: 3px solid var(--bs-primary, #0d6efd);
+  background-color: rgba(13, 110, 253, 0.02);
+}
+
+.tree-node-selected {
+  background-color: rgba(13, 110, 253, 0.12) !important;
+  outline: 2px solid rgba(13, 110, 253, 0.3);
+  outline-offset: -2px;
+}
+
+.tree-node-editing {
+  background-color: rgba(25, 135, 84, 0.08) !important;
+  outline: 2px solid rgba(25, 135, 84, 0.3);
+  outline-offset: -2px;
+}
+
+/* ── Toggle Icon ────────────────────────────────── */
+
+.tree-toggle {
+  color: var(--bs-secondary, #6c757d);
+  min-width: 22px;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    color: var(--bs-primary, #0d6efd);
+  }
+}
+
+.tree-toggle-icon {
+  transition: transform 0.2s ease;
+  font-size: 1rem;
+
+  &.expanded {
+    transform: rotate(0deg);
+  }
+}
+
+/* ── Type Icon ──────────────────────────────────── */
+
+.tree-type-icon {
+  font-size: 1rem;
+  opacity: 0.8;
+  width: 18px;
+  text-align: center;
+}
+
+/* ── Node Label ─────────────────────────────────── */
+
+.tree-node-label {
+  color: var(--bs-body-color, #212529);
+  white-space: nowrap;
+}
+
+.tree-node-code {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.875rem;
+  color: var(--bs-primary, #0d6efd);
+}
+
+.tree-node-separator {
+  color: var(--bs-secondary, #6c757d);
+  margin: 0 0.15rem;
+}
+
+.tree-node-name {
+  font-size: 0.875rem;
+}
+
+/* ── Badges ─────────────────────────────────────── */
+
+.tree-badges {
+  flex-shrink: 0;
+
+  .badge {
+    font-size: 0.68rem;
+    padding: 0.2em 0.45em;
+    font-weight: 500;
+  }
+}
+
+.bg-primary-subtle {
+  background-color: rgba(13, 110, 253, 0.1) !important;
+}
+
+.bg-info-subtle {
+  background-color: rgba(13, 202, 240, 0.1) !important;
+}
+
+/* ── Action Buttons (visible on hover) ──────────── */
+
+.tree-action-buttons {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  margin-inline-start: 0.25rem;
+}
+
+.tree-action-btn {
+  color: var(--bs-secondary, #6c757d);
+  font-size: 0.875rem;
+  padding: 0.125rem 0.35rem !important;
+  line-height: 1;
+  transition: color 0.15s ease, background-color 0.15s ease;
+  border-radius: 0.25rem;
+
+  &:hover {
+    color: var(--bs-primary, #0d6efd);
+    background-color: rgba(13, 110, 253, 0.08);
+  }
+}
+
+.tree-action-add:hover {
+  color: var(--bs-success, #198754) !important;
+  background-color: rgba(25, 135, 84, 0.08) !important;
+}
+
+.tree-action-deactivate:hover {
+  color: var(--bs-warning, #ffc107) !important;
+  background-color: rgba(255, 193, 7, 0.08) !important;
+}
+
+.tree-action-activate:hover {
+  color: var(--bs-success, #198754) !important;
+  background-color: rgba(25, 135, 84, 0.08) !important;
+}
+
+/* ── Inline Form Panels ─────────────────────────── */
+
+.inline-form-panel {
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 0.375rem;
+  margin: 0.25rem 0 0.5rem;
+  overflow: hidden;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    max-height: 200px;
+    transform: translateY(0);
+  }
+}
+
+.inline-form-header {
+  background-color: var(--bs-light, #f8f9fa);
+  border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--bs-body-color, #212529);
+  display: flex;
+  align-items: center;
+}
+
+.inline-form-body {
+  padding: 0.625rem 0.75rem;
+  background-color: var(--bs-body-bg, #fff);
+}
+
+.inline-form-edit {
+  border-color: rgba(13, 110, 253, 0.3);
+  border-inline-start: 3px solid var(--bs-primary, #0d6efd);
+}
+
+.inline-form-add {
+  border-color: rgba(25, 135, 84, 0.3);
+  border-inline-start: 3px solid var(--bs-success, #198754);
+
+  .inline-form-header {
+    background-color: rgba(25, 135, 84, 0.05);
+    color: var(--bs-success, #198754);
+  }
+}
+
+/* ── Inactive Node ──────────────────────────────── */
+
+.tree-node-inactive {
+  opacity: 0.5;
+
+  .tree-node-label {
+    color: var(--bs-secondary, #6c757d);
+    text-decoration: line-through;
+  }
+
+  .tree-node-code {
+    color: var(--bs-secondary, #6c757d);
+  }
+}
+
+/* ── Outline badge ──────────────────────────────── */
+
+.bg-outline-secondary {
+  background-color: transparent;
+  border: 1px solid var(--bs-secondary, #6c757d);
+  color: var(--bs-secondary, #6c757d);
+}

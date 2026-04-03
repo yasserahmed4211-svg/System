@@ -1,0 +1,86 @@
+<!--
+  GL Journal Search / List Page
+-->
+
+<app-card [cardTitle]="'GL.JOURNALS_TITLE' | translate" [padding]="0">
+  <div class="card-header-right">
+    <button class="btn btn-info btn-sm me-2" (click)="toggleAdvancedFilters()">
+      <i class="ti ti-filter"></i> {{ showAdvancedFilters ? ('COMMON.HIDE_FILTERS' | translate) : ('COMMON.ADVANCED_FILTERS' | translate) }}
+    </button>
+    <button
+      class="btn btn-success btn-sm me-2"
+      erpPermission="PERM_GL_JOURNAL_CREATE"
+      (click)="navigateToCreate()"
+    >
+      <i class="ti ti-plus"></i> {{ 'GL.ADD_JOURNAL' | translate }}
+    </button>
+    <button class="btn btn-primary btn-sm" (click)="refreshData()">
+      <i class="ti ti-refresh"></i> {{ 'COMMON.REFRESH' | translate }}
+    </button>
+  </div>
+
+  <!-- Advanced Filters Panel -->
+  @if (showAdvancedFilters) {
+  <div class="card-body border-bottom bg-light">
+    <erp-specification-filter
+      [availableFields]="availableFields"
+      [availableOperators]="availableOperators"
+      (apply)="onSpecFiltersApply($event)"
+      (clear)="onSpecFiltersClear()"
+    />
+
+    @if (currentFilters.length > 0) {
+    <div class="alert alert-info mt-3 mb-0 py-2">
+      <small>
+        <i class="ti ti-info-circle"></i>
+        <strong>{{ 'COMMON.ACTIVE_FILTERS' | translate }}:</strong> {{ currentFilters.length }}
+        @for (filter of currentFilters.slice(0, 3); track $index) {
+          <span class="badge bg-primary ms-1">{{ filter.field }} {{ filter.op }}</span>
+        }
+        @if (currentFilters.length > 3) {
+          <span class="badge bg-secondary ms-1">+{{ currentFilters.length - 3 }}</span>
+        }
+      </small>
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Result Table -->
+  <div class="card-body p-0">
+    @if (showGrid) {
+      @if (!isLoading && hasError) {
+        <div class="p-3">
+          <erp-empty-state
+            icon="ti ti-alert-circle"
+            titleKey="ERRORS.OPERATION_FAILED"
+            messageKey="ERRORS.TRY_AGAIN"
+            actionLabelKey="COMMON.REFRESH"
+            (actionClicked)="refreshData()"
+          />
+        </div>
+      } @else if (!isLoading && rowData.length === 0) {
+        <div class="p-3">
+          <erp-empty-state
+            icon="ti ti-file-text"
+            titleKey="COMMON.NO_DATA"
+            messageKey="TABLE.NO_ROWS"
+          />
+        </div>
+      } @else {
+        <ag-grid-angular
+          class="ag-theme-alpine"
+          [columnDefs]="columnDefs"
+          [defaultColDef]="defaultColDef"
+          [gridOptions]="gridOptions"
+          [theme]="theme"
+          [rowData]="rowData"
+          [localeText]="agLocaleText"
+          (gridReady)="onGridReady($event)"
+          (paginationChanged)="onPaginationChanged()"
+          [style.height.px]="600"
+        />
+      }
+    }
+  </div>
+</app-card>

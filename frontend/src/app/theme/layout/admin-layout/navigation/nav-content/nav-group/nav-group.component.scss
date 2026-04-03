@@ -1,0 +1,45 @@
+.coded-menu-caption {
+  cursor: pointer;
+  user-select: none;
+
+  .group-toggle-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .group-toggle-icon {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid currentColor;
+    transition: transform var(--erp-transition-fast, 200ms ease-in-out);
+    opacity: 0.5;
+    margin-inline-start: var(--erp-spacing-xxs, 4px);
+
+    &.collapsed {
+      transform: rotate(-90deg);
+    }
+  }
+
+  &:hover .group-toggle-icon {
+    opacity: 0.8;
+  }
+}
+
+.group-children {
+  overflow: hidden;
+  max-height: 2000px;
+  opacity: 1;
+  transition: max-height var(--erp-transition-slow, 300ms ease-in-out), opacity var(--erp-transition-fast, 200ms ease-in-out);
+
+  &.group-collapsed {
+    max-height: 0;
+    opacity: 0;
+  }
+}

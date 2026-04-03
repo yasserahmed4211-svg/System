@@ -1,0 +1,165 @@
+/**
+ * ERP Design Tokens
+ * 
+ * Centralized CSS custom properties for the ERP system.
+ * These tokens provide consistent spacing, typography, and visual styling
+ * across all ERP modules.
+ * 
+ * @requirement FE-REQ-SHARED-001
+ * @task TASK-FE-SHARED-001
+ */
+
+:root {
+  // ============================================
+  // SPACING TOKENS
+  // ============================================
+  --erp-spacing-xxs: 0.25rem;   // 4px
+  --erp-spacing-xs: 0.5rem;     // 8px
+  --erp-spacing-sm: 0.75rem;    // 12px
+  --erp-spacing-md: 1rem;       // 16px
+  --erp-spacing-lg: 1.5rem;     // 24px
+  --erp-spacing-xl: 2rem;       // 32px
+  --erp-spacing-xxl: 3rem;      // 48px
+
+  // ============================================
+  // TYPOGRAPHY TOKENS
+  // ============================================
+  --erp-font-size-xs: 0.75rem;    // 12px
+  --erp-font-size-sm: 0.875rem;   // 14px
+  --erp-font-size-md: 1rem;       // 16px
+  --erp-font-size-lg: 1.125rem;   // 18px
+  --erp-font-size-xl: 1.25rem;    // 20px
+  --erp-font-size-xxl: 1.5rem;    // 24px
+  --erp-font-size-heading: 1.75rem; // 28px
+
+  --erp-font-weight-normal: 400;
+  --erp-font-weight-medium: 500;
+  --erp-font-weight-semibold: 600;
+  --erp-font-weight-bold: 700;
+
+  --erp-line-height-tight: 1.25;
+  --erp-line-height-normal: 1.5;
+  --erp-line-height-relaxed: 1.75;
+
+  // ============================================
+  // BORDER RADIUS TOKENS
+  // ============================================
+  --erp-radius-none: 0;
+  --erp-radius-sm: 0.25rem;    // 4px
+  --erp-radius-md: 0.375rem;   // 6px
+  --erp-radius-lg: 0.5rem;     // 8px
+  --erp-radius-xl: 0.75rem;    // 12px
+  --erp-radius-full: 9999px;
+
+  // ============================================
+  // SHADOW TOKENS
+  // ============================================
+  --erp-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --erp-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --erp-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  // ============================================
+  // TRANSITION TOKENS
+  // ============================================
+  --erp-transition-fast: 150ms ease-in-out;
+  --erp-transition-normal: 250ms ease-in-out;
+  --erp-transition-slow: 350ms ease-in-out;
+
+  // ============================================
+  // Z-INDEX TOKENS
+  // ============================================
+  --erp-z-dropdown: 1000;
+  --erp-z-sticky: 1020;
+  --erp-z-fixed: 1030;
+  --erp-z-modal-backdrop: 1040;
+  --erp-z-modal: 1050;
+  --erp-z-popover: 1060;
+  --erp-z-tooltip: 1070;
+  --erp-z-toast: 1080;
+
+  // ============================================
+  // COLOR SEMANTIC TOKENS (referencing theme)
+  // ============================================
+  --erp-color-success: var(--bs-success, #198754);
+  --erp-color-warning: var(--bs-warning, #ffc107);
+  --erp-color-danger: var(--bs-danger, #dc3545);
+  --erp-color-info: var(--bs-info, #0dcaf0);
+  --erp-color-primary: var(--bs-primary, #0d6efd);
+  --erp-color-secondary: var(--bs-secondary, #6c757d);
+
+  --erp-color-text: var(--bs-body-color, #212529);
+  --erp-color-text-muted: var(--bs-secondary-color, #6c757d);
+  --erp-color-text-light: var(--bs-tertiary-color, #adb5bd);
+
+  --erp-color-bg: var(--bs-body-bg, #ffffff);
+  --erp-color-bg-subtle: var(--bs-tertiary-bg, #f8f9fa);
+  --erp-color-bg-muted: var(--bs-secondary-bg, #e9ecef);
+
+  --erp-color-border: var(--bs-border-color, #dee2e6);
+  --erp-color-border-light: var(--bs-border-color-translucent, rgba(0, 0, 0, 0.175));
+
+  // ============================================
+  // COMPONENT-SPECIFIC TOKENS
+  // ============================================
+  
+  // Page Header
+  --erp-page-header-padding-block: var(--erp-spacing-md);
+  --erp-page-header-padding-inline: var(--erp-spacing-lg);
+  --erp-page-header-gap: var(--erp-spacing-md);
+  
+  // Form
+  --erp-form-gap: var(--erp-spacing-md);
+  --erp-form-label-gap: var(--erp-spacing-xs);
+  --erp-form-group-gap: var(--erp-spacing-lg);
+  
+  // Card / Panel
+  --erp-card-padding: var(--erp-spacing-lg);
+  --erp-card-radius: var(--erp-radius-lg);
+  
+  // Table / Grid
+  --erp-table-cell-padding-block: var(--erp-spacing-sm);
+  --erp-table-cell-padding-inline: var(--erp-spacing-md);
+  
+  // Button
+  --erp-btn-padding-block: var(--erp-spacing-xs);
+  --erp-btn-padding-inline: var(--erp-spacing-md);
+  --erp-btn-gap: var(--erp-spacing-xs);
+  
+  // Dialog
+  --erp-dialog-padding: var(--erp-spacing-lg);
+  --erp-dialog-header-gap: var(--erp-spacing-md);
+  --erp-dialog-footer-gap: var(--erp-spacing-sm);
+
+  // Section
+  --erp-section-padding: var(--erp-spacing-md);
+  --erp-section-radius: var(--erp-radius-lg);
+  --erp-section-header-gap: var(--erp-spacing-sm);
+  --erp-section-title-size: var(--erp-font-size-lg);
+
+  // Empty State
+  --erp-empty-state-padding: var(--erp-spacing-lg);
+  --erp-empty-state-radius: var(--erp-radius-xl);
+  --erp-empty-state-gap: var(--erp-spacing-sm);
+  --erp-empty-state-icon-size: var(--erp-font-size-xxl);
+
+  // Notification
+  --erp-notification-offset: var(--erp-spacing-md);
+  --erp-notification-width: min(420px, calc(100vw - 2rem));
+  --erp-notification-z: var(--erp-z-toast);
+  --erp-notification-gap: var(--erp-spacing-sm);
+
+  // Autocomplete Dropdown
+  --erp-autocomplete-z: var(--erp-z-modal);
+  --erp-autocomplete-max-height: 280px;
+  --erp-autocomplete-radius: var(--erp-radius-md);
+  --erp-autocomplete-item-padding-block: var(--erp-spacing-xs);
+  --erp-autocomplete-item-padding-inline: var(--erp-spacing-sm);
+
+  // Lookup Dialog
+  --erp-lookup-max-height: 400px;
+
+  // Readonly Hint
+  --erp-readonly-padding-block: var(--erp-spacing-xs);
+  --erp-readonly-padding-inline: var(--erp-spacing-sm);
+  --erp-readonly-radius: var(--erp-radius-lg);
+}

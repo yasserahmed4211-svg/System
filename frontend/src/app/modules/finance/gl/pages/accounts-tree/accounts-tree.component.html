@@ -1,0 +1,461 @@
+<!--
+  ========================================
+  GL-SCR-001 – Chart of Accounts Management Console
+  ========================================
+  TASK: TASK-FE-GL-001
+  REQ:  FE-REQ-GL-001 §3.5
+  Primary and only screen for Chart of Accounts CRUD.
+  No delete actions – use status toggle (Active/Inactive) instead.
+-->
+
+<app-card [cardTitle]="'GL.CHART_OF_ACCOUNTS' | translate" [padding]="0">
+
+  <!-- ── Header Buttons (same style as user-management) ──── -->
+  <div class="card-header-right">
+    <button class="btn btn-info btn-sm me-2"
+            [class.active]="showAdvancedFilters"
+            (click)="toggleAdvancedFilters()">
+      <i class="ti ti-filter"></i> {{ showAdvancedFilters ? ('GL.HIDE_FILTERS' | translate) : ('GL.ADVANCED_FILTERS' | translate) }}
+      @if (activeSpecFilters.length > 0) {
+        <span class="badge bg-light text-dark ms-1">{{ activeSpecFilters.length }}</span>
+      }
+    </button>
+    <button class="btn btn-success btn-sm me-2"
+            erpPermission="PERM_GL_ACCOUNT_CREATE"
+            [disabled]="isSaving"
+            (click)="startAddRoot()">
+      <i class="ti ti-plus"></i> {{ 'GL.ADD_ROOT_ACCOUNT' | translate }}
+    </button>
+    <button class="btn btn-outline-success btn-sm me-2"
+            erpPermission="PERM_GL_ACCOUNT_CREATE"
+            [disabled]="!selectedNodePk || isSaving"
+            (click)="selectedNodePk ? startAddChild(findNodeByPk(treeData, selectedNodePk)!) : null">
+      <i class="ti ti-subtask"></i> {{ 'GL.ADD_CHILD_ACCOUNT' | translate }}
+    </button>
+    <button class="btn btn-primary btn-sm" (click)="loadTree()">
+      <i class="ti ti-refresh"></i> {{ 'COMMON.REFRESH' | translate }}
+    </button>
+  </div>
+
+  <!-- ── Advanced Specification Filter Panel ──────────────── -->
+  @if (showAdvancedFilters) {
+  <div class="card-body border-bottom bg-light">
+    <erp-specification-filter
+      [availableFields]="availableFields"
+      [availableOperators]="availableOperators"
+      (apply)="onSpecFilterApply($event)"
+      (clear)="onSpecFilterClear()"
+    />
+
+    @if (activeSpecFilters.length > 0) {
+    <div class="alert alert-info mt-3 mb-0 py-2">
+      <small>
+        <i class="ti ti-info-circle"></i>
+        <strong>{{ 'COMMON.ACTIVE' | translate }}:</strong> {{ activeSpecFilters.length }}
+        @for (filter of activeSpecFilters.slice(0, 3); track $index) {
+          <span class="badge bg-primary ms-1">{{ filter.field }} {{ filter.operator }}</span>
+        }
+        @if (activeSpecFilters.length > 3) {
+          <span class="badge bg-secondary ms-1">+{{ activeSpecFilters.length - 3 }}</span>
+        }
+      </small>
+    </div>
+    }
+  </div>
+  }
+
+  <div class="card-body px-3 pt-3">
+
+    <!-- ── Sticky Toolbar (Quick filter + Expand/Collapse) ── -->
+    <div class="tree-toolbar">
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <!-- Quick filter -->
+        <div class="quick-filter-wrapper">
+          <i class="ti ti-filter-search quick-filter-icon"></i>
+          <input
+            type="text"
+            class="form-control form-control-sm quick-filter-input"
+            [(ngModel)]="quickFilterText"
+            [placeholder]="'GL.QUICK_FILTER' | translate"
+          />
+          @if (quickFilterText) {
+          <button class="btn btn-sm btn-link quick-filter-clear p-0" (click)="clearQuickFilter()">
+            <i class="ti ti-x"></i>
+          </button>
+          }
+        </div>
+
+        <span class="toolbar-separator"></span>
+
+        <!-- Expand/Collapse -->
+        <button class="btn btn-sm btn-outline-secondary" (click)="expandAll()" title="{{ 'GL.EXPAND_ALL' | translate }}">
+          <i class="ti ti-arrows-maximize me-1"></i>{{ 'GL.EXPAND_ALL' | translate }}
+        </button>
+        <button class="btn btn-sm btn-outline-secondary" (click)="collapseAll()" title="{{ 'GL.COLLAPSE_ALL' | translate }}">
+          <i class="ti ti-arrows-minimize me-1"></i>{{ 'GL.COLLAPSE_ALL' | translate }}
+        </button>
+
+        <!-- Node count + saving indicator -->
+        <span class="ms-auto text-muted small d-flex align-items-center gap-2">
+          @if (isSaving) {
+          <span class="saving-indicator">
+            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+            {{ 'COMMON.SAVING' | translate }}
+          </span>
+          }
+          <span>
+            <i class="ti ti-binary-tree me-1"></i>{{ treeData.length }} {{ 'GL.ROOT_ACCOUNTS' | translate }}
+          </span>
+        </span>
+      </div>
+    </div>
+
+    <!-- ── Add Root Form (above tree) ───────────────────────── -->
+    @if (isAddingRoot && addState) {
+    <div class="inline-form-panel inline-form-add mb-2">
+      <div class="inline-form-header">
+        <i class="ti ti-plus me-2"></i>{{ 'GL.ADD_ROOT_ACCOUNT' | translate }}
+      </div>
+      <div class="inline-form-body">
+        <div class="row g-2 align-items-end">
+          <div class="col-md-3">
+            <label class="form-label small mb-1">{{ 'GL.ORGANIZATION' | translate }} <span class="text-danger">*</span></label>
+            <input
+              type="number"
+              class="form-control form-control-sm"
+              [(ngModel)]="addState.organizationFk"
+              [placeholder]="'GL.ENTER_ORG_ID' | translate"
+            />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small mb-1">{{ 'GL.ACCOUNT_NAME' | translate }} <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              [(ngModel)]="addState.accountChartName"
+              [placeholder]="'GL.ACCOUNT_NAME' | translate"
+              maxlength="200"
+            />
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small mb-1">{{ 'GL.ACCOUNT_TYPE' | translate }} <span class="text-danger">*</span></label>
+            <select class="form-select form-select-sm" [(ngModel)]="addState.accountType">
+              @for (type of accountTypeOptions; track type.value) {
+              <option [ngValue]="type.value">{{ type.label }}</option>
+              }
+            </select>
+          </div>
+          <div class="col-md-1">
+            <div class="form-check form-switch mt-2">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="addState.isActive" id="addRootActive" />
+              <label class="form-check-label small" for="addRootActive">{{ 'GL.IS_ACTIVE' | translate }}</label>
+            </div>
+          </div>
+          <div class="col-md-3 d-flex gap-2 justify-content-end">
+            <button class="btn btn-sm btn-primary" [disabled]="!addFormValid || isSaving" (click)="saveAdd()">
+              @if (isSaving) {
+                <span class="spinner-border spinner-border-sm me-1"></span>
+              }
+              <i class="ti ti-check me-1"></i>{{ 'COMMON.SAVE' | translate }}
+            </button>
+            <button class="btn btn-sm btn-outline-secondary" [disabled]="isSaving" (click)="cancelAdd()">
+              <i class="ti ti-x me-1"></i>{{ 'COMMON.CANCEL' | translate }}
+            </button>
+          </div>
+        </div>
+        <div class="text-muted small mt-1">
+          <i class="ti ti-info-circle me-1"></i>{{ 'GL.ACCOUNT_CODE_AUTO_HINT' | translate }}
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- ── Tree Content ─────────────────────────────────────── -->
+    @if (isLoading) {
+    <div class="p-4 text-center">
+      <span class="spinner-border text-primary" role="status"></span>
+      <p class="mt-2 text-muted mb-0">{{ 'COMMON.LOADING' | translate }}</p>
+    </div>
+    } @else if (treeData.length === 0) {
+    <div class="p-3">
+      <erp-empty-state
+        icon="ti ti-binary-tree"
+        titleKey="COMMON.NO_DATA"
+        messageKey="GL.TREE_EMPTY_HINT"
+      />
+    </div>
+    } @else if (filteredTreeData.length > 0) {
+    <div class="tree-container">
+      <ng-container *ngTemplateOutlet="treeTemplate; context: { nodes: filteredTreeData, depth: 0 }"></ng-container>
+    </div>
+    } @else if (hasActiveFilters && treeData.length > 0) {
+    <div class="p-3 text-center text-muted">
+      <i class="ti ti-search-off" style="font-size: 2rem;"></i>
+      <p class="mt-2 mb-0">{{ 'COMMON.NO_RESULTS' | translate }}</p>
+      <button class="btn btn-sm btn-link mt-1" (click)="clearAllFilters()">{{ 'COMMON.CLEAR' | translate }}</button>
+    </div>
+    }
+  </div>
+</app-card>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- Recursive tree template                                    -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<ng-template #treeTemplate let-nodes="nodes" let-depth="depth">
+  @for (node of nodes; track node.accountChartPk) {
+  <div class="tree-node" [style.padding-inline-start.px]="depth * 28">
+
+    <!-- ── Node Row ──────────────────────────────────────── -->
+    <div class="tree-node-row d-flex align-items-center"
+         [class.tree-node-inactive]="!node.isActive"
+         [class.tree-node-selected]="isSelected(node.accountChartPk)"
+         [class.tree-node-editing]="isEditing(node.accountChartPk)"
+         [class.tree-node-root]="depth === 0"
+         (click)="selectNode(node.accountChartPk)">
+
+      <!-- Expand/Collapse toggle -->
+      @if (node.children && node.children.length > 0) {
+      <button
+        class="btn btn-sm btn-link tree-toggle p-0 me-2"
+        (click)="toggleNode(node.accountChartPk); $event.stopPropagation()"
+        [attr.aria-expanded]="isExpanded(node.accountChartPk)"
+        [attr.aria-label]="'COMMON.EXPAND' | translate"
+      >
+        <i [class]="isExpanded(node.accountChartPk)
+          ? 'ti ti-chevron-down tree-toggle-icon expanded'
+          : 'ti ti-chevron-right tree-toggle-icon'"></i>
+      </button>
+      } @else {
+      <span class="tree-leaf-spacer me-2" style="width: 22px; display: inline-block;">
+        <i class="ti ti-point text-muted" style="font-size: 10px;"></i>
+      </span>
+      }
+
+      <!-- Account type icon -->
+      <i [class]="getAccountTypeIcon(node.accountType) + ' me-2 tree-type-icon'"
+         [class.text-primary]="node.accountType === 'ASSET'"
+         [class.text-danger]="node.accountType === 'LIABILITY'"
+         [class.text-success]="node.accountType === 'EQUITY'"
+         [class.text-info]="node.accountType === 'REVENUE'"
+         [class.text-warning]="node.accountType === 'EXPENSE'"
+         [class.text-secondary]="node.accountType === 'COGS' || node.accountType === 'OTHER_COST' || node.accountType === 'INTERNAL' || node.accountType === 'STATISTICAL'"
+         [title]="node.accountTypeName"></i>
+
+      <!-- Account number + name -->
+      <span
+        class="tree-node-label"
+        [class.fw-bold]="depth === 0"
+      >
+        <span class="tree-node-code">{{ node.accountChartNo }}</span>
+        <span class="tree-node-separator"> – </span>
+        <span class="tree-node-name">{{ node.accountChartName }}</span>
+      </span>
+
+      <!-- Badges area -->
+      <div class="tree-badges ms-auto d-flex align-items-center gap-1">
+        <!-- Account Type Badge -->
+        @if (node.accountTypeName && depth === 0) {
+        <span class="badge bg-primary-subtle text-primary">{{ node.accountTypeName }}</span>
+        }
+
+        <!-- Level Badge -->
+        <span class="badge bg-light text-dark border" title="{{ 'GL.LEVEL' | translate }}">
+          L{{ node.level }}
+        </span>
+
+        <!-- Child Count -->
+        @if (node.childCount > 0) {
+        <span class="badge bg-info-subtle text-info" title="{{ 'GL.CHILDREN_COUNT' | translate }}">
+          <i class="ti ti-sitemap me-1" style="font-size: 10px;"></i>{{ node.childCount }}
+        </span>
+        }
+
+        <!-- Leaf Badge -->
+        @if (node.isLeaf) {
+        <span class="badge bg-outline-secondary" title="{{ 'GL.LEAF_ACCOUNT' | translate }}">
+          <i class="ti ti-file-text"></i>
+        </span>
+        }
+
+        <!-- Inactive indicator -->
+        @if (!node.isActive) {
+        <span class="badge bg-danger">{{ 'COMMON.INACTIVE' | translate }}</span>
+        }
+
+        <!-- ── Action buttons (visible on hover) ────────── -->
+        <div class="tree-action-buttons d-flex align-items-center gap-0">
+          <!-- Edit -->
+          <button
+            class="btn btn-sm btn-link tree-action-btn p-0"
+            erpPermission="PERM_GL_ACCOUNT_UPDATE"
+            (click)="startEdit(node); $event.stopPropagation()"
+            title="{{ 'COMMON.EDIT' | translate }}"
+          >
+            <i class="ti ti-pencil"></i>
+          </button>
+          <!-- Add Child -->
+          <button
+            class="btn btn-sm btn-link tree-action-btn tree-action-add p-0"
+            erpPermission="PERM_GL_ACCOUNT_CREATE"
+            (click)="startAddChild(node); $event.stopPropagation()"
+            title="{{ 'GL.ADD_CHILD_ACCOUNT' | translate }}"
+          >
+            <i class="ti ti-plus"></i>
+          </button>
+          <!-- Status Toggle (Activate / Deactivate) -->
+          @if (node.isActive) {
+          <button
+            class="btn btn-sm btn-link tree-action-btn tree-action-deactivate p-0"
+            erpPermission="PERM_GL_ACCOUNT_UPDATE"
+            (click)="toggleStatus(node); $event.stopPropagation()"
+            title="{{ 'COMMON.DEACTIVATE' | translate }}"
+          >
+            <i class="ti ti-toggle-right"></i>
+          </button>
+          } @else {
+          <button
+            class="btn btn-sm btn-link tree-action-btn tree-action-activate p-0"
+            erpPermission="PERM_GL_ACCOUNT_UPDATE"
+            (click)="toggleStatus(node); $event.stopPropagation()"
+            title="{{ 'COMMON.ACTIVATE' | translate }}"
+          >
+            <i class="ti ti-toggle-left"></i>
+          </button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Inline Edit Panel ─────────────────────────────── -->
+    @if (isEditing(node.accountChartPk) && editState) {
+    <div class="inline-form-panel inline-form-edit" [style.margin-inline-start.px]="22">
+      <div class="inline-form-body">
+        <div class="row g-2 align-items-end">
+          <div class="col-md-4">
+            <label class="form-label small mb-1">{{ 'GL.ACCOUNT_NAME' | translate }} <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              [(ngModel)]="editState.accountChartName"
+              (ngModelChange)="onEditFieldChange()"
+              maxlength="200"
+            />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small mb-1">{{ 'GL.ACCOUNT_TYPE' | translate }}<span class="text-danger">*</span></label>
+            @if (editTypeLockedByParent) {
+            <!-- Read-only: inherited from parent — no select rendered to avoid blank display -->
+            <div class="form-control form-control-sm bg-light d-flex align-items-center justify-content-between">
+              <span>{{ editAccountTypeLabel }}</span>
+              <span class="badge bg-info-subtle text-info ms-1" style="font-size:0.65rem">
+                <i class="ti ti-lock me-1"></i>{{ 'GL.ACCOUNT_TYPE_INHERITED' | translate }}
+              </span>
+            </div>
+            } @else {
+            <select class="form-select form-select-sm" [(ngModel)]="editState.accountType" (ngModelChange)="onEditFieldChange()" [disabled]="editTypeDisabled">
+              @for (type of accountTypeOptions; track type.value) {
+              <option [ngValue]="type.value">{{ type.label }}</option>
+              }
+            </select>
+            @if (editTypeDisabled) {
+            <div class="text-muted small mt-1">
+              <i class="ti ti-lock me-1"></i>{{ 'GL.TYPE_LOCKED_HAS_CHILDREN' | translate }}
+            </div>
+            }
+            }
+          </div>
+          <div class="col-md-2">
+            <div class="form-check form-switch mt-2">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="editState.isActive" (ngModelChange)="onEditFieldChange()" [id]="'editActive_' + node.accountChartPk" />
+              <label class="form-check-label small" [for]="'editActive_' + node.accountChartPk">{{ 'GL.IS_ACTIVE' | translate }}</label>
+            </div>
+          </div>
+          <div class="col-md-3 d-flex gap-2 justify-content-end">
+            <button class="btn btn-sm btn-primary" [disabled]="!editFormValid || !editState.dirty || isSaving" (click)="saveEdit()">
+              @if (isSaving) {
+                <span class="spinner-border spinner-border-sm me-1"></span>
+              }
+              <i class="ti ti-device-floppy me-1"></i>{{ 'COMMON.SAVE' | translate }}
+            </button>
+            <button class="btn btn-sm btn-outline-secondary" [disabled]="isSaving" (click)="cancelEdit()">
+              <i class="ti ti-x me-1"></i>{{ 'COMMON.CANCEL' | translate }}
+            </button>
+          </div>
+        </div>
+        @if (editState.dirty) {
+        <div class="text-warning small mt-1">
+          <i class="ti ti-alert-triangle me-1"></i>{{ 'GL.UNSAVED_INLINE_CHANGES' | translate }}
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+    <!-- ── Inline Add Child Panel ────────────────────────── -->
+    @if (isAddingChildOf(node.accountChartPk) && addState) {
+    <div class="inline-form-panel inline-form-add" [style.margin-inline-start.px]="22">
+      <div class="inline-form-header">
+        <i class="ti ti-subtask me-2"></i>{{ 'GL.ADD_CHILD_OF' | translate: { parent: node.accountChartNo } }}
+      </div>
+      <div class="inline-form-body">
+        <div class="row g-2 align-items-end">
+          <div class="col-md-4">
+            <label class="form-label small mb-1">{{ 'GL.ACCOUNT_NAME' | translate }} <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              [(ngModel)]="addState.accountChartName"
+              [placeholder]="'GL.ACCOUNT_NAME' | translate"
+              maxlength="200"
+            />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small mb-1">{{ 'GL.ACCOUNT_TYPE' | translate }} <span class="text-danger">*</span></label>
+            @if (addState.parentPk !== null) {
+            <!-- Read-only: inherited from parent -->
+            <div class="form-control form-control-sm bg-light d-flex align-items-center justify-content-between">
+              <span>{{ addAccountTypeLabel }}</span>
+              <span class="badge bg-info-subtle text-info ms-1" style="font-size:0.65rem">
+                <i class="ti ti-lock me-1"></i>{{ 'GL.ACCOUNT_TYPE_INHERITED' | translate }}
+              </span>
+            </div>
+            } @else {
+            <select class="form-select form-select-sm" [(ngModel)]="addState.accountType">
+              @for (type of accountTypeOptions; track type.value) {
+              <option [ngValue]="type.value">{{ type.label }}</option>
+              }
+            </select>
+            }
+          </div>
+          <div class="col-md-2">
+            <div class="form-check form-switch mt-2">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="addState.isActive" id="addChildActive" />
+              <label class="form-check-label small" for="addChildActive">{{ 'GL.IS_ACTIVE' | translate }}</label>
+            </div>
+          </div>
+          <div class="col-md-3 d-flex gap-2">
+            <button class="btn btn-sm btn-primary" [disabled]="!addFormValid || isSaving" (click)="saveAdd()">
+              @if (isSaving) {
+                <span class="spinner-border spinner-border-sm me-1"></span>
+              }
+              <i class="ti ti-check me-1"></i>{{ 'COMMON.SAVE' | translate }}
+            </button>
+            <button class="btn btn-sm btn-outline-secondary" [disabled]="isSaving" (click)="cancelAdd()">
+              <i class="ti ti-x me-1"></i>{{ 'COMMON.CANCEL' | translate }}
+            </button>
+          </div>
+        </div>
+        <div class="text-muted small mt-1">
+          <i class="ti ti-info-circle me-1"></i>{{ 'GL.ACCOUNT_CODE_AUTO_HINT' | translate }}
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- ── Children (recursive) ──────────────────────────── -->
+    @if (isExpanded(node.accountChartPk) && node.children && node.children.length > 0) {
+      <ng-container *ngTemplateOutlet="treeTemplate; context: { nodes: node.children, depth: depth + 1 }"></ng-container>
+    }
+  </div>
+  }
+</ng-template>

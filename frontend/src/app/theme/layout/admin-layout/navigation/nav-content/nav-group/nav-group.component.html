@@ -1,0 +1,17 @@
+@if (!item().hidden) {
+  <li class="nav-item coded-menu-caption" [ngClass]="item().classes" (click)="toggleGroup()">
+    <label class="group-toggle-label">
+      {{ item().title | translate }}
+      <i class="group-toggle-icon" [class.collapsed]="isCollapsed"></i>
+    </label>
+  </li>
+  <div class="group-children" [class.group-collapsed]="isCollapsed">
+    @for (items of item().children; track items) {
+      @if (items.type === 'collapse') {
+        <app-nav-collapse [item]="items" [parentRole]="item().role!" (showCollapseItem)="subMenuCollapse(items)" />
+      } @else if (items.type === 'item') {
+        <app-nav-item [item]="items" [parentRole]="item().role!" />
+      }
+    }
+  </div>
+}

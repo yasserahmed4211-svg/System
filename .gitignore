@@ -1,0 +1,49 @@
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE and editor files
+.idea/
+.vscode/
+**/.idea/
+**/.vscode/
+*.iml
+
+# Node / Angular
+**/node_modules/
+frontend/.angular/
+frontend/dist/
+frontend/coverage/
+frontend/test-results/
+
+# Java / Maven / Spring Boot
+**/target/
+**/out/
+*.class
+*.jar
+*.war
+*.ear
+
+# Logs and runtime output
+*.log
+logs/
+backend/logs/
+backend/startup.log
+backend/test-output.txt
+backend/test-run-output.txt
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+deploy/.env
+**/application-prod.yml
+**/application-prod.yaml
+**/application-prod.properties
+
+# Docker archives and temp artifacts
+*.tar
+
+# Local tool output
+backend/.github/java-upgrade/

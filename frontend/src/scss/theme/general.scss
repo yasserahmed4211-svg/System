@@ -1,0 +1,408 @@
+/**  =====================
+    2. Custom css start
+==========================  **/
+@use 'sass:map';
+
+* {
+  &:focus {
+    outline: none;
+  }
+}
+
+.accordion {
+  --#{$prefix}accordion-color: #{$body-color};
+}
+
+a {
+  color: $black;
+
+  &:hover {
+    outline: none;
+    text-decoration: none;
+  }
+
+  &:not([href]) {
+    color: inherit;
+  }
+}
+
+p {
+  font-size: 14px;
+}
+
+h6,
+.h6,
+h5,
+.h5,
+h4,
+.h4,
+h3,
+.h3,
+h2,
+.h2,
+h1,
+.h1 {
+  color: var(--pc-heading-color);
+}
+
+b,
+strong {
+  font-weight: 600;
+}
+
+.breadcrumb-default-icon {
+  .breadcrumb-item + .breadcrumb-item::before {
+    position: relative;
+    top: 2px;
+  }
+}
+
+.btn-page {
+  .btn {
+    margin-right: 5px;
+    margin-bottom: 5px;
+  }
+
+  .btn-group {
+    .btn {
+      margin-right: 0;
+      margin-bottom: 0;
+
+      &:last-child {
+        border-left: none;
+      }
+    }
+
+    label {
+      &:first-of-type {
+        border-right: none;
+      }
+    }
+  }
+}
+
+.material-icons-two-tone {
+  background-color: $body-color;
+  -webkit-text-fill-color: transparent;
+  vertical-align: text-bottom;
+  -webkit-background-clip: text;
+
+  &.text-white {
+    background-color: $white;
+  }
+}
+
+.img-radius {
+  border-radius: 50%;
+}
+
+.pc-icon {
+  &:not([class*='wid-']) {
+    width: 22px;
+  }
+
+  &:not([class*='hei-']) {
+    height: 22px;
+  }
+}
+
+/* ========================================================
+ ===============     document      ======================
+ ========================================================
+
+ Grid examples
+*/
+
+// modal box select
+.ng-dropdown-panel.ng-select-bottom {
+  z-index: 1099;
+}
+
+.bd-example-row {
+  background: $body-bg;
+  margin-bottom: 15px;
+
+  .row {
+    > [class^='col-'],
+    > .col {
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+      background-color: rgba(86, 61, 124, 0.15);
+      border: 1px solid rgba(86, 61, 124, 0.2);
+    }
+  }
+
+  .row + .row {
+    margin-top: 1rem;
+  }
+
+  .flex-items-bottom,
+  .flex-items-middle,
+  .flex-items-top {
+    min-height: 6rem;
+    background-color: rgba(255, 0, 0, 0.1);
+  }
+}
+
+.bd-example-row-flex-cols .row {
+  min-height: 10rem;
+  background-color: rgba(255, 0, 0, 0.1);
+}
+
+.horizontal-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Docs examples */
+.bd-example {
+  position: relative;
+  padding: 1rem;
+  margin: 1rem;
+  border: solid #ddd;
+  border-width: 0.2rem 0 0;
+
+  @media only screen and (max-height: 575px) {
+    padding: 1.5rem;
+    margin-right: 0;
+    margin-left: 0;
+    border-width: 0.2rem;
+  }
+}
+
+/* Example modals */
+.modal {
+  z-index: 1081;
+
+  .popover,
+  .tooltip {
+    z-index: 1073;
+  }
+}
+
+.modal-backdrop {
+  z-index: 1071;
+}
+
+.bd-example-modal {
+  background-color: var(--bs-body-bg);
+
+  .modal {
+    position: relative;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    z-index: 1;
+    display: block;
+  }
+
+  .modal-dialog {
+    left: auto;
+    margin-right: auto;
+    margin-left: auto;
+    padding: 0 20px;
+  }
+
+  .offcanvas {
+    position: static;
+    display: block;
+    height: 200px;
+    visibility: visible;
+    transform: translate(0);
+  }
+}
+
+.modal {
+  .bd-example-row {
+    padding: 15px 25px;
+  }
+}
+
+/* ================================    Blockquote Start  ===================== */
+
+svg.feather {
+  &:not([class*='wid-']) {
+    width: 20px;
+  }
+
+  &:not([class*='hei-']) {
+    height: 20px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .container {
+    max-width: 1540px;
+  }
+}
+
+.media {
+  display: flex;
+
+  .media-body {
+    flex-grow: 1;
+  }
+}
+
+.blockquote {
+  padding: 0.5rem 1rem;
+}
+
+/* ================================    Blockquote End  ===================== */
+
+.color-card {
+  .card-body {
+    margin: var(--bs-card-spacer-y) var(--bs-card-spacer-x);
+    background: rgba(107, 117, 125, 0.08);
+    border-radius: $border-radius;
+  }
+}
+
+.color-block {
+  border-radius: $border-radius;
+  margin: 4px 0;
+
+  @each $name, $value in $more-colors {
+    $i: 100;
+
+    @while $i<=900 {
+      &.bg-#{$name}-#{$i} {
+        color: color-contrast(map.get($value, $i));
+      }
+
+      &.text-#{$name}-#{$i} {
+        background-color: color-contrast(map.get($value, $i));
+      }
+
+      $i: $i + 100;
+    }
+  }
+}
+
+.row {
+  > div {
+    .color-block {
+      &:first-child {
+        margin-top: 0;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+.blockquote-footer {
+  margin-top: 0;
+}
+
+.carousel-indicators {
+  li {
+    &::marker {
+      font-size: 0;
+    }
+  }
+}
+
+.pagination {
+  .page-item {
+    .page-link {
+      border-radius: 0;
+    }
+
+    &:first-child {
+      .page-link {
+        border-radius: var(--bs-pagination-border-radius) 0 0 var(--bs-pagination-border-radius);
+      }
+    }
+
+    &:last-child {
+      .page-link {
+        border-radius: 0 var(--bs-pagination-border-radius) var(--bs-pagination-border-radius) 0;
+      }
+    }
+  }
+}
+
+.form-search {
+  position: relative;
+
+  i {
+    position: absolute;
+    top: 12px;
+    left: 15px;
+    font-size: 20px;
+  }
+
+  .form-control {
+    padding-left: 50px;
+  }
+
+  &.product-search {
+    i {
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.54);
+      top: 12px;
+    }
+
+    .form-control {
+      padding-left: 35px;
+    }
+  }
+}
+
+// user
+.user-sett-tabs {
+  .list-group-item {
+    &.active:hover,
+    &.active {
+      color: $primary;
+      background-color: rgba($primary, 0.1);
+    }
+
+    &:hover {
+      color: var(--bs-body-color);
+      background: rgba(0, 0, 0, 0.04);
+    }
+  }
+}
+
+// landing page
+.img-comp-container {
+  position: relative;
+
+  .img-comp-slider {
+    position: absolute;
+    z-index: 9;
+    cursor: ew-resize;
+    width: 50px;
+    height: 50px;
+    opacity: 1;
+    top: 50% !important;
+    border-radius: 50%;
+    font-size: 27px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $white;
+    background: $white;
+    border: 2px solid $white;
+    box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.3);
+
+    &.ti-separator-vertical:before {
+      color: #222;
+    }
+  }
+}
+
+// offcanvas page css
+.customer-body {
+  height: calc(100% - 60px);
+}
+
+.offcanvas-top,
+.offcanvas-bottom {
+  min-height: 240px;
+}

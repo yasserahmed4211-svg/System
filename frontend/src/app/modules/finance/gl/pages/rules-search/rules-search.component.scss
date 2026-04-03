@@ -1,0 +1,25 @@
+/**
+ * Blueprint Level 2 – Page A (Search/List)
+ * GL Accounting Rules Search
+ */
+
+:host {
+  display: block;
+}
+
+::ng-deep {
+  .card-header-right {
+    position: absolute;
+    left: 20px;
+    top: 15px;
+    z-index: 1;
+  }
+}
+
+.ag-theme-alpine {
+  width: 100%;
+}
+
+.alert {
+  border-radius: 0.25rem;
+}

@@ -1,0 +1,67 @@
+/**
+ * Blueprint Level 2 – Page A (Search/List)
+ * GL Chart of Accounts Search
+ */
+
+:host {
+  display: block;
+}
+
+::ng-deep {
+  .card-header-right {
+    position: absolute;
+    left: 20px;
+    top: 15px;
+    z-index: 1;
+  }
+
+  /* ── Grid hierarchy visual enhancements ── */
+  .grid-row-root {
+    background-color: rgba(13, 110, 253, 0.04) !important;
+    font-weight: 600;
+  }
+
+  .grid-row-inactive {
+    opacity: 0.55;
+    background-color: rgba(108, 117, 125, 0.06) !important;
+  }
+
+  .grid-row-posting {
+    font-weight: 400;
+  }
+
+  /* Enhanced row hover */
+  .ag-row:hover {
+    background-color: rgba(13, 110, 253, 0.08) !important;
+    transition: background-color 0.15s ease-in-out;
+  }
+
+  /* Badge styling in grid cells */
+  .ag-cell .badge {
+    font-size: 0.7rem;
+    padding: 0.2em 0.55em;
+    vertical-align: middle;
+  }
+
+  /* Level badge colors */
+  .badge.bg-info {
+    background-color: #0dcaf0 !important;
+    color: #000;
+  }
+}
+
+.ag-theme-alpine {
+  width: 100%;
+}
+
+.alert {
+  border-radius: 0.25rem;
+}
+
+/* Header toolbar alignment */
+.card-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}

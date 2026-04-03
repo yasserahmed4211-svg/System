@@ -1,0 +1,17 @@
+
+:host ::ng-deep .modal-header.rtl-header {
+  flex-direction: row-reverse;
+}
+
+:host ::ng-deep .modal-header.rtl-header .modal-title {
+  width: 100%;
+  text-align: right;
+}
+::ng-deep {
+  .card-header-right {
+    position: absolute;
+    left: 20px;
+    top: 15px;
+    z-index: 1;
+  }
+}
