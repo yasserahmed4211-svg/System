@@ -56,9 +56,9 @@ public class SecurityConfig {
                         "/swagger-ui/**",
                         "/swagger-ui.html",
                         "/v3/api-docs/**",
-                        "/api-docs/**"
+                        "/api-docs/**",
+                        "/actuator/health"
                     ).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
                         .anyRequest().authenticated()
                 )
                 // Unified error response format for security exceptions
