@@ -1,0 +1,15 @@
+.git
+.github
+**/node_modules
+**/dist
+**/target
+**/coverage
+**/test-results
+**/.angular
+**/.idea
+**/.vscode
+logs
+backend/logs
+deploy/.env
+*.log
+*.log.*

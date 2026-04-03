@@ -1,40 +1,37 @@
 services:
   # ============================================
-  # Backend — Spring Boot
+  # Backend — Spring Boot (host network)
   # ============================================
   backend:
     build:
       context: ..
       dockerfile: deploy/backend/Dockerfile
     container_name: erp-backend
-
-    # نستخدم host فقط للـ DB (مؤقت)
     network_mode: host
-
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - DB_URL=${DB_URL}
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
-      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
-
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:7272/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
 
   # ============================================
-  # Frontend — Angular + Nginx
+  # Frontend — Angular + Nginx (host network)
   # ============================================
   frontend:
     build:
       context: ..
       dockerfile: deploy/frontend/Dockerfile
     container_name: erp-frontend
-
-    # ❗ frontend لازم NOT host mode
-    ports:
-      - 80:80
-
+    network_mode: host
     depends_on:
-      - backend
-
+      backend:
+        condition: service_healthy
     restart: unless-stopped

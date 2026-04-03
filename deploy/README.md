@@ -1,147 +1,86 @@
-# ERP System — Deployment Guide
+# ERP System Deployment Guide
 
 ## Prerequisites
 
-- **Docker** >= 24.x
-- **Docker Compose** >= 2.x
-- An accessible Oracle database (default port `1892`)
-
----
-
-## Architecture
-
-```
-Browser
-  │
-  ▼
-┌─────────────────────────┐
-│  Frontend (nginx:80)    │
-│  Angular SPA            │
-│  ┌───────────────────┐  │
-│  │  /api/* → proxy   │  │
-│  └────────┬──────────┘  │
-└───────────┼─────────────┘
-            │
-            ▼
-┌─────────────────────────┐
-│  Backend (Spring Boot)  │
-│  Port 7272              │
-│  Profile: prod          │
-└───────────┬─────────────┘
-            │
-            ▼
-     Oracle Database
-     (external / host)
-```
-
----
+- Docker 24+
+- Docker Compose V2
+- Git
+- SSH access to the deployment server
+- Oracle reachable on the host machine at `localhost:1892/orclpdb`
 
 ## Quick Start
 
-### 1. Create environment file
-
 ```bash
-cd deploy/
+cd deploy
 cp .env.example .env
+# edit .env with real values
+docker compose --env-file .env up -d --build
 ```
 
-Edit `.env` with real values:
+## Environment Variables
 
 | Variable | Description |
 |---|---|
-| `DB_URL` | Oracle JDBC URL (e.g., `jdbc:oracle:thin:@//host:1892/orclpdb`) |
-| `DB_USERNAME` | Database username |
-| `DB_PASSWORD` | Database password |
-| `JWT_SECRET` | Random 256-bit secret for JWT signing |
-| `CORS_ALLOWED_ORIGINS` | Comma-separated allowed origins |
-| `BACKEND_PORT` | Host port mapped to backend (default: `7272`) |
-| `FRONTEND_PORT` | Host port mapped to frontend (default: `80`) |
+| `DB_URL` | Oracle JDBC URL used directly from `deploy/.env`. Recommended value: `jdbc:oracle:thin:@//localhost:1892/orclpdb`. |
+| `DB_USERNAME` | Oracle username for the ERP schema. |
+| `DB_PASSWORD` | Oracle password for the ERP schema. |
+| `JWT_SECRET` | Random 256-bit secret used to sign JWTs. |
 
-### 2. Build and start
+## Architecture
 
-```bash
-# From the deploy/ directory
-docker compose up --build -d
+```text
+Browser
+  -> Nginx (:80)
+     -> /api/* -> localhost:7272 (Spring Boot)
+     -> /*     -> Angular static files
+
+Spring Boot (:7272)
+  -> localhost:1892/orclpdb (Oracle on host)
 ```
 
-### 3. Verify
+## Git-Based Deployment
 
 ```bash
-# Check all containers are running
-docker compose ps
-
-# Backend health
-curl http://localhost:7272/actuator/health
-
-# Frontend
-open http://localhost
+git push
+ssh user@server 'bash ~/System/deploy/deploy.sh'
 ```
 
----
+The deploy script pulls the latest code, rebuilds both images, restarts the stack, and checks the backend health endpoint.
+
+Use `--env-file .env` when running compose so `deploy/.env` is the source of truth for variable substitution without injecting unrelated keys into the containers.
 
 ## Individual Container Builds
 
-### Backend only
-
 ```bash
-# From project root
+# project root
 docker build -f deploy/backend/Dockerfile -t erp-backend .
-docker run -p 7272:7272 \
-  -e DB_URL=jdbc:oracle:thin:@//host.docker.internal:1892/orclpdb \
-  -e DB_USERNAME=erp_user \
-  -e DB_PASSWORD=secret \
-  -e JWT_SECRET=your-secret \
-  erp-backend
-```
-
-### Frontend only
-
-```bash
-# From project root
 docker build -f deploy/frontend/Dockerfile -t erp-frontend .
-docker run -p 80:80 erp-frontend
 ```
 
----
-
-## Logs
+## Verification and Logs
 
 ```bash
-# All services
-docker compose logs -f
-
-# Backend only
+cd deploy
+docker compose ps
 docker compose logs -f backend
-
-# Frontend only
 docker compose logs -f frontend
+wget --spider -q http://localhost:7272/actuator/health && echo healthy
 ```
-
----
-
-## Stopping
-
-```bash
-docker compose down
-```
-
----
 
 ## Troubleshooting
 
 | Problem | Cause | Fix |
 |---|---|---|
-| Backend fails to start | DB unreachable | Verify `DB_URL` and that Oracle DB is running |
-| Frontend shows blank page | Wrong nginx config | Check `docker compose logs frontend` |
-| API calls return 502 | Backend not healthy yet | Frontend waits for backend health check; wait and retry |
-| Port already in use | Port conflict | Change `BACKEND_PORT` or `FRONTEND_PORT` in `.env` |
-| CORS errors | Wrong allowed origins | Update `CORS_ALLOWED_ORIGINS` in `.env` |
-| JWT errors | Weak/missing secret | Set a strong 256-bit `JWT_SECRET` |
-
----
+| Compose says an environment variable is not set | `deploy/.env` is missing a required entry | Fill in `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, and `JWT_SECRET` in `deploy/.env`. |
+| Backend container is unhealthy | Oracle is unreachable or credentials are wrong | Check `.env` and confirm Oracle is available on `localhost:1892/orclpdb`. |
+| Frontend returns 502 on `/api` | Backend is not ready yet | Wait for backend health to pass, then retry. |
+| Port 80 is unavailable | Another service is bound to host port 80 | Stop the conflicting service or move the reverse proxy to another host. |
+| `docker compose up` fails during build | Host lacks internet access or package registry access | Verify access to Maven Central and npm registry from the build host. |
+| Authentication cookies do not behave as expected | Production cookie domain is hardcoded for a specific host IP | Update the backend production cookie settings to match the real deployment hostname if needed. |
 
 ## Notes
 
-- The frontend Nginx proxies all `/api/*` requests to the backend container — no hardcoded backend IP needed inside the container network.
-- The backend runs with `--spring.profiles.active=prod`, loading `application-prod.properties`.
-- Secrets are injected at runtime via the `.env` file — never stored in images.
+- External clients should enter through Nginx on port 80 only.
+- The backend runs with the `prod` Spring profile from both Dockerfile and compose for redundancy.
+- `.env` must stay untracked; only `.env.example` belongs in version control.
+- After cloning on a server, make the deploy script executable with `chmod +x deploy/deploy.sh`.

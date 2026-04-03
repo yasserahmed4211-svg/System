@@ -1,6 +1,6 @@
 ---
 name: deploy
-description: "Generates production deployment artifacts: Dockerfiles, docker-compose.yml, nginx configs, environment files, and production configurations. Analyzes multi-module Spring Boot backend and Angular frontend to produce ready-to-deploy containerized setup."
+description: "Generates production deployment artifacts: Dockerfiles, docker-compose.yml, nginx configs, environment files, deploy scripts, and production configurations. Uses network_mode: host for backend, Git-based pull deployment, and enforces production Spring profile. Analyzes multi-module Spring Boot backend and Angular frontend to produce ready-to-deploy containerized setup."
 ---
 
 # Skill: deploy
@@ -9,7 +9,14 @@ description: "Generates production deployment artifacts: Dockerfiles, docker-com
 `deploy`
 
 ## Description
-Generates all deployment artifacts required to containerize and deploy the ERP system. Analyzes the project structure (backend modules, frontend config, existing properties) and produces Dockerfiles, docker-compose.yml, nginx configuration, and production environment files — all placed in the `deploy/` directory.
+Generates all deployment artifacts required to containerize and deploy the ERP system. Analyzes the project structure (backend modules, frontend config, existing properties) and produces Dockerfiles, docker-compose.yml, nginx configuration, deploy scripts, and production environment files — all placed in the `deploy/` directory.
+
+**Architecture:**
+- Backend runs in Docker with `network_mode: host` (shares host network)
+- Database (Oracle) runs on the host machine — accessed via `localhost`
+- Frontend served via Nginx (reverse proxy to `localhost:7272`)
+- All API calls go through Nginx `/api` — no direct backend access
+- Deployment is Git pull-based (push → SSH → pull → rebuild)
 
 ## When to Use
 - When the user says "deploy", "prepare deployment", "containerize", or "create Docker setup"
@@ -38,6 +45,7 @@ Before generating ANY deployment artifact, the skill MUST analyze the current pr
 | Production config file | Search for `application-prod.properties` or `application-prod.yml` in the bootable module's `src/main/resources/` |
 | Database driver | Detect from `pom.xml` dependencies (e.g., `ojdbc11` → Oracle, `postgresql` → PostgreSQL) |
 | Required env vars | Parse production config for `${VAR_NAME:default}` patterns |
+| Spring profile active | Verify `--spring.profiles.active=prod` is set in Dockerfile ENTRYPOINT or docker-compose `SPRING_PROFILES_ACTIVE` |
 
 ### 1.2 Frontend Analysis
 
@@ -46,7 +54,7 @@ Before generating ANY deployment artifact, the skill MUST analyze the current pr
 | Angular project name | Read `frontend/angular.json` → first key under `projects` |
 | Output path | Read `angular.json` → `architect.build.options.outputPath` |
 | Production config | Verify `configurations.production` exists with `fileReplacements` |
-| Environment file | Read `frontend/src/environments/environment.prod.ts` for `apiUrl` |
+| Environment file | Read `frontend/src/environments/environment.prod.ts` — verify `apiUrl: '/api'` (proxy-relative) |
 
 ### 1.3 Existing Deployment State
 
@@ -55,6 +63,16 @@ Before generating ANY deployment artifact, the skill MUST analyze the current pr
 | `deploy/` directory | Check if it exists and what it contains |
 | Existing Dockerfiles | Search `**/Dockerfile*` — update if found, create if not |
 | Existing docker-compose | Search `**/docker-compose*` — update if found, create if not |
+| Git remote | Verify Git remote is configured for pull-based deployment |
+
+### 1.4 Network Architecture Validation
+
+| Check | How |
+|-------|-----|
+| Backend network mode | Verify `network_mode: host` in docker-compose for backend |
+| DB connectivity | Verify DB_URL uses `localhost` (not `host.docker.internal`) |
+| Nginx proxy target | Verify `proxy_pass` uses `http://localhost:7272` (not Docker service name) |
+| Frontend API URL | Verify `environment.prod.ts` uses `/api` (not hardcoded IP:PORT) |
 
 ---
 
@@ -129,6 +147,8 @@ ENTRYPOINT ["java", "-jar", "app.jar", "--spring.profiles.active=prod"]
 | BD.6 | Active profile | Hardcoded properties in Dockerfile | `--spring.profiles.active=prod` in ENTRYPOINT |
 | BD.7 | All modules included | Missing any active module's POM or src | Every uncommented module POM + source copied |
 | BD.8 | No secrets in image | `ENV DB_PASSWORD=xxx` in Dockerfile | Secrets via docker-compose `environment:` or `.env` |
+| BD.9 | Host network mode | `network_mode: bridge` or Docker networks for backend | `network_mode: host` — backend shares host network |
+| BD.10 | DB via localhost | `host.docker.internal` or Docker service name for DB | `localhost` for DB connection (host network = host's localhost) |
 
 ---
 
@@ -207,9 +227,9 @@ server {
         try_files $uri $uri/ /index.html;
     }
 
-    # Proxy API calls to backend
+    # Proxy API calls to backend (host network — backend on localhost)
     location /api/ {
-        proxy_pass http://backend:7272/api/;
+        proxy_pass http://localhost:7272/api/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -242,7 +262,7 @@ server {
 | FD.1 | Multi-stage build | Single-stage with Node in runtime | Separate `build` and `runtime` stages |
 | FD.2 | Nginx for serving | `ng serve` or `http-server` in production | `nginx:1.27-alpine` |
 | FD.3 | SPA fallback | No `try_files` for Angular routes | `try_files $uri $uri/ /index.html` |
-| FD.4 | API reverse proxy | Hardcoded backend URL in frontend | `location /api/` proxying to `backend:7272` |
+| FD.4 | API reverse proxy via localhost | Docker service name (`backend:7272`) or hardcoded IP | `location /api/` proxying to `localhost:7272` (host network) |
 | FD.5 | Layer caching | Copy all source before `npm ci` | Copy `package.json` + `package-lock.json` first |
 | FD.6 | Production build | `ng build` (dev mode) | `ng build --configuration=production` |
 | FD.7 | Security headers | No security headers | X-Frame-Options, X-Content-Type-Options, X-XSS-Protection |
@@ -261,26 +281,23 @@ server {
 **Canonical Pattern:**
 
 ```yaml
-version: "3.8"
-
 services:
   # ============================================
-  # Backend — Spring Boot
+  # Backend — Spring Boot (host network)
   # ============================================
   backend:
     build:
       context: ..
       dockerfile: deploy/backend/Dockerfile
     container_name: erp-backend
-    ports:
-      - "${BACKEND_PORT:-7272}:7272"
+    network_mode: host
+    # No 'ports:' needed — host network binds directly to 7272
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-      - DB_URL=${DB_URL:-jdbc:oracle:thin:@//host.docker.internal:1892/orclpdb}
+      - DB_URL=${DB_URL:-jdbc:oracle:thin:@//localhost:1892/orclpdb}
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
-      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost,http://localhost:80}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:7272/actuator/health"]
@@ -288,29 +305,23 @@ services:
       timeout: 10s
       retries: 5
       start_period: 40s
-    networks:
-      - erp-network
 
   # ============================================
-  # Frontend — Angular + Nginx
+  # Frontend — Angular + Nginx (host network)
   # ============================================
   frontend:
     build:
       context: ..
       dockerfile: deploy/frontend/Dockerfile
     container_name: erp-frontend
-    ports:
-      - "${FRONTEND_PORT:-80}:80"
+    network_mode: host
+    # No 'ports:' needed — host network binds directly to 80
     depends_on:
       backend:
         condition: service_healthy
     restart: unless-stopped
-    networks:
-      - erp-network
 
-networks:
-  erp-network:
-    driver: bridge
+# No 'networks:' block — both services use host network
 ```
 
 ### 4.2 Environment File Template
@@ -328,15 +339,10 @@ networks:
 # ============================================
 
 # Backend
-BACKEND_PORT=7272
-DB_URL=jdbc:oracle:thin:@//host.docker.internal:1892/orclpdb
+DB_URL=jdbc:oracle:thin:@//localhost:1892/orclpdb
 DB_USERNAME=erp_user
 DB_PASSWORD=CHANGE_ME
 JWT_SECRET=CHANGE_ME_TO_A_RANDOM_256_BIT_SECRET
-CORS_ALLOWED_ORIGINS=http://localhost,http://localhost:80
-
-# Frontend
-FRONTEND_PORT=80
 ```
 
 ### 4.3 Docker Compose Enforcement
@@ -347,33 +353,34 @@ FRONTEND_PORT=80
 | DC.2 | No hardcoded secrets | `DB_PASSWORD: mypass` in yml | `DB_PASSWORD=${DB_PASSWORD}` from `.env` |
 | DC.3 | Health check on backend | No health check | `wget` or `curl` to `/actuator/health` |
 | DC.4 | Frontend depends on backend | No dependency or `depends_on: backend` (without condition) | `depends_on: backend: condition: service_healthy` |
-| DC.5 | Named network | Default bridge | Named `erp-network` with bridge driver |
+| DC.5 | Host network mode | `networks:` or `ports:` on backend | `network_mode: host` on both backend and frontend |
 | DC.6 | Restart policy | `restart: always` or none | `restart: unless-stopped` |
-| DC.7 | Port variables | Hardcoded ports | `${BACKEND_PORT:-7272}` and `${FRONTEND_PORT:-80}` |
+| DC.7 | DB URL uses localhost | `host.docker.internal` or Docker service name | `jdbc:oracle:thin:@//localhost:1892/orclpdb` |
 | DC.8 | `.env.example` provided | No env template | `.env.example` with placeholder values |
 | DC.9 | `.env` in `.gitignore` | `.env` committed to repo | `.env` added to `.gitignore` |
+| DC.10 | No CORS env needed | `CORS_ALLOWED_ORIGINS` in env | CORS eliminated — all traffic through nginx `/api` |
+| DC.11 | No `version:` key | `version: "3.8"` (deprecated in Compose V2) | Omit `version:` — use modern Compose V2 format |
+| DC.12 | Oracle service name | Wrong SID or service (`XEPDB1`, `XE`) | `orclpdb` as the Oracle service name |
 
 ---
 
-## 5. Frontend Environment Integration
+## 5. Frontend Environment Integration (MANDATORY)
 
-When the nginx reverse proxy is configured (`location /api/`), the frontend `environment.prod.ts` should use a relative API URL:
+All frontend API calls MUST go through the Nginx reverse proxy (`/api`). Direct backend access via IP:PORT is **forbidden** in production.
 
-### 5.1 environment.prod.ts — Proxy-Aware
+### 5.1 environment.prod.ts — Proxy-Relative (REQUIRED)
 
-**Before (hardcoded):**
+**❌ FORBIDDEN — Hardcoded IP:PORT:**
 ```typescript
-// ❌ Hardcoded server IP
 export const environment = {
   production: true,
-  apiUrl: 'http://89.117.37.75:7272',
-  authApiUrl: 'http://89.117.37.75:7272'
+  apiUrl: 'http://89.117.37.75:7272',     // ❌ Direct backend access
+  authApiUrl: 'http://89.117.37.75:7272'   // ❌ Bypasses nginx
 };
 ```
 
-**After (proxy-relative):**
+**✅ REQUIRED — Proxy-Relative:**
 ```typescript
-// ✅ Uses nginx reverse proxy
 export const environment = {
   production: true,
   apiUrl: '/api',
@@ -381,56 +388,89 @@ export const environment = {
 };
 ```
 
-> **Note:** Only update `environment.prod.ts` if the user explicitly asks to switch to proxy mode. Otherwise, preserve the existing hardcoded URLs and document the proxy option.
+### 5.2 Frontend Environment Enforcement
+
+| ID | Rule | ❌ Forbidden | ✅ Required |
+|----|------|-------------|------------|
+| FE.1 | Proxy-relative API URL | Any absolute URL (`http://...`) in `environment.prod.ts` | `apiUrl: '/api'` |
+| FE.2 | No hardcoded IPs | `89.117.37.75`, `localhost:7272`, or any IP:PORT | Relative path `/api` only |
+| FE.3 | Auth via same proxy | Separate `authApiUrl` with different host | `authApiUrl: '/api'` (same proxy) |
 
 ---
 
-## 6. File Update Rules
+## 6. CORS Elimination
 
-### 6.1 Files the Skill Creates (in `deploy/`)
+### 6.1 Architecture Rule
+
+With Nginx as the single entry point, CORS is **completely eliminated**:
+
+```
+Browser → Nginx (:80) → /api/* → localhost:7272 (backend)
+                       → /*    → static Angular files
+```
+
+Both frontend and API are served from the **same origin** (Nginx on port 80). No cross-origin requests exist.
+
+### 6.2 CORS Enforcement
+
+| ID | Rule | ❌ Forbidden | ✅ Required |
+|----|------|-------------|------------|
+| CR.1 | No CORS env vars | `CORS_ALLOWED_ORIGINS` in docker-compose or `.env` | Remove CORS config entirely |
+| CR.2 | No direct backend calls | Frontend calling `http://IP:7272/api` | Frontend calling `/api` (same-origin via nginx) |
+| CR.3 | Single entry point | Multiple exposed ports (80 + 7272) to clients | Only port 80 (nginx) exposed to external clients |
+
+> **Note:** Backend CORS config in `application-prod.properties` may remain for development flexibility, but in production deployment, Nginx handles all routing — CORS headers are unnecessary.
+
+---
+
+## 7. File Update Rules
+
+### 7.1 Files the Skill Creates (in `deploy/`)
 
 | File | Purpose |
 |------|---------|
 | `deploy/backend/Dockerfile` | Multi-stage backend build |
 | `deploy/frontend/Dockerfile` | Multi-stage frontend build |
-| `deploy/frontend/nginx.conf` | Nginx config with SPA fallback + API proxy |
-| `deploy/docker-compose.yml` | Full-stack orchestration |
+| `deploy/frontend/nginx.conf` | Nginx config with SPA fallback + API proxy to localhost |
+| `deploy/docker-compose.yml` | Full-stack orchestration (host network) |
 | `deploy/.env.example` | Environment variable template |
+| `deploy/deploy.sh` | Git pull + rebuild deploy script |
 | `deploy/README.md` | Deployment instructions |
 
-### 6.2 Files the Skill MAY Update (with user confirmation)
+### 7.2 Files the Skill MUST Update
 
 | File | Update | Condition |
 |------|--------|-----------|
-| `frontend/src/environments/environment.prod.ts` | Switch to proxy-relative URLs | Only if user requests proxy mode |
-| `.gitignore` | Add `deploy/.env` | If not already present |
-| `backend/erp-main/src/main/resources/application-prod.properties` | Externalize remaining hardcoded values | Only if user requests |
+| `frontend/src/environments/environment.prod.ts` | Set `apiUrl: '/api'` and `authApiUrl: '/api'` | ALWAYS — proxy-relative is mandatory |
+| `.gitignore` | Add `deploy/.env`, `docker-compose.override.yml`, `*.log.*` | If not already present |
 
-### 6.3 Files the Skill Must NEVER Modify
+### 7.3 Files the Skill Must NEVER Modify
 
 - `backend/pom.xml` — read-only for analysis
 - `frontend/angular.json` — read-only for analysis
 - `frontend/package.json` — read-only for analysis
 - Any source code files under `backend/*/src/` or `frontend/src/app/`
+- Backend business logic or frontend application logic
 
 ---
 
-## 7. Deploy README
+## 8. Deploy README
 
 **Path:** `deploy/README.md`
 
 **Must Include:**
 
-1. **Prerequisites** — Docker, Docker Compose versions
-2. **Quick Start** — Copy `.env.example` → `.env`, fill values, run `docker-compose up`
+1. **Prerequisites** — Docker, Docker Compose versions, Git, SSH access
+2. **Quick Start** — Copy `.env.example` → `.env`, fill values, run `docker compose up -d --build`
 3. **Environment Variables** — Table of all variables with descriptions
-4. **Architecture Diagram** — ASCII showing frontend → nginx → backend → DB
-5. **Individual Container Builds** — How to build/run backend or frontend alone
-6. **Troubleshooting** — Common issues (port conflicts, DB connection, CORS)
+4. **Architecture Diagram** — ASCII showing: `Browser → Nginx(:80) → /api → localhost:7272(backend) → localhost:1892(Oracle/orclpdb)`
+5. **Git-Based Deployment** — Push from dev → SSH to server → `git pull` → `docker compose up -d --build`
+6. **Individual Container Builds** — How to build/run backend or frontend alone
+7. **Troubleshooting** — Common issues (port conflicts, DB connection, Oracle service name)
 
 ---
 
-## 8. Safety Rules
+## 9. Safety Rules
 
 | ID | Rule |
 |----|------|
@@ -443,10 +483,189 @@ export const environment = {
 | SF.7 | ALWAYS include health checks for backend services |
 | SF.8 | ALWAYS set `restart: unless-stopped` (not `always`) |
 | SF.9 | ALWAYS use `.dockerignore` if applicable to exclude unnecessary files |
+| SF.10 | Database MUST use persistent storage — never run DB without volume or external persistence |
+| SF.11 | Deploy script must assume SSH is pre-configured — NEVER include SSH credentials |
+| SF.12 | ALWAYS verify `spring.profiles.active=prod` before any production deployment |
 
 ---
 
-## 9. Adaptation Rules
+## 10. Git-Based Deployment
+
+### 10.1 Deployment Flow
+
+```
+Developer Machine:                    Production Server:
+┌─────────────────┐                  ┌──────────────────────┐
+│ git add .        │                  │                      │
+│ git commit -m "" │  ──── push ───→ │  (GitHub/GitLab)     │
+│ git push         │                  │                      │
+└─────────────────┘                  └──────────┬───────────┘
+                                                │
+                                     SSH to server
+                                                │
+                                     ┌──────────▼───────────┐
+                                     │ cd ~/System           │
+                                     │ git pull              │
+                                     │ cd deploy             │
+                                     │ docker compose up -d  │
+                                     │   --build             │
+                                     └──────────────────────┘
+```
+
+### 10.2 Deploy Script
+
+**Path:** `deploy/deploy.sh`
+
+**Canonical Pattern:**
+
+```bash
+#!/bin/bash
+# ============================================
+# ERP System — Production Deploy Script
+# ============================================
+# Usage: ssh user@server 'bash ~/System/deploy/deploy.sh'
+# Assumes: Git repo cloned at ~/System
+# ============================================
+
+set -euo pipefail
+
+PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+DEPLOY_DIR="$PROJECT_DIR/deploy"
+
+echo "=========================================="
+echo " ERP System — Deploying..."
+echo "=========================================="
+
+# Step 1: Pull latest code
+echo "[1/3] Pulling latest code..."
+cd "$PROJECT_DIR"
+git pull
+
+# Step 2: Build and restart containers
+echo "[2/3] Building and starting containers..."
+cd "$DEPLOY_DIR"
+docker compose up -d --build
+
+# Step 3: Verify
+echo "[3/3] Verifying deployment..."
+echo "Waiting for backend health check..."
+sleep 10
+if wget --spider -q http://localhost:7272/actuator/health 2>/dev/null; then
+    echo "✅ Backend is healthy"
+else
+    echo "⚠️  Backend health check pending — check logs: docker compose logs backend"
+fi
+
+echo "=========================================="
+echo " Deployment complete!"
+echo "=========================================="
+```
+
+### 10.3 Deploy Script Enforcement
+
+| ID | Rule | ❌ Forbidden | ✅ Required |
+|----|------|-------------|------------|
+| GD.1 | Script uses `set -euo pipefail` | No error handling | `set -euo pipefail` at top |
+| GD.2 | No hardcoded paths | `cd /home/user/project` | Use `$(dirname "$0")/..` for relative resolution |
+| GD.3 | No credentials in script | `git pull https://user:pass@...` | Assumes SSH key auth is pre-configured |
+| GD.4 | Script is executable | Missing execute permission | `chmod +x deploy.sh` documented in README |
+| GD.5 | Post-deploy verification | No health check after deploy | Verify backend `/actuator/health` after restart |
+
+---
+
+## 11. Gitignore Validation
+
+### 11.1 Required Entries
+
+The skill MUST verify these entries exist in the project `.gitignore`:
+
+```gitignore
+# Deploy secrets
+deploy/.env
+
+# Docker overrides
+docker-compose.override.yml
+
+# Log files
+*.log.*
+
+# Build artifacts
+**/target/
+**/dist/
+**/node_modules/
+```
+
+### 11.2 Gitignore Enforcement
+
+| ID | Rule | ❌ Forbidden | ✅ Required |
+|----|------|-------------|------------|
+| GI.1 | `.env` ignored | `deploy/.env` committed to repo | `deploy/.env` in `.gitignore` |
+| GI.2 | Override ignored | `docker-compose.override.yml` committed | `docker-compose.override.yml` in `.gitignore` |
+| GI.3 | Logs ignored | `*.log.*` files committed | `*.log.*` in `.gitignore` |
+
+---
+
+## 12. Production Mode Enforcement (CRITICAL)
+
+The system MUST ensure the backend always runs in **production mode**, never development.
+
+### 12.1 Production Profile Rules
+
+**❌ WRONG PRACTICE:**
+- Running with default profile (dev)
+- Hardcoding dev configurations inside `application.properties`
+- Missing `spring.profiles.active=prod` anywhere in the runtime chain
+
+**✅ REQUIRED — Docker-Controlled (Preferred):**
+
+The production profile MUST be activated via one of these methods (in priority order):
+
+1. **Dockerfile ENTRYPOINT** (highest priority):
+```dockerfile
+ENTRYPOINT ["java", "-jar", "app.jar", "--spring.profiles.active=prod"]
+```
+
+2. **docker-compose environment** (redundant safety):
+```yaml
+environment:
+  - SPRING_PROFILES_ACTIVE=prod
+```
+
+3. **Config file fallback** (last resort — if Docker config is missing):
+```properties
+# application.properties
+spring.profiles.active=prod
+```
+
+### 12.2 Production Profile Enforcement
+
+| ID | Rule | ❌ Forbidden | ✅ Required |
+|----|------|-------------|------------|
+| PM.1 | Profile set in Dockerfile | No `--spring.profiles.active` in ENTRYPOINT | `--spring.profiles.active=prod` in ENTRYPOINT |
+| PM.2 | Profile set in docker-compose | No `SPRING_PROFILES_ACTIVE` in environment | `SPRING_PROFILES_ACTIVE=prod` as redundant safety |
+| PM.3 | `application-prod.*` exists | No production config file | `application-prod.properties` or `application-prod.yml` in bootable module |
+| PM.4 | No dev logging in prod | `logging.level.org.hibernate.SQL=DEBUG` | `logging.level.org.hibernate.SQL=WARN` |
+| PM.5 | No `ddl-auto` in prod | `spring.jpa.hibernate.ddl-auto=update/create` | `spring.jpa.hibernate.ddl-auto=none` |
+| PM.6 | No `show-sql` in prod | `spring.jpa.show-sql=true` | `spring.jpa.show-sql=false` |
+
+### 12.3 Pre-Deploy Profile Validation
+
+Before generating deployment artifacts, verify:
+
+```
+✓ application-prod.properties (or .yml) exists
+✓ ddl-auto = none
+✓ show-sql = false
+✓ Logging levels are WARN or above for frameworks
+✓ Dockerfile ENTRYPOINT includes --spring.profiles.active=prod
+✓ docker-compose includes SPRING_PROFILES_ACTIVE=prod
+```
+
+If ANY check fails → **STOP** → report issues → **DO NOT** generate deployment files.
+
+---
+
+## 13. Adaptation Rules
 
 The canonical patterns above are based on the current project analysis. The skill MUST adapt when:
 
@@ -459,18 +678,20 @@ The canonical patterns above are based on the current project analysis. The skil
 | Backend port changes from 7272 | Update EXPOSE, health check URL, proxy_pass, and env defaults |
 | `application-prod.properties` adds new `${VAR}` | Add new variable to `.env.example` and docker-compose `environment:` |
 | Frontend `environment.prod.ts` adds new fields | Document in deploy README |
+| Oracle service name changes from `orclpdb` | Update all DB_URL defaults across `.env.example` and docker-compose |
 
 ---
 
-## 10. Output Format
+## 14. Output Format
 
 When the skill is invoked, produce output in this order:
 
 ```
-1. [ANALYSIS]    — Print detected project config (versions, modules, paths)
-2. [GENERATE]    — Create all files in deploy/
-3. [VERIFY]      — Run enforcement checks (all BD.*, FD.*, DC.*, SF.* rules)
-4. [SUMMARY]     — List all created/updated files with brief descriptions
+1. [ANALYSIS]    — Print detected project config (versions, modules, paths, network mode)
+2. [VALIDATE]    — Run pre-deploy checks (prod profile, env vars, no dev configs)
+3. [GENERATE]    — Create all files in deploy/
+4. [VERIFY]      — Run enforcement checks (all BD.*, FD.*, DC.*, SF.*, FE.*, CR.*, GD.*, GI.*, PM.* rules)
+5. [SUMMARY]     — List all created/updated files with brief descriptions
 ```
 
 ### Analysis Output Example:
@@ -482,32 +703,75 @@ When the skill is invoked, produce output in this order:
   Boot JAR: erp-main-1.0.0-SNAPSHOT.jar
   Prod Config: application-prod.properties
   DB Driver: Oracle (ojdbc11)
-  Env Vars: DB_URL, DB_USERNAME, DB_PASSWORD, JWT_SECRET, CORS_ALLOWED_ORIGINS
+  DB URL:   jdbc:oracle:thin:@//localhost:1892/orclpdb
+  Env Vars: DB_URL, DB_USERNAME, DB_PASSWORD, JWT_SECRET
+  Network:  host (no Docker bridge)
+  Profile:  prod (Dockerfile + docker-compose)
 
   Frontend: Angular (n-erp-system)
   Output:   dist/n-erp-system/browser
-  Prod API: http://89.117.37.75:7272
+  API URL:  /api (proxy-relative via nginx)
+
+  Deployment: Git pull-based (deploy.sh)
 ```
 
 ---
 
-## 11. Enforcement Summary
+## 15. Enforcement Summary
 
 ### Complete Check Matrix
 
 | Category | IDs | Count |
 |----------|-----|-------|
-| Backend Dockerfile | BD.1 – BD.8 | 8 |
+| Backend Dockerfile | BD.1 – BD.10 | 10 |
 | Frontend Dockerfile | FD.1 – FD.10 | 10 |
-| Docker Compose | DC.1 – DC.9 | 9 |
-| Safety | SF.1 – SF.9 | 9 |
-| **Total** | | **36** |
+| Docker Compose | DC.1 – DC.12 | 12 |
+| Frontend Environment | FE.1 – FE.3 | 3 |
+| CORS Elimination | CR.1 – CR.3 | 3 |
+| Safety | SF.1 – SF.12 | 12 |
+| Git Deployment | GD.1 – GD.5 | 5 |
+| Gitignore | GI.1 – GI.3 | 3 |
+| Production Mode | PM.1 – PM.6 | 6 |
+| **Total** | | **64** |
 
-All 36 checks MUST pass before the skill marks deployment artifacts as ready.
+All 64 checks MUST pass before the skill marks deployment artifacts as ready.
 
 ---
 
-## 12. Meta
+## 16. Pre-Deploy Validation (CRITICAL)
+
+Before generating ANY deployment artifacts, the system MUST validate:
+
+### 16.1 Backend Validation
+
+| Check | ❌ Fail Condition | ✅ Pass Condition |
+|-------|------------------|------------------|
+| Spring profile | No `--spring.profiles.active=prod` in Dockerfile or compose | Profile set in both Dockerfile ENTRYPOINT and compose env |
+| Prod config exists | No `application-prod.properties` or `application-prod.yml` | File exists in bootable module `src/main/resources/` |
+| No dev configs active | `ddl-auto=update`, `show-sql=true`, `DEBUG` logging | `ddl-auto=none`, `show-sql=false`, `WARN` logging |
+| DB service name | `XEPDB1`, `XE`, or wrong Oracle SID | `orclpdb` in DB_URL |
+| DB uses localhost | `host.docker.internal` or any non-localhost | `localhost` in DB_URL |
+
+### 16.2 Frontend Validation
+
+| Check | ❌ Fail Condition | ✅ Pass Condition |
+|-------|------------------|------------------|
+| No hardcoded IPs | `http://89.117.37.75` or any IP in `environment.prod.ts` | `apiUrl: '/api'` only |
+| No localhost URLs | `http://localhost:7272` in `environment.prod.ts` | Relative `/api` path |
+| Production build | No `configurations.production` in `angular.json` | Production config with fileReplacements |
+
+### 16.3 Network Validation
+
+| Check | ❌ Fail Condition | ✅ Pass Condition |
+|-------|------------------|------------------|
+| Nginx proxy target | `proxy_pass http://backend:7272` (Docker service name) | `proxy_pass http://localhost:7272` |
+| Backend reachable via nginx | Direct IP:PORT access from frontend | All API calls through `/api` → nginx → localhost:7272 |
+
+If ANY check fails → **STOP** → report ALL issues → **DO NOT** generate deployment files.
+
+---
+
+## 17. Meta
 
 | Property | Value |
 |----------|-------|
@@ -515,23 +779,9 @@ All 36 checks MUST pass before the skill marks deployment artifacts as ready.
 | Category | `devops` |
 | Phase | Post-development |
 | Depends On | Completed backend + frontend implementation |
-| Inputs | `backend/pom.xml`, `frontend/angular.json`, `application-prod.properties`, `environment.prod.ts` |
-| Outputs | `deploy/` directory with 6 files |
-| Enforcement Checks | 36 |
-
-## 13. PRE-DEPLOY VALIDATION (CRITICAL)
-
-Before generating ANY deployment artifacts, the system MUST validate:
-
-1. No TODO or placeholder values remain
-2. No hardcoded development URLs (localhost) in production configs
-3. All environment variables are externalized
-4. No debug or dev logging enabled
-5. All required backend endpoints are reachable
-6. Frontend build is successful in production mode
-
-If any issue is detected:
-
-→ STOP
-→ report issues
-→ DO NOT generate deployment files
+| Inputs | `backend/pom.xml`, `frontend/angular.json`, `application-prod.properties`, `environment.prod.ts`, `.gitignore` |
+| Outputs | `deploy/` directory with 7 files (Dockerfiles, docker-compose, nginx, .env.example, deploy.sh, README) |
+| Enforcement Checks | 64 |
+| Network Mode | `host` (no Docker bridge networks) |
+| Deployment Model | Git pull-based (`push → SSH → pull → rebuild`) |
+| Database | Oracle on host — `localhost:1892/orclpdb` |

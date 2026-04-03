@@ -30,17 +30,15 @@ RUN mvn clean package -DskipTests -B
 # ============================================
 # Stage 2: Runtime
 # ============================================
-# ============================================
-# Stage 2: Runtime
-# ============================================
 FROM eclipse-temurin:21-jre-alpine AS runtime
 WORKDIR /app
 
 # Security: run as non-root
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-
-# ✅ إنشاء مجلد logs مع صلاحيات
-RUN mkdir -p /app/logs && chown -R appuser:appgroup /app
+RUN apk add --no-cache wget && \
+	addgroup -S appgroup && \
+	adduser -S appuser -G appgroup && \
+	mkdir -p /app/logs && \
+	chown -R appuser:appgroup /app
 
 # Copy JAR from build stage
 COPY --from=build /app/erp-main/target/erp-main-*.jar app.jar

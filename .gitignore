@@ -27,6 +27,7 @@ frontend/test-results/
 
 # Logs and runtime output
 *.log
+*.log.*
 logs/
 backend/logs/
 backend/startup.log
@@ -44,6 +45,10 @@ deploy/.env
 
 # Docker archives and temp artifacts
 *.tar
+docker-compose.override.yml
 
 # Local tool output
 backend/.github/java-upgrade/
+backend/erp-security/cp.txt
+backend/erp-security/temp-log.txt
+ERP-Local.postman_environment.json
