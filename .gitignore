@@ -34,14 +34,6 @@ backend/startup.log
 backend/test-output.txt
 backend/test-run-output.txt
 
-# Environment files and secrets
-.env
-.env.*
-!.env.example
-deploy/.env
-**/application-prod.yml
-**/application-prod.yaml
-**/application-prod.properties
 
 # Docker archives and temp artifacts
 *.tar
