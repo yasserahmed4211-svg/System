@@ -18,6 +18,7 @@ public class CryptoConfig {
 
     @PostConstruct
     public void logEncoder() {
-        log.info("PasswordEncoder in use: {}", passwordEncoder().getClass().getName());
+        // Do NOT call the @Bean method here — it causes a CGLIB self-cycle during init.
+        log.info("PasswordEncoder in use: {}", BCryptPasswordEncoder.class.getName());
     }
 }
