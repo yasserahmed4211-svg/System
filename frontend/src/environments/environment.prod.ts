@@ -4,5 +4,5 @@ export const environment = {
   appVersion: packageInfo.version,
   production: true,
   apiUrl: '/api',
-  authApiUrl: '/api'
+  authApiUrl: ''
 };
