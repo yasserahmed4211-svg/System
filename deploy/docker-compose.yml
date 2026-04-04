@@ -10,7 +10,9 @@ services:
     network_mode: host
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-      - DB_URL=${DB_URL:-jdbc:oracle:thin:@//localhost:1892/orclpdb}
+      # DB_URL MUST be set in deploy/.env — no fallback to prevent silent misconfiguration.
+      # Example: DB_URL=jdbc:oracle:thin:@//localhost:1892/orclpdb
+      - DB_URL=${DB_URL}
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
