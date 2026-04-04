@@ -18,11 +18,13 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +40,7 @@ import java.util.UUID;
  * 
  * @author ERP Team
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -47,7 +50,8 @@ public class AuthService {
     private final JwtService jwt;
     private final RefreshTokenRepository refreshTokenRepo;
     private final UserAccountRepository userAccountRepo;
-    
+    private final PasswordEncoder passwordEncoder;
+
     // Configuration Properties (injected via constructor)
     private final JwtProperties jwtProperties;
     private final CookieProperties cookieProperties;
@@ -61,6 +65,15 @@ public class AuthService {
         String tenant = resolveTenant(request);
         TenantContext.setTenantId(tenant);
         try {
+            // Diagnostic: verify stored hash format and encoder compatibility before delegating to Spring.
+            // Raw password is intentionally NOT logged (OWASP A09 – sensitive data in logs).
+            userAccountRepo.findByUsernameIgnoreCaseAndTenantId(username, tenant).ifPresent(u -> {
+                String hash = u.getPassword();
+                String prefix = (hash != null && hash.length() >= 4) ? hash.substring(0, 4) : "null";
+                boolean matches = passwordEncoder.matches(password, hash);
+                log.info("[AUTH-DIAG] user={} tenant={} hashPrefix={} bcryptMatch={}",
+                        username, tenant, prefix, matches);
+            });
             Authentication auth = authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password));
             UserDetails principal = (UserDetails) auth.getPrincipal();
