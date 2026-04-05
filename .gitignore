@@ -44,3 +44,11 @@ backend/.github/java-upgrade/
 backend/erp-security/cp.txt
 backend/erp-security/temp-log.txt
 ERP-Local.postman_environment.json
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/

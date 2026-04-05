@@ -14,7 +14,6 @@ import { NavGroupComponent } from './nav-group/nav-group.component';
 import { NavItemComponent } from './nav-item/nav-item.component';
 import { AuthenticationService } from 'src/app/core/services/authentication.service';
 import { MenuService } from 'src/app/theme/shared/service/menu.service';
-import { ThemeService } from 'src/app/theme/shared/service/customs-theme.service';
 import { LanguageService } from 'src/app/core/services/language.service';
 import { Role } from 'src/app/theme/shared/components/_helpers/role';
 import { ScrollbarComponent } from 'src/app/theme/shared/components/scrollbar/scrollbar.component';
@@ -119,8 +118,6 @@ import {
   LayoutOutline
 } from '@ant-design/icons-angular/icons';
 
-type Direction = 'ltr' | 'rtl' | 'auto';
-
 @Component({
   selector: 'app-nav-content',
   imports: [SharedModule, CommonModule, RouterModule, NavCollapseComponent, NavGroupComponent, NavItemComponent, ScrollbarComponent],
@@ -130,8 +127,7 @@ type Direction = 'ltr' | 'rtl' | 'auto';
 export class NavContentComponent implements AfterViewInit, OnInit {
   authenticationService = inject(AuthenticationService);
   private menuService = inject(MenuService);
-  private themeService = inject(ThemeService);
-  private languageService = inject(LanguageService);
+  languageService = inject(LanguageService);
   private location = inject(Location);
   private locationStrategy = inject(LocationStrategy);
   private iconService = inject(IconService);
@@ -149,7 +145,6 @@ export class NavContentComponent implements AfterViewInit, OnInit {
   currentApplicationVersion = environment.appVersion;
 
   mantisConfig = MantisConfig;
-  direction: Direction = 'ltr';
   layout!: string;
   navigation!: NavigationItem[];
   prevDisabled: string;
@@ -269,11 +264,6 @@ export class NavContentComponent implements AfterViewInit, OnInit {
     this.scrollWidth = 0;
     this.contentWidth = 0;
     
-    effect(() => {
-      const isRtl = this.themeService.isRTLMode();
-      untracked(() => this.isRtlTheme(isRtl));
-    });
-    
     // Reload menu when language changes
     effect(() => {
       const currentLang = this.languageService.currentLanguage();
@@ -335,11 +325,6 @@ export class NavContentComponent implements AfterViewInit, OnInit {
     });
   }
 
-  // private method
-  private isRtlTheme(isRtl: boolean) {
-    this.direction = isRtl === true ? 'rtl' : 'ltr';
-  }
-
   // public method
   ngAfterViewInit() {
     if (MantisConfig.layout === 'horizontal') {
@@ -356,7 +341,14 @@ export class NavContentComponent implements AfterViewInit, OnInit {
       this.nextDisabled = 'disabled';
     }
     this.prevDisabled = '';
-    (document.querySelector('#side-nav-horizontal') as HTMLElement).style.marginLeft = '-' + this.scrollWidth + 'px';
+    const el = document.querySelector('#side-nav-horizontal') as HTMLElement;
+    if (this.languageService.isRTL()) {
+      el.style.marginRight = '-' + this.scrollWidth + 'px';
+      el.style.marginLeft = '';
+    } else {
+      el.style.marginLeft = '-' + this.scrollWidth + 'px';
+      el.style.marginRight = '';
+    }
   }
 
   scrollMinus() {
@@ -366,7 +358,14 @@ export class NavContentComponent implements AfterViewInit, OnInit {
       this.prevDisabled = 'disabled';
     }
     this.nextDisabled = '';
-    (document.querySelector('#side-nav-horizontal') as HTMLElement).style.marginLeft = '-' + this.scrollWidth + 'px';
+    const el = document.querySelector('#side-nav-horizontal') as HTMLElement;
+    if (this.languageService.isRTL()) {
+      el.style.marginRight = '-' + this.scrollWidth + 'px';
+      el.style.marginLeft = '';
+    } else {
+      el.style.marginLeft = '-' + this.scrollWidth + 'px';
+      el.style.marginRight = '';
+    }
   }
 
   fireLeave() {

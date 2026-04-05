@@ -6,9 +6,9 @@
     'theme-compact': this.mantisConfig['layout'] === 'compact',
     'mob-open': navCollapsedMob
   }"
-  (NavCollapse)="this.navCollapsed = !this.navCollapsed"
+  (NavCollapse)="layout.toggleSidebar()"
 />
-<app-nav-bar (NavCollapsedMob)="navMobClick()" (NavCollapse)="this.navCollapsed = !this.navCollapsed" />
+<app-nav-bar (NavCollapsedMob)="navMobClick()" (NavCollapse)="layout.toggleSidebar()" />
 <div class="pc-container">
   <div class="coded-wrapper">
     <div class="coded-content">
@@ -22,8 +22,10 @@
       </div>
     </div>
   </div>
-  <div class="pc-menu-overlay" (click)="closeMenu()" (keydown)="handleKeyDown($event)" tabindex="0"></div>
 </div>
+@if (navCollapsedMob) {
+  <div class="pc-menu-overlay" (click)="closeMenu()" (keydown)="handleKeyDown($event)" tabindex="0"></div>
+}
 <footer class="pc-footer">
   <div class="footer-wrapper container-fluid">
     <div class="row">

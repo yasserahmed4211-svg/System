@@ -1,8 +1,9 @@
 // Angular import
-import { Component, input, output, inject } from '@angular/core';
+import { Component, output, inject } from '@angular/core';
 
 // project import
 import { SharedModule } from 'src/app/theme/shared/shared.module';
+import { LayoutStateService } from 'src/app/theme/shared/service/layout-state.service';
 
 // icons
 import { IconService } from '@ant-design/icons-angular';
@@ -16,14 +17,19 @@ import { MenuUnfoldOutline, MenuFoldOutline, SearchOutline } from '@ant-design/i
 })
 export class NavLeftComponent {
   private iconService = inject(IconService);
+  readonly layout = inject(LayoutStateService);
 
   // public props
-  readonly navCollapsed = input.required<boolean>();
   readonly NavCollapse = output();
   readonly NavCollapsedMob = output();
+
   // Constructor
   constructor() {
     this.iconService.addIcon(...[MenuUnfoldOutline, MenuFoldOutline, SearchOutline]);
+  }
+
+  get navCollapsed(): boolean {
+    return this.layout.sidebarCollapsed();
   }
 
   // public method

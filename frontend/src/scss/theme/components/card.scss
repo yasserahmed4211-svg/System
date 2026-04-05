@@ -10,6 +10,8 @@
       color: $headings-color;
       font-size: 0.875rem;
       font-weight: 600;
+      flex: 1;
+      min-width: 0;
 
       + p,
       + small {
@@ -20,6 +22,21 @@
         }
       }
     }
+  }
+
+  // Action buttons row inside card body (used by search/list pages)
+  .card-header-right {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid $border-color;
+    background: transparent;
+
+    // Reset any absolute positioning from component overrides
+    position: static !important;
+    inset: unset !important;
   }
 
   .card-footer {

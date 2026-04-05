@@ -1,5 +1,5 @@
 // Angular import
-import { Component, inject, effect } from '@angular/core';
+import { Component, inject, effect, HostListener, OnDestroy } from '@angular/core';
 import { CommonModule, Location, LocationStrategy } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
@@ -11,6 +11,7 @@ import { NavBarComponent } from './nav-bar/nav-bar.component';
 import { NavigationComponent } from './navigation/navigation.component';
 import { BreadcrumbComponent } from '../../shared/components/breadcrumb/breadcrumb.component';
 import { LanguageService } from 'src/app/core/services/language.service';
+import { LayoutStateService } from '../../shared/service/layout-state.service';
 
 @Component({
   selector: 'app-admin',
@@ -23,17 +24,24 @@ import { LanguageService } from 'src/app/core/services/language.service';
     '[class.ltr]': '!languageService.isRTL()'
   }
 })
-export class AdminLayout {
+export class AdminLayout implements OnDestroy {
   private location = inject(Location);
   private locationStrategy = inject(LocationStrategy);
   languageService = inject(LanguageService);
+  readonly layout = inject(LayoutStateService);
 
   // public props
   mantisConfig;
-  navCollapsed: boolean;
-  navCollapsedMob: boolean;
-  windowWidth: number;
   styleSelectorToggle!: boolean;
+
+  // Convenience getters that keep the template bindings working
+  get navCollapsed(): boolean {
+    return this.layout.sidebarCollapsed();
+  }
+
+  get navCollapsedMob(): boolean {
+    return this.layout.mobileSidebarOpen();
+  }
 
   // Constructor
   constructor() {
@@ -49,24 +57,29 @@ export class AdminLayout {
       this.mantisConfig.isCollapseMenu = true;
     }
 
-    this.windowWidth = window.innerWidth;
-    this.navCollapsed = this.windowWidth >= 1025 ? MantisConfig.isCollapseMenu : false;
-    this.navCollapsedMob = false;
+    // Sync body scroll-lock class with mobile sidebar state
+    effect(() => {
+      const isOpen = this.layout.mobileSidebarOpen();
+      if (isOpen) {
+        document.body.classList.add('sidebar-mobile-open');
+      } else {
+        document.body.classList.remove('sidebar-mobile-open');
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    document.body.classList.remove('sidebar-mobile-open');
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event): void {
+    this.layout.updateWidth((event.target as Window).innerWidth);
   }
 
   // public method
   navMobClick() {
-    if (this.navCollapsedMob && !document.querySelector('app-navigation.pc-sidebar')?.classList.contains('mob-open')) {
-      this.navCollapsedMob = !this.navCollapsedMob;
-      setTimeout(() => {
-        this.navCollapsedMob = !this.navCollapsedMob;
-      }, 100);
-    } else {
-      this.navCollapsedMob = !this.navCollapsedMob;
-    }
-    if (document.querySelector('app-navigation.pc-sidebar')?.classList.contains('navbar-collapsed')) {
-      document.querySelector('app-navigation.pc-sidebar')?.classList.remove('navbar-collapsed');
-    }
+    this.layout.toggleMobileSidebar();
   }
 
   handleKeyDown(event: KeyboardEvent): void {
@@ -76,8 +89,6 @@ export class AdminLayout {
   }
 
   closeMenu() {
-    if (document.querySelector('app-navigation.pc-sidebar')?.classList.contains('mob-open')) {
-      document.querySelector('app-navigation.pc-sidebar')?.classList.remove('mob-open');
-    }
+    this.layout.closeMobileSidebar();
   }
 }

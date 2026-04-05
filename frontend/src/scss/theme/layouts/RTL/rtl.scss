@@ -1,5 +1,3 @@
-$menu-styler: 280px;
-
 body.mantis-rtl {
   direction: rtl;
   text-align: right;
@@ -363,7 +361,7 @@ body.mantis-rtl {
         margin-right: $sidebar-collapsed-width;
       }
       ~ app-nav-bar .pc-header {
-        right: 60px;
+        right: $sidebar-collapsed-width;
         left: 0;
       }
       &.navbar-collapsed {
@@ -416,7 +414,7 @@ body.mantis-rtl {
 
   // main content
   .pc-container {
-    margin-right: 260px;
+    margin-right: $sidebar-width;
     margin-left: 0px;
     @media (max-width: 1024px) {
       margin-right: 0px !important;
@@ -426,7 +424,7 @@ body.mantis-rtl {
   // footer
   .pc-footer {
     margin-left: 0px;
-    margin-right: 260px;
+    margin-right: $sidebar-width;
 
     @media (max-width: 1024px) {
       margin-right: 0px;
@@ -441,7 +439,7 @@ body.mantis-rtl {
   // header
   .pc-header {
     left: 0;
-    right: 260px;
+    right: $sidebar-width;
 
     .header-search {
       .icon-search {

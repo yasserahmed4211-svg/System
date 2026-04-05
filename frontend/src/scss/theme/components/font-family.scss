@@ -2,6 +2,8 @@
 @import url(https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap);
 @import url(https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap);
 @import url(https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap);
+@import url(https://fonts.googleapis.com/earlyaccess/droidarabicnaskh.css);
+@import url(https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap);
 
 body.public-sans {
   font-family: 'Public Sans', sans-serif;
@@ -14,4 +16,11 @@ body.Inter {
 }
 body.Poppins {
   font-family: 'Poppins', sans-serif;
+}
+
+/* Arabic Language — Droid Arabic Naskh font */
+[lang="ar"],
+body.mantis-rtl,
+[dir="rtl"] {
+  font-family: 'Droid Arabic Naskh', 'Noto Naskh Arabic', sans-serif;
 }

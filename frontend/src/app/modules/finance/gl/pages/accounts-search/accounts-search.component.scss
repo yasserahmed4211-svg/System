@@ -8,13 +8,6 @@
 }
 
 ::ng-deep {
-  .card-header-right {
-    position: absolute;
-    left: 20px;
-    top: 15px;
-    z-index: 1;
-  }
-
   /* ── Grid hierarchy visual enhancements ── */
   .grid-row-root {
     background-color: rgba(13, 110, 253, 0.04) !important;

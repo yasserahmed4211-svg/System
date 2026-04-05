@@ -1,11 +1,10 @@
 // angular import
-import { Component, Input, OnInit, effect, output, inject, untracked } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, Input, OnInit, output, inject } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 
 // project import
 import { AuthenticationService } from 'src/app/core/services/authentication.service';
 import { SharedModule } from 'src/app/theme/shared/shared.module';
-import { ThemeService } from 'src/app/theme/shared/service/customs-theme.service';
 import { ScrollbarComponent } from 'src/app/theme/shared/components/scrollbar/scrollbar.component';
 import { LanguageService, SupportedLanguage } from 'src/app/core/services/language.service';
 
@@ -50,14 +49,13 @@ export class NavRightComponent implements OnInit {
   authenticationService = inject(AuthenticationService);
   languageService = inject(LanguageService);
   private iconService = inject(IconService);
-  private themeService = inject(ThemeService);
+  private router = inject(Router);
 
   // public props
   @Input() styleSelectorToggle!: boolean;
   readonly Customize = output();
   windowWidth: number;
   screenFull: boolean = true;
-  direction: string = 'ltr';
 
   // constructor
   constructor() {
@@ -90,20 +88,11 @@ export class NavRightComponent implements OnInit {
         ArrowRightOutline
       ]
     );
-    effect(() => {
-      const isRtl = this.themeService.isRTLMode();
-      untracked(() => this.isRtlTheme(isRtl));
-    });
   }
 
   // life cycle
   ngOnInit() {
     // Language is initialized by LanguageService from localStorage
-  }
-
-  // private method
-  private isRtlTheme(isRtl: boolean) {
-    this.direction = isRtl === true ? 'rtl' : 'ltr';
   }
 
   // public method

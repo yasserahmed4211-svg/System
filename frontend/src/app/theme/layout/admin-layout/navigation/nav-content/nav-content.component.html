@@ -19,11 +19,11 @@
             <div class="d-flex flex-column align-items-center">
               <img src="assets/images/user/avatar-group.png" alt="user" class="img-fluid" />
               <div class="m-t-20 text-center">
-                <h5 class="mb-0">Help ?</h5>
-                <span class="text-muted">Get to resolve query</span>
+                <h5 class="mb-0">{{ 'NAVIGATION.HELP' | translate }}</h5>
+                <span class="text-muted">{{ 'NAVIGATION.SUPPORT' | translate }}</span>
               </div>
               <div class="m-t-20 text-center">
-                <button class="btn btn-primary">Support</button>
+                <button class="btn btn-primary">{{ 'NAVIGATION.SUPPORT' | translate }}</button>
               </div>
             </div>
           </div>
@@ -41,14 +41,14 @@
         </div>
         <div class="flex-grow-1">
           <span>{{ this.authenticationService.currentUserName }}</span>
-          <p class="mb-0 text-muted">UI/UX Designer</p>
+          <p class="mb-0 text-muted">{{ authenticationService.currentUserValue?.roles?.[0] || '' }}</p>
         </div>
         <div class="avatar avatar-xs btn-link-secondary" ngbDropdown>
           <i antIcon theme="outline" type="right" ngbDropdownToggle></i>
           <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-            <button ngbDropdownItem (click)="logout()">Logout</button>
-            <button ngbDropdownItem [routerLink]="['/user/user-profile']">Profile</button>
-            <button ngbDropdownItem [routerLink]="['/user/account-profile']">My Account</button>
+            <button ngbDropdownItem (click)="logout()">{{ 'NAVIGATION.LOGOUT' | translate }}</button>
+            <button ngbDropdownItem [routerLink]="['/user/user-profile']">{{ 'NAVIGATION.PROFILE' | translate }}</button>
+            <button ngbDropdownItem [routerLink]="['/user/account-profile']">{{ 'NAVIGATION.MY_ACCOUNT' | translate }}</button>
           </div>
         </div>
       </div>
@@ -83,7 +83,7 @@
 <!-- Compact Layout -->
 <div class="navbar-content">
   @if (layout === 'compact') {
-    <app-scrollbar [customStyle]="{ height: 'calc(100vh - 80px)' }" id="nav-ps-mantis" visibility="hover" [dir]="direction">
+    <app-scrollbar [customStyle]="{ height: 'calc(100vh - 80px)' }" id="nav-ps-mantis" visibility="hover" [dir]="languageService.direction()">
       <ul class="nav coded-inner-navbar" (click)="fireOutClick()" (mouseleave)="navMob()">
         @for (item of navigation; track item) {
           @if (item.type === 'group') {
@@ -114,7 +114,7 @@
         </div>
       </div>
       <div class="collapse-item">
-        <app-scrollbar [customStyle]="{ height: 'calc(100vh - 70px)' }" visibility="hover" [dir]="direction">
+        <app-scrollbar [customStyle]="{ height: 'calc(100vh - 70px)' }" visibility="hover" [dir]="languageService.direction()">
           @for (item of collapseItem.children; track item) {
             @if (item.type === 'item') {
               <!-- <app-nav-item [item]="item" [parentRole]="item.role && item.role.length > 0 ? item.role : null"></app-nav-item> -->

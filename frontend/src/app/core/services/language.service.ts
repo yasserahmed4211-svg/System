@@ -18,6 +18,9 @@ export class LanguageService {
   // Signals for reactive state
   private currentLanguageSignal = signal<SupportedLanguage>(DEFAULT_LANGUAGE);
   
+  /** Incremented on every language change — components can watch this to re-fetch data */
+  readonly languageVersion = signal(0);
+
   // Computed signals
   readonly currentLanguage = this.currentLanguageSignal.asReadonly();
   readonly isRTL = computed(() => this.currentLanguageSignal() === 'ar');
@@ -66,6 +69,7 @@ export class LanguageService {
     this.currentLanguageSignal.set(lang);
     this.translate.use(lang);
     this.persistLanguage(lang);
+    this.languageVersion.update(v => v + 1);
   }
 
   /**

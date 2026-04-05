@@ -1,11 +1,11 @@
 // angular import
-import { Component, HostListener, output } from '@angular/core';
+import { Component, HostListener, output, inject } from '@angular/core';
 
 // project import
-import { MantisConfig } from 'src/app/app-config';
 import { SharedModule } from 'src/app/theme/shared/shared.module';
 import { NavLeftComponent } from './nav-left/nav-left.component';
 import { NavRightComponent } from './nav-right/nav-right.component';
+import { LayoutStateService } from 'src/app/theme/shared/service/layout-state.service';
 
 @Component({
   selector: 'app-nav-bar',
@@ -14,25 +14,19 @@ import { NavRightComponent } from './nav-right/nav-right.component';
   styleUrls: ['./nav-bar.component.scss']
 })
 export class NavBarComponent {
+  private readonly layout = inject(LayoutStateService);
+
   // public props
   readonly NavCollapse = output();
   readonly NavCollapsedMob = output<void>();
 
-  navCollapsed;
-  windowWidth: number;
-  navCollapsedMob;
-
-  // Constructor
-  constructor() {
-    this.windowWidth = window.innerWidth;
-    this.navCollapsed = this.windowWidth >= 1025 ? MantisConfig.isCollapseMenu : false;
-    this.navCollapsedMob = false;
+  get navCollapsed(): boolean {
+    return this.layout.sidebarCollapsed();
   }
 
   // public method
   navCollapse() {
-    if (this.windowWidth >= 1025) {
-      this.navCollapsed = !this.navCollapsed;
+    if (!this.layout.isMobile()) {
       this.NavCollapse.emit();
     }
   }
@@ -40,12 +34,11 @@ export class NavBarComponent {
   @HostListener('window:resize', ['$event'])
   // eslint-disable-next-line
   onResize(event: any): void {
-    this.windowWidth = event.target.innerWidth;
-    this.navCollapseMob();
+    this.layout.updateWidth(event.target.innerWidth);
   }
 
   navCollapseMob(): void {
-    if (this.windowWidth < 1025) {
+    if (this.layout.isMobile()) {
       this.NavCollapsedMob.emit();
     }
   }
