@@ -12,6 +12,7 @@ COPY backend/erp-common-utils/pom.xml ./erp-common-utils/pom.xml
 COPY backend/erp-security/pom.xml ./erp-security/pom.xml
 COPY backend/erp-finance-gl/pom.xml ./erp-finance-gl/pom.xml
 COPY backend/erp-masterdata/pom.xml ./erp-masterdata/pom.xml
+COPY backend/erp-org/pom.xml ./erp-org/pom.xml
 COPY backend/erp-main/pom.xml ./erp-main/pom.xml
 
 # Download dependencies (cached layer)
@@ -22,6 +23,7 @@ COPY backend/erp-common-utils/src ./erp-common-utils/src
 COPY backend/erp-security/src ./erp-security/src
 COPY backend/erp-finance-gl/src ./erp-finance-gl/src
 COPY backend/erp-masterdata/src ./erp-masterdata/src
+COPY backend/erp-org/src ./erp-org/src
 COPY backend/erp-main/src ./erp-main/src
 
 # Build (skip tests — run tests in CI, not in Docker build)
