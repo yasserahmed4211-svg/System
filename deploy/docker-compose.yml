@@ -37,6 +37,7 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - REDIS_HOST=${REDIS_HOST:-localhost}
       - REDIS_PORT=${REDIS_PORT:-6379}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://89.117.37.75:8080,http://89.117.37.75,http://89.117.37.75:80}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:7272/actuator/health"]

@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -93,22 +92,7 @@ public class CommonWebConfig implements WebMvcConfigurer {
             DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE);
     }
 
-    /**
-     * Configure CORS for Angular frontend
-     * Allows localhost:4200, 4201 for development
-     */
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")
-            .allowedOrigins(
-                "http://localhost:4200",    // Angular dev server
-                "http://localhost:4201"     // Alternative port
-            )
-            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-            .allowedHeaders("*")
-            .allowCredentials(true)
-            .maxAge(3600);
-        
-        log.debug("CORS configured for /api/** from localhost:4200, 4201");
-    }
+    // CORS is handled entirely by Spring Security's CorsFilter (SecurityConfig.corsConfigurationSource()).
+    // Do NOT add addCorsMappings() here — it would create a second CORS handler at the MVC layer
+    // that hardcodes origins and overrides Security's dynamic configuration, causing 403 rejections.
 }
