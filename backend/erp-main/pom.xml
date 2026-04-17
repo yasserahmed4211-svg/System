@@ -33,6 +33,11 @@
             <artifactId>erp-finance-gl</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.erp</groupId>
+            <artifactId>erp-org</artifactId>
+        </dependency>
+
         <!-- SpringDoc OpenAPI for unified Swagger -->
         <dependency>
             <groupId>org.springdoc</groupId>

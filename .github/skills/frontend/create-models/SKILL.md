@@ -26,6 +26,25 @@ Generates all TypeScript model files for a frontend feature: DTOs/interfaces in 
 | `HAS_CHILD` | `true/false` | Whether entity has child entities |
 | `CHILD_NAME` | `LookupDetail` | PascalCase child entity name (if applicable) |
 
+## Responsibilities
+
+- Generate all TypeScript DTO interfaces matching backend response contracts exactly
+- Generate `FormModel` interface and `FormMapper` class for form-to-DTO conversion
+- Define `SearchRequest`, `FilterOperator`, and pagination structures
+- Ensure field names, types, and optionality match backend DTOs
+
+## Constraints
+
+- MUST NOT generate API service, facade, or component code
+- MUST NOT assume field names or types — derive from backend response DTOs
+- MUST NOT place models outside the `models/` folder
+- MUST NOT split DTOs across multiple files — all in single `<feature>.model.ts`
+
+## Output
+
+- `frontend/src/app/modules/<DOMAIN_DIR>/<FEATURE_DIR>/models/<feature>.model.ts`
+- `frontend/src/app/modules/<DOMAIN_DIR>/<FEATURE_DIR>/models/<feature>-form.model.ts`
+
 ---
 
 ## Steps
@@ -363,3 +382,33 @@ export const MasterLookupFormMapper = {
   }
 };
 ```
+
+
+---
+
+## ANGULAR/SKILLS COMPATIBILITY
+
+> This section documents how this skill relates to the official `angular/skills` guidance.
+> **ERP contracts always take precedence.** See `erp-priority-override` for the full precedence rule.
+
+### What angular/skills adds that is SAFE to use alongside this skill
+- `signal()` and `computed()` syntax for understanding reactive types
+- TypeScript strict mode patterns
+
+### What angular/skills suggests that this skill OVERRIDES
+
+| angular/skills Suggestion | This Skill Requires | Rule |
+|--------------------------|--------------------|----|
+| Signal Forms (`FormField`, `SignalForm`) | `FormGroup + FormBuilder` always | B.1.2, B.1.3 |
+| Flexible DTO naming | Field names MUST match backend Response DTO exactly | Blueprint 1.4 |
+
+### Additional prohibition
+Signal Forms experimental API is **permanently forbidden** in FormModel and FormMapper.
+`FormMapper` MUST implement the canonical 4-method const object pattern regardless of Angular version.
+
+### Conflict resolution trigger
+
+If any angular/skills guidance contradicts a rule in this skill:
+1. Apply the ERP rule
+2. Log: ` CONFLICT RESOLVED: angular/skills suggests [X], ERP rule [RULE_ID] requires [Y]. Applied [Y].`
+3. Do NOT ask the user  apply ERP rule silently

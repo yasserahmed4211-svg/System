@@ -1,4 +1,4 @@
-import { Component, signal, inject, ChangeDetectorRef, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, signal, inject, ChangeDetectorRef, OnInit, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { form, Field } from '@angular/forms/signals';
@@ -9,6 +9,7 @@ import { AuthenticationService } from 'src/app/core/services/authentication.serv
 import { LanguageService } from 'src/app/core/services/language.service';
 import { FeatureFlagService } from 'src/app/core/services/feature-flag.service';
 import { DASHBOARD_PATH } from 'src/app/app-config';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { IconService } from '@ant-design/icons-angular';
 import { EyeInvisibleOutline, EyeOutline } from '@ant-design/icons-angular/icons';
@@ -41,6 +42,7 @@ export class AuthLoginComponent implements OnInit {
   readonly featureFlags = inject(FeatureFlagService);
   private iconService = inject(IconService);
   private cd = inject(ChangeDetectorRef);
+  private destroyRef = inject(DestroyRef);
 
   showPassword = true;
   submitted = false;
@@ -103,7 +105,9 @@ export class AuthLoginComponent implements OnInit {
 
     const { username, password } = this.loginForm().value();
 
-    this.authenticationService.login(username, password).subscribe({
+    this.authenticationService.login(username, password)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
       next: (success) => {
         if (success) {
           this.router.navigate([this.returnUrl]);

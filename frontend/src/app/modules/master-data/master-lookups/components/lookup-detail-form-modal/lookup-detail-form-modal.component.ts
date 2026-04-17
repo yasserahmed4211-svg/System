@@ -74,7 +74,7 @@ export class LookupDetailFormModalComponent {
         nameAr: detail.nameAr,
         nameEn: detail.nameEn || '',
         extraValue: detail.extraValue || '',
-        sortOrder: detail.sortOrder || 0
+        sortOrder: detail.sortOrder ?? 0
       });
       this.detailForm.get('code')?.disable();
     } else {

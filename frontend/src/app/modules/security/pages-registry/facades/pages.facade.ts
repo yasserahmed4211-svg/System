@@ -1,4 +1,5 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
+import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, tap, of, finalize } from 'rxjs';
 import { PagesApiService } from 'src/app/modules/security/pages-registry/services/pages-api.service';
 import {
@@ -27,6 +28,7 @@ export interface PagesListState {
 export class PagesFacade {
   private pagesApiService = inject(PagesApiService);
   private readonly errorMapper = inject(ErpErrorMapperService);
+  private readonly destroyRef = inject(DestroyRef);
 
   // State signals
   private pagesSignal = signal<PageDto[]>([]);
@@ -98,7 +100,8 @@ export class PagesFacade {
           this.totalElementsSignal.set(0);
           return of(null);
         }),
-        finalize(() => this.loadingSignal.set(false))
+        finalize(() => this.loadingSignal.set(false)),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe();
   }
@@ -118,7 +121,8 @@ export class PagesFacade {
       catchError(() => {
         this.activePagesSignal.set([]);
         return of(null);
-      })
+      }),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe();
   }
 
@@ -140,7 +144,8 @@ export class PagesFacade {
       catchError(() => {
         this.modulesSignal.set([]);
         return of(null);
-      })
+      }),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe();
   }
 
@@ -162,7 +167,8 @@ export class PagesFacade {
         this.errorSignal.set(mappedKey || 'ERRORS.OPERATION_FAILED');
         return of(null);
       }),
-      finalize(() => this.loadingSignal.set(false))
+      finalize(() => this.loadingSignal.set(false)),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe();
   }
 
@@ -193,7 +199,8 @@ export class PagesFacade {
         this.saveErrorSignal.set(mappedKey || 'ERRORS.OPERATION_FAILED');
         return of(null);
       }),
-      finalize(() => this.savingSignal.set(false))
+      finalize(() => this.savingSignal.set(false)),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe();
   }
 
@@ -224,7 +231,8 @@ export class PagesFacade {
         this.saveErrorSignal.set(mappedKey || 'ERRORS.OPERATION_FAILED');
         return of(null);
       }),
-      finalize(() => this.savingSignal.set(false))
+      finalize(() => this.savingSignal.set(false)),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe();
   }
 
@@ -255,7 +263,8 @@ export class PagesFacade {
         this.saveErrorSignal.set(mappedKey || 'ERRORS.OPERATION_FAILED');
         return of(null);
       }),
-      finalize(() => this.savingSignal.set(false))
+      finalize(() => this.savingSignal.set(false)),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe();
   }
 
@@ -286,7 +295,8 @@ export class PagesFacade {
         this.saveErrorSignal.set(mappedKey || 'ERRORS.OPERATION_FAILED');
         return of(null);
       }),
-      finalize(() => this.savingSignal.set(false))
+      finalize(() => this.savingSignal.set(false)),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe();
   }
 

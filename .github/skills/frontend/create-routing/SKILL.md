@@ -28,6 +28,25 @@ Generates the routing configuration for a frontend feature including lazy-loaded
 | `HAS_CHILD` | `true/false` | Whether entity has child entities |
 | `CHILD_NAME` | `LookupDetail` | PascalCase child name (if applicable) |
 
+## Responsibilities
+
+- Generate routing configuration with lazy-loaded routes (list, create, edit)
+- Apply `authGuard` + `permissionGuard` on all routes
+- Wrap routes in `AdminLayout` parent
+- Generate confirm action helper functions with permission-first pattern
+
+## Constraints
+
+- MUST NOT generate models, API service, facade, or component code
+- MUST NOT use eager `component` loading — must use `loadComponent`
+- MUST NOT skip permission guards on any route
+- MUST NOT hardcode permission strings — use `SecurityPermissions` constants
+
+## Output
+
+- `frontend/src/app/modules/<DOMAIN_DIR>/<FEATURE_DIR>/<feature>.routes.ts`
+- `frontend/src/app/modules/<DOMAIN_DIR>/<FEATURE_DIR>/helpers/<feature>-confirm-actions.ts`
+
 ---
 
 ## PART 1: Confirm Actions
@@ -347,3 +366,31 @@ export function confirmDeleteMasterLookup(
   });
 }
 ```
+
+
+---
+
+## ANGULAR/SKILLS COMPATIBILITY
+
+> This section documents how this skill relates to the official `angular/skills` guidance.
+> **ERP contracts always take precedence.** See `erp-priority-override` for the full precedence rule.
+
+### What angular/skills adds that is SAFE to use alongside this skill
+- Angular Router syntax reference
+- Lazy loading `loadComponent` syntax
+
+### What angular/skills suggests that this skill OVERRIDES
+
+| angular/skills Suggestion | This Skill Requires | Rule |
+|--------------------------|--------------------|----|
+| `ng new` app setup patterns | Not applicable  project exists |  |
+| Optional route guards | `authGuard + permissionGuard` on EVERY route | B.5.3 |
+| Inline confirm logic | Extracted to `helpers/*-confirm-actions.ts` | B.6.1 |
+| Single route for create/edit | Three separate routes: `''`, `'create'`, `'edit/:id'` | B.5.1 |
+
+### Conflict resolution trigger
+
+If any angular/skills guidance contradicts a rule in this skill:
+1. Apply the ERP rule
+2. Log: ` CONFLICT RESOLVED: angular/skills suggests [X], ERP rule [RULE_ID] requires [Y]. Applied [Y].`
+3. Do NOT ask the user  apply ERP rule silently

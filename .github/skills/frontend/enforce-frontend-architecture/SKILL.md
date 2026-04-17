@@ -1,5 +1,5 @@
 ---
-description: "ARCHITECTURE ENFORCER — validates frontend code against 63 checks across 6 layers: file organization, models, API service, facade, components, and routing/i18n. Rejects BehaviorSubject, providedIn root, missing OnPush, direct HttpClient."
+description: "ARCHITECTURE ENFORCER — validates frontend code against 73 checks across 7 layers: file organization, models, API service, facade, components, routing/i18n, and theme/layout architecture. Rejects BehaviorSubject, providedIn root, missing OnPush, direct HttpClient, ::ng-deep card positioning."
 ---
 
 # Skill: enforce-frontend-architecture
@@ -8,13 +8,33 @@ description: "ARCHITECTURE ENFORCER — validates frontend code against 63 check
 `enforce-frontend-architecture`
 
 ## Description
-Validates that frontend feature implementations comply with the ERP architectural contracts. Checks layer separation, component structure, file organization, API patterns, and form handling. This is the frontend equivalent of `enforce-backend-contract`.
+Validates that frontend feature implementations comply with the ERP architectural contracts. Checks layer separation, component structure, file organization, API patterns, form handling, and theme/layout architecture. This is the frontend equivalent of `enforce-backend-contract`.
 
 ## When to Use
 - After generating or reviewing any frontend feature code
 - During code review of frontend pull requests
 - When auditing existing frontend features for compliance
 - When resolving frontend architectural issues
+
+## Responsibilities
+
+- Validate file organization (models, services, facades, components in correct folders)
+- Validate component structure (standalone, OnPush, no business logic)
+- Validate API patterns (BaseApiService extension, no direct HttpClient)
+- Validate facade patterns (signal-based, no BehaviorSubject, component-scoped)
+- Validate theme/layout architecture rules
+
+## Constraints
+
+- MUST NOT generate or modify application code — this skill only validates
+- MUST NOT fix violations automatically — report them for the appropriate create-* skill to fix
+- MUST NOT validate backend code — scope is frontend only
+- MUST NOT skip any check — all layers must be evaluated
+
+## Output
+
+- Architecture compliance report with PASS/VIOLATION per check across 7 layers
+- Specific violation descriptions for any failures
 
 ---
 
@@ -114,6 +134,21 @@ Validates that frontend feature implementations comply with the ERP architectura
 | F.6.9 | Confirm actions use i18n | `translate.instant()` with messageParams | Hardcoded entity names |
 | F.6.10 | Confirm actions check permission first | Permission check before dialog show | Dialog then permission denied |
 
+### Layer 7: Theme & Layout Architecture (10 checks)
+
+| # | Check | Pass Criteria | Violation |
+|---|-------|--------------|-----------|
+| F.7.1 | Theme state via ThemeService | Theme color, dark mode, container mode managed by `ThemeService` signals | Component managing theme state locally |
+| F.7.2 | Theme persistence via localStorage | ThemeService reads/writes `erp_theme_color`, `erp_dark_mode`, `erp_container_mode` | No persistence — theme resets on refresh |
+| F.7.3 | DOM sync via effects | ThemeService uses `effect()` to sync signals to DOM (body classes, part attribute) | Manual DOM manipulation in components |
+| F.7.4 | RTL owned by LanguageService | RTL/LTR management exclusively in `LanguageService` — not ThemeService or ConfigurationComponent | RTL classes set in ConfigurationComponent |
+| F.7.5 | ConfigurationComponent is thin | Only applies font family from MantisConfig — all other concerns delegated to ThemeService | ConfigurationComponent manipulates dark mode, theme color, or container |
+| F.7.6 | No direct body manipulation | Components use ThemeService methods — never `document.body.classList.add()` for theme | `document.body.classList.add('mantis-dark')` in component |
+| F.7.7 | Card-header-right uses flexbox | `.card-header-right` layout is flexbox (from global `card.scss`) — not absolute | `position: absolute` on `.card-header-right` |
+| F.7.8 | No ::ng-deep card positioning | Component SCSS does not use `::ng-deep` to override card-header-right layout | `::ng-deep { .card-header-right { position: absolute } }` |
+| F.7.9 | Navigation fully translated | All text in nav-right and nav-content uses `\| translate` pipe | Hardcoded navigation labels |
+| F.7.10 | Single Arabic font source | Arabic font defined only in `font-family.scss` — no conflicting rules | Duplicate `[lang="ar"]` font-family in styles.scss |
+
 ---
 
 ## AUTOMATIC REJECTION TRIGGERS
@@ -134,6 +169,9 @@ Any of the following causes **immediate rejection** without further review:
 | 10 | `formValue.numericField \|\| undefined` for numeric conversion | F.2.8 |
 | 11 | Missing `takeUntilDestroyed(this.destroyRef)` before `.subscribe()` in facade | F.4.15 |
 | 12 | Plain property `isEditMode`, `entityId`, or `loading` instead of `signal()` | F.5.8 |
+| 13 | `::ng-deep` overriding `.card-header-right` with absolute positioning | F.7.8 |
+| 14 | Direct `document.body` manipulation for theme/dark mode in components | F.7.6 |
+| 15 | Hardcoded navigation text in `nav-right` or `nav-content` | F.7.9 |
 
 ---
 
@@ -144,7 +182,7 @@ List of frontend feature files to validate.
 
 ### Process
 1. **Scan all files** in the feature directory
-2. **Run all 63 checks** across 6 layers
+2. **Run all 73 checks** across 7 layers
 3. **Flag violations** with rule reference and file location
 4. **Check automatic rejection triggers** — if any triggered, REJECT immediately
 5. **Generate report** with pass/fail per check
@@ -162,8 +200,9 @@ LAYER 3: API SERVICE CONTRACTS      [X/7 PASS]
 LAYER 4: FACADE CONTRACTS           [X/14 PASS]
 LAYER 5: COMPONENT CONTRACTS        [X/16 PASS]
 LAYER 6: ROUTING & I18N CONTRACTS   [X/10 PASS]
+LAYER 7: THEME & LAYOUT ARCH        [X/10 PASS]
 
-TOTAL: XX/63 CHECKS PASSED
+TOTAL: XX/73 CHECKS PASSED
 
 AUTOMATIC REJECTION: YES/NO
 VIOLATIONS: [list of failed checks with file locations]
@@ -184,3 +223,41 @@ After running this architecture enforcement, also verify shared code consumption
 | `enforce-permissions` | Validates triple-enforcement permission pattern |
 | `enforce-state-management` | Validates Signal-based state management patterns |
 | `enforce-design-system` | Validates CSS token consumption and design system compliance |
+
+
+---
+
+## ANGULAR/SKILLS COMPATIBILITY
+
+> This section documents how this skill relates to the official `angular/skills` guidance.
+> **ERP contracts always take precedence.** See `erp-priority-override` for the full precedence rule.
+
+### What angular/skills adds that is SAFE to use alongside this skill
+- Signal API syntax (`signal`, `computed`, `effect`)
+- Standalone component patterns  fully aligned with F.5.1
+- OnPush change detection  fully aligned with F.5.2
+- Lazy loading syntax  fully aligned with F.6.2
+
+### What angular/skills suggests that this skill OVERRIDES
+
+| angular/skills Suggestion | This Skill Requires | Rejection Trigger |
+|--------------------------|--------------------|--------------------|
+| Signal Forms (Angular v21+) | Reactive Forms only  `FormGroup + FormBuilder` | #7  automatic rejection |
+| NgModule compatibility | `standalone: true` always | #3  automatic rejection |
+| `providedIn: 'root'` for services | Component-scoped providers only | #1  automatic rejection |
+| BehaviorSubject for streams | `signal()` always | #2  automatic rejection |
+| `router.navigate` for mode switch | `Location.replaceState()` | #6  automatic rejection |
+
+### Amended Automatic Rejection  Trigger #7 (explicit)
+The following patterns all trigger rejection under rule #7 (template-driven / Signal Forms):
+- `[(ngModel)]`  template-driven forms
+- `FormField` from `@angular/forms` experimental
+- `SignalForm`, `signalForm()`  Signal Forms API
+- Any form pattern that does NOT use `FormGroup + FormBuilder`
+
+### Conflict resolution trigger
+
+If any angular/skills guidance contradicts a rule in this skill:
+1. Apply the ERP rule
+2. Log: ` CONFLICT RESOLVED: angular/skills suggests [X], ERP rule [RULE_ID] requires [Y]. Applied [Y].`
+3. Do NOT ask the user  apply ERP rule silently

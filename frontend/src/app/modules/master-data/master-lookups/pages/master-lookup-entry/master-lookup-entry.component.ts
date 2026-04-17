@@ -149,7 +149,7 @@ export class MasterLookupEntryComponent implements OnInit, OnDestroy {
       this.lookupForm.enable();
       this.lookupForm.get('lookupKey')?.disable();
 
-      if (this.authService.hasPermission('PERM_MASTER_LOOKUP_VIEW')) this.facade.loadLookupDetails(id);
+      this.facade.loadLookupDetails(id);
       this.facade.getUsageInfo(id);
       this.loading.set(false);
       this.cdr.detectChanges();
@@ -179,7 +179,7 @@ export class MasterLookupEntryComponent implements OnInit, OnDestroy {
         this.lookupId.set(c.id);
         this.lookupForm.get('lookupKey')?.disable();
         this.location.replaceState(`/master-data/master-lookups/edit/${c.id}`);
-        if (this.authService.hasPermission('PERM_MASTER_LOOKUP_VIEW')) this.facade.loadLookupDetails(c.id, false);
+        this.facade.loadLookupDetails(c.id, false);
         this.facade.getUsageInfo(c.id);
         this.cdr.detectChanges();
       });

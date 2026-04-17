@@ -1,4 +1,5 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
+import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, concatMap, finalize, from, last, map, of, tap } from 'rxjs';
 
 import { ErpErrorMapperService } from 'src/app/shared/services/erp-error-mapper.service';
@@ -28,6 +29,7 @@ export interface RoleSearchFilter {
 export class RoleAccessFacade {
   private readonly api = inject(RoleAccessApiService);
   private readonly errorMapper = inject(ErpErrorMapperService);
+  private readonly destroyRef = inject(DestroyRef);
 
   private rolesSignal = signal<RoleDto[]>([]);
   private totalElementsSignal = signal<number>(0);
@@ -105,7 +107,8 @@ export class RoleAccessFacade {
           this.totalElementsSignal.set(0);
           return of(null);
         }),
-        finalize(() => this.loadingSignal.set(false))
+        finalize(() => this.loadingSignal.set(false)),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe();
   }
@@ -189,7 +192,8 @@ export class RoleAccessFacade {
           this.saveErrorSignal.set(mappedKey || 'ERRORS.OPERATION_FAILED');
           return of(null);
         }),
-        finalize(() => this.savingSignal.set(false))
+        finalize(() => this.savingSignal.set(false)),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe();
   }
@@ -222,7 +226,8 @@ export class RoleAccessFacade {
           this.saveErrorSignal.set(mappedKey || 'ERRORS.OPERATION_FAILED');
           return of(null);
         }),
-        finalize(() => this.savingSignal.set(false))
+        finalize(() => this.savingSignal.set(false)),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe();
   }
@@ -247,7 +252,8 @@ export class RoleAccessFacade {
           this.saveErrorSignal.set(mappedKey || 'ERRORS.OPERATION_FAILED');
           return of(null);
         }),
-        finalize(() => this.savingSignal.set(false))
+        finalize(() => this.savingSignal.set(false)),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe();
   }
@@ -270,7 +276,8 @@ export class RoleAccessFacade {
           this.selectedRoleSignal.set(null);
           return of(null);
         }),
-        finalize(() => this.loadingSignal.set(false))
+        finalize(() => this.loadingSignal.set(false)),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe();
   }
@@ -283,7 +290,8 @@ export class RoleAccessFacade {
         catchError(() => {
           this.activePagesSignal.set([]);
           return of([]);
-        })
+        }),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe();
   }
@@ -301,7 +309,12 @@ export class RoleAccessFacade {
           for (const a of assignments) {
             const key = String(a?.pageCode ?? '').trim().toUpperCase();
             if (!key) continue;
-            uniqueByPageCode.set(key, { ...a, pageCode: key });
+            uniqueByPageCode.set(key, {
+              ...a,
+              pageCode:   key,
+              pageName:   a.pageName   ?? (a as any).pageNameEn ?? '',
+              pageNameAr: a.pageNameAr ?? '',
+            });
           }
           this.rolePagesSignal.set(Array.from(uniqueByPageCode.values()));
         }),
@@ -315,7 +328,8 @@ export class RoleAccessFacade {
           this.rolePagesSignal.set([]);
           return of(null);
         }),
-        finalize(() => this.loadingSignal.set(false))
+        finalize(() => this.loadingSignal.set(false)),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe();
   }
@@ -368,7 +382,8 @@ export class RoleAccessFacade {
           this.saveErrorSignal.set(mappedKey || 'ERRORS.OPERATION_FAILED');
           return of(null);
         }),
-        finalize(() => this.savingSignal.set(false))
+        finalize(() => this.savingSignal.set(false)),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe();
   }
@@ -411,7 +426,8 @@ export class RoleAccessFacade {
           this.saveErrorSignal.set(mappedKey || 'ERRORS.OPERATION_FAILED');
           return of(null);
         }),
-        finalize(() => this.savingSignal.set(false))
+        finalize(() => this.savingSignal.set(false)),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe();
   }
@@ -436,7 +452,8 @@ export class RoleAccessFacade {
           this.saveErrorSignal.set(mappedKey || 'ERRORS.OPERATION_FAILED');
           return of(null);
         }),
-        finalize(() => this.savingSignal.set(false))
+        finalize(() => this.savingSignal.set(false)),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe();
   }
@@ -467,7 +484,8 @@ export class RoleAccessFacade {
           this.saveErrorSignal.set(mappedKey || 'ERRORS.OPERATION_FAILED');
           return of(null);
         }),
-        finalize(() => this.savingSignal.set(false))
+        finalize(() => this.savingSignal.set(false)),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe();
   }

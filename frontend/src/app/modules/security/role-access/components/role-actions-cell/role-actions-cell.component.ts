@@ -19,7 +19,8 @@ export type RoleActionsCellRendererParams = ICellRendererParams<RoleDto> & {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, TranslateModule, ErpPermissionDirective],
   template: `
-    <div class="d-flex align-items-center gap-1" *ngIf="role as r">
+    @if (role; as r) {
+    <div class="d-flex align-items-center gap-1">
       <button
         type="button"
         class="btn btn-sm btn-outline-primary"
@@ -50,6 +51,7 @@ export type RoleActionsCellRendererParams = ICellRendererParams<RoleDto> & {
         <i class="ti ti-trash"></i>
       </button>
     </div>
+    }
   `
 })
 export class RoleActionsCellComponent implements ICellRendererAngularComp {

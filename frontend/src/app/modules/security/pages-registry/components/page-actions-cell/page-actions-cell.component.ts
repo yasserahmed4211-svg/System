@@ -18,7 +18,8 @@ export type PageActionsCellRendererParams = ICellRendererParams<PageDto> & {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, TranslateModule, ErpPermissionDirective],
   template: `
-    <div class="d-flex align-items-center gap-1" *ngIf="page as p">
+    @if (page; as p) {
+    <div class="d-flex align-items-center gap-1">
       <button
         type="button"
         class="btn btn-sm btn-outline-primary"
@@ -39,6 +40,7 @@ export type PageActionsCellRendererParams = ICellRendererParams<PageDto> & {
         <i [class]="p.active ? 'ti ti-toggle-right' : 'ti ti-toggle-left'"></i>
       </button>
     </div>
+    }
   `
 })
 export class PageActionsCellComponent implements ICellRendererAngularComp {

@@ -1,17 +1,24 @@
 <div class="erp-empty-state">
-  <div class="erp-empty-state__icon" *ngIf="icon">
-    <i [class]="icon" aria-hidden="true"></i>
-  </div>
+  @if (icon) {
+    <div class="erp-empty-state__icon">
+      <i [class]="icon" aria-hidden="true"></i>
+    </div>
+  }
 
-  <h4 class="erp-empty-state__title" *ngIf="titleKey">{{ titleKey | translate }}</h4>
-  <p class="erp-empty-state__message" *ngIf="messageKey">{{ messageKey | translate }}</p>
+  @if (titleKey) {
+    <h4 class="erp-empty-state__title">{{ titleKey | translate }}</h4>
+  }
+  @if (messageKey) {
+    <p class="erp-empty-state__message">{{ messageKey | translate }}</p>
+  }
 
-  <button
-    *ngIf="actionLabelKey"
-    type="button"
-    class="btn btn-primary"
-    (click)="actionClicked.emit()"
-  >
-    {{ actionLabelKey | translate }}
-  </button>
+  @if (actionLabelKey) {
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="actionClicked.emit()"
+    >
+      {{ actionLabelKey | translate }}
+    </button>
+  }
 </div>

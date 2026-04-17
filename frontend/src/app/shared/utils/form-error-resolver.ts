@@ -117,8 +117,22 @@ export function getFormFieldError(
     return { key: 'VALIDATION.UNIQUE' };
   }
 
+  if (errors['urlPattern']) {
+    return { key: 'VALIDATION.URL_INVALID' };
+  }
+
   // Fallback for unknown errors
   return { key: 'VALIDATION.INVALID_VALUE' };
+}
+
+/**
+ * Validator that checks a URL format (optional field — passes when empty).
+ * Returns { urlPattern: true } if the value is present but not a valid URL.
+ */
+export function urlValidator(control: AbstractControl): ValidationErrors | null {
+  if (!control.value) return null;
+  const pattern = /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)$/;
+  return pattern.test(control.value) ? null : { urlPattern: true };
 }
 
 /**

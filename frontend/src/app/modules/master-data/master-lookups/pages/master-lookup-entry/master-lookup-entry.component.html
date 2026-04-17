@@ -81,14 +81,6 @@
         </div>
       </erp-section>
 
-      <erp-action-bar
-        [saveKey]="isEditMode() ? 'COMMON.UPDATE' : 'COMMON.SAVE'"
-        [loading]="facade.saving()"
-        [disabled]="lookupForm.invalid"
-        [showCancel]="false"
-        (saveClicked)="save()"
-        (backClicked)="onCancel()"
-      />
     </form>
     }
   </div>
@@ -98,7 +90,6 @@
 <app-card
   [cardTitle]="'MASTER_LOOKUPS.LOOKUP_DETAILS' | translate"
   class="mt-4"
-  *erpPermission="'PERM_MASTER_LOOKUP_VIEW'"
 >
   <app-lookup-details-section
     [details]="facade.lookupDetails()"
@@ -111,6 +102,15 @@
     (sortChange)="sortDetails($event)"
   />
 </app-card>
+
+<erp-action-bar
+  [saveKey]="isEditMode() ? 'COMMON.UPDATE' : 'COMMON.SAVE'"
+  [loading]="facade.saving()"
+  [disabled]="lookupForm.invalid"
+  [showCancel]="false"
+  (saveClicked)="save()"
+  (backClicked)="onCancel()"
+/>
 
 <!-- Detail Form Modal (self-contained) -->
 <app-lookup-detail-form-modal

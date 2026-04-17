@@ -55,7 +55,7 @@ export const PageFormMapper = {
       route: dto.route,
       icon: dto.icon || '',
       module: dto.module || '',
-      parentId: dto.parentId || null,
+      parentId: dto.parentId ?? null,
       displayOrder: dto.displayOrder,
       active: dto.active
     };

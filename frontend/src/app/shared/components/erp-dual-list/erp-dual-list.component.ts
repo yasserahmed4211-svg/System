@@ -58,7 +58,7 @@ export interface DualListItem {
             class="form-control form-control-sm"
             [placeholder]="'COMMON.SEARCH' | translate"
             [disabled]="disabled"
-            [(ngModel)]="availableSearch"
+            [ngModel]="availableSearch()"
             (ngModelChange)="onAvailableSearchChange($event)"
           />
         </div>
@@ -144,7 +144,7 @@ export interface DualListItem {
             class="form-control form-control-sm"
             [placeholder]="'COMMON.SEARCH' | translate"
             [disabled]="disabled"
-            [(ngModel)]="selectedSearch"
+            [ngModel]="selectedSearch()"
             (ngModelChange)="onSelectedSearchChange($event)"
           />
         </div>
@@ -335,8 +335,8 @@ export class ErpDualListComponent {
   protected readonly _availableItems = signal<DualListItem[]>([]);
   protected readonly _selectedItems = signal<DualListItem[]>([]);
   
-  protected availableSearch = '';
-  protected selectedSearch = '';
+  protected readonly availableSearch = signal('');
+  protected readonly selectedSearch = signal('');
   
   protected readonly selectedAvailableItems = signal<Set<string | number>>(new Set());
   protected readonly selectedSelectedItems = signal<Set<string | number>>(new Set());
@@ -344,7 +344,7 @@ export class ErpDualListComponent {
   // Filtered items based on search
   protected readonly filteredAvailable = computed(() => {
     const items = this._availableItems();
-    const search = this.availableSearch.toLowerCase().trim();
+    const search = this.availableSearch().toLowerCase().trim();
     if (!search) return items;
     return items.filter(item => 
       item.label.toLowerCase().includes(search) ||
@@ -354,7 +354,7 @@ export class ErpDualListComponent {
   
   protected readonly filteredSelected = computed(() => {
     const items = this._selectedItems();
-    const search = this.selectedSearch.toLowerCase().trim();
+    const search = this.selectedSearch().toLowerCase().trim();
     if (!search) return items;
     return items.filter(item => 
       item.label.toLowerCase().includes(search) ||
@@ -403,13 +403,13 @@ export class ErpDualListComponent {
   }
   
   protected onAvailableSearchChange(value: string): void {
-    this.availableSearch = value;
+    this.availableSearch.set(value);
     // Clear selection when search changes
     this.selectedAvailableItems.set(new Set());
   }
   
   protected onSelectedSearchChange(value: string): void {
-    this.selectedSearch = value;
+    this.selectedSearch.set(value);
     // Clear selection when search changes
     this.selectedSelectedItems.set(new Set());
   }

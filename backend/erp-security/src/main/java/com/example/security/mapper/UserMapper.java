@@ -17,6 +17,8 @@ public final class UserMapper {
                 .flatMap(r -> r.getPermissions().stream())
                 .map(Permission::getName)
                 .collect(Collectors.toSet());
-        return new UserDto(u.getId(), u.getUsername(), u.getTenantId(), u.isEnabled(), roles, perms);
+        return new UserDto(
+                u.getId(), u.getUsername(), u.getTenantId(), u.isEnabled(), roles, perms,
+                u.getCreatedAt(), u.getCreatedBy(), u.getUpdatedAt(), u.getUpdatedBy());
     }
 }

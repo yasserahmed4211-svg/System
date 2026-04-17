@@ -16,6 +16,29 @@ description: "ERROR HANDLING ENFORCER — ensures ALL exceptions use LocalizedEx
 - When validating that error codes are properly registered
 - As part of the full `validate-backend-feature` pipeline
 
+## Responsibilities
+
+- Validate that ALL exceptions use `LocalizedException` with domain-specific error codes
+- Detect and reject `NotFoundException`, raw `RuntimeException`, `IllegalArgumentException`
+- Verify error codes are registered in `<Module>ErrorCodes` constants
+- Verify error messages exist in `messages.properties` (EN and AR)
+- Validate correct `Status` usage per error scenario (NOT_FOUND, ALREADY_EXISTS, CONFLICT)
+
+## Constraints
+
+- MUST NOT generate or modify application code — this skill only validates
+- MUST NOT create new error codes — report missing codes for manual addition
+- MUST NOT modify `GlobalExceptionHandler` or shared exception infrastructure
+- MUST NOT validate non-error-handling concerns (those belong to other enforce skills)
+
+## Output
+
+- Error handling compliance report identifying:
+  - Exception type violations (non-LocalizedException usage)
+  - Missing error code registrations
+  - Missing message translations
+  - Incorrect Status usage per scenario
+
 ---
 
 ## Core Rule (NON-NEGOTIABLE)

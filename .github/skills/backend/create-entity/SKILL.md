@@ -27,6 +27,28 @@ Generates a JPA entity class for the ERP system following the canonical MasterLo
 | `PARENT_ENTITY` | *(optional)* | Parent entity if child |
 | `PARENT_FK_COL` | *(optional)* | e.g., `ACTIVITY_ID_FK` |
 
+## Responsibilities
+
+- Generate a JPA entity class extending `AuditableEntity`
+- Define DB schema: table name, columns, constraints, indexes, sequences
+- Implement boolean fields with `BooleanNumberConverter`
+- Add FK relationships (`@ManyToOne` LAZY) if child entity
+- Add child collections (`@OneToMany`) and `@Formula` counts if parent entity
+- Implement `@PrePersist`/`@PreUpdate` lifecycle hooks for key normalization
+- Provide `activate()`/`deactivate()` helper methods
+
+## Constraints
+
+- MUST NOT generate repository, DTO, mapper, service, or controller code
+- MUST NOT modify other existing entity files
+- MUST NOT assume missing variable values — require them before generation
+- MUST NOT apply uppercase normalization outside `@PrePersist`/`@PreUpdate`
+- MUST NOT use `@Builder` — always `@SuperBuilder` due to `AuditableEntity` inheritance
+
+## Output
+
+- Single file: `backend/erp-<MODULE>/src/main/java/com/example/<module>/entity/Md<Entity>.java`
+
 ---
 
 ## Steps

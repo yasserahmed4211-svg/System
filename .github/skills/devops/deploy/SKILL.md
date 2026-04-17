@@ -27,6 +27,33 @@ Generates all deployment artifacts required to containerize and deploy the ERP s
 ## Trigger
 User says: `deploy`, `prepare deployment`, `dockerize`, `create docker setup`, `production deploy`
 
+## Responsibilities
+
+- Analyze project structure (backend modules, frontend config, existing properties)
+- Generate Dockerfiles for backend (Spring Boot) and frontend (Nginx)
+- Generate `docker-compose.yml` with `network_mode: host` for backend
+- Generate Nginx reverse proxy configuration
+- Generate deploy scripts for Git-based pull deployment
+- Generate production environment files and Spring profile configs
+
+## Constraints
+
+- MUST NOT modify application source code (backend or frontend)
+- MUST NOT change database configuration or schema
+- MUST NOT modify existing Spring profiles — create production profile only
+- MUST NOT expose backend directly — all access through Nginx reverse proxy
+- MUST NOT assume infrastructure details — ask if database host/port is unclear
+
+## Output
+
+- Complete deployment artifact set in `deploy/` directory:
+  - `deploy/backend/Dockerfile`
+  - `deploy/frontend/Dockerfile`
+  - `deploy/docker-compose.yml`
+  - `deploy/frontend/nginx.conf`
+  - `deploy/deploy.sh`
+  - Production environment/config files
+
 ---
 
 ## 1. Project Analysis (Auto-Detect Before Generating)

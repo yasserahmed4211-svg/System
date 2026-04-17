@@ -59,7 +59,7 @@ public class UserService {
 
     @Transactional
     @PreAuthorize("hasAuthority(T(com.example.security.constants.SecurityPermissions).USER_CREATE)")
-    // @CacheEvict(cacheNames = "users", allEntries = true)
+    @CacheEvict(cacheNames = "users", allEntries = true)
     public ServiceResult<UserDto> createUser(CreateUserRequest req){
         String tenant = TenantHelper.requireTenant();
 
@@ -102,7 +102,7 @@ public class UserService {
      */
     @Transactional
     @PreAuthorize("hasAuthority(T(com.example.security.constants.SecurityPermissions).USER_MANAGE_ROLES)")
-    // @CacheEvict(cacheNames = {"users", "userRoles"}, allEntries = true)
+    @CacheEvict(cacheNames = {"users", "userRoles"}, allEntries = true)
     public ServiceResult<UserDto> assignRoles(Long userId, Set<String> roleNames) {
         String tenant = TenantHelper.requireTenant();
         
@@ -140,7 +140,7 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     @PreAuthorize("hasAuthority(T(com.example.security.constants.SecurityPermissions).USER_VIEW)")
-    // @Cacheable(cacheNames = "userRoleNames", key = "#userId + '_' + T(com.example.erp.common.multitenancy.TenantContext).getTenantId())")
+    @Cacheable(cacheNames = "userRoleNames", key = "#userId + '_' + T(com.example.erp.common.multitenancy.TenantContext).getTenantId()")
     public ServiceResult<List<String>> getUserRoleNames(Long userId) {
         String tenant = TenantHelper.requireTenant();
         
@@ -205,7 +205,7 @@ public class UserService {
      */
     @Transactional
     @PreAuthorize("hasAuthority(T(com.example.security.constants.SecurityPermissions).USER_DELETE)")
-    // @CacheEvict(cacheNames = {"users", "userRoles"}, allEntries = true)
+    @CacheEvict(cacheNames = {"users", "userRoles"}, allEntries = true)
     public void deleteUser(Long userId) {
         String tenant = TenantHelper.requireTenant();
         
@@ -239,7 +239,7 @@ public class UserService {
      */
     @Transactional
     @PreAuthorize("hasAuthority(T(com.example.security.constants.SecurityPermissions).USER_UPDATE)")
-    // @CacheEvict(cacheNames = {"users", "userRoles"}, allEntries = true)
+    @CacheEvict(cacheNames = {"users", "userRoles"}, allEntries = true)
     public ServiceResult<UserDto> updateUser(Long userId, UpdateUserRequest req) {
         String tenant = TenantHelper.requireTenant();
         

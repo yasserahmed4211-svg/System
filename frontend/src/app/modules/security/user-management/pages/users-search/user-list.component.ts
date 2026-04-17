@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef, inject, effect, ChangeDetectionStrategy, ChangeDetectorRef, NgZone, DestroyRef, untracked } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, TemplateRef, inject, effect, signal, computed, ChangeDetectionStrategy, ChangeDetectorRef, NgZone, DestroyRef, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
@@ -22,6 +22,7 @@ import { ErpGridState, SpecFieldOption, SpecFilter, SpecOperatorOption } from 's
 import { ErpDualListComponent, DualListItem } from 'src/app/shared/components/erp-dual-list/erp-dual-list.component';
 import { ErpDialogService } from 'src/app/shared/services/erp-dialog.service';
 import { ErpNotificationService } from 'src/app/shared/services/erp-notification.service';
+import { AuthenticationService } from 'src/app/core/services/authentication.service';
 import { ErpEmptyStateComponent } from 'src/app/shared/components/erp-empty-state/erp-empty-state.component';
 
 import { UserFacade } from 'src/app/modules/security/user-management/facades/user.facade';
@@ -67,7 +68,7 @@ registerErpAgGridModules();
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [UserFacade, UserApiService]
 })
-export class UserListComponent extends ErpListComponent implements OnInit {
+export class UserListComponent extends ErpListComponent implements OnInit, OnDestroy {
   private themeService = inject(ThemeService);
   private modalService = inject(NgbModal);
   private translate = inject(TranslateService);
@@ -76,6 +77,7 @@ export class UserListComponent extends ErpListComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private erpDialogService = inject(ErpDialogService);
   private notificationService = inject(ErpNotificationService);
+  private authService = inject(AuthenticationService);
   readonly facade = inject(UserFacade);
 
   @ViewChild('createUserModal') createUserModalRef!: TemplateRef<unknown>;
@@ -85,7 +87,7 @@ export class UserListComponent extends ErpListComponent implements OnInit {
     return this.translate.currentLang === 'ar';
   }
   
-  showGrid = true;
+  showGrid = signal(true);
   private gridApi!: GridApi;
 
   private agGridSearchFilters: unknown[] = [];
@@ -94,51 +96,51 @@ export class UserListComponent extends ErpListComponent implements OnInit {
 
   // Form state
   userForm = { username: '', password: '', tenantId: '', enabled: true, roles: [] as string[] };
-  formSubmitting = false;
-  formError = '';
-  isEditMode = false;
-  editingUserId: number | null = null;
+  formSubmitting = signal(false);
+  formError = signal('');
+  isEditMode = signal(false);
+  editingUserId = signal<number | null>(null);
 
   // Delete state
-  deleteSubmitting = false;
+  deleteSubmitting = signal(false);
 
   private formModalRef: NgbModalRef | null = null;
 
-  showAdvancedFilters = false;
+  showAdvancedFilters = signal(false);
 
   // Theme
-  theme = createAgGridTheme(this.themeService.isDarkMode());
+  theme = signal(createAgGridTheme(this.themeService.isDarkMode()));
 
   // Data from facade
-  get rowData(): UserDto[] { return this.facade.users(); }
-  get totalRows(): number { return this.facade.totalElements(); }
-  get availableRoles(): string[] { return this.facade.availableRoles(); }
-  get rolesLoading(): boolean { return this.facade.rolesLoading(); }
-  get currentFilters() { return this.facade['currentFiltersSignal'](); }
-  get isLoading(): boolean { return this.facade.loading(); }
-  get hasError(): boolean { return !!this.facade.error(); }
+  readonly rowData = computed(() => this.facade.users());
+  readonly totalRows = computed(() => this.facade.totalElements());
+  readonly availableRoles = computed(() => this.facade.availableRoles());
+  readonly rolesLoading = computed(() => this.facade.rolesLoading());
+  readonly currentFilters = computed(() => this.facade['currentFiltersSignal']());
+  readonly isLoading = computed(() => this.facade.loading());
+  readonly hasError = computed(() => !!this.facade.error());
 
   // State for ErpDualListComponent - stored separately to avoid re-computation
-  dualListAvailableItems: DualListItem[] = [];
-  dualListSelectedItems: DualListItem[] = [];
+  dualListAvailableItems = signal<DualListItem[]>([]);
+  dualListSelectedItems = signal<DualListItem[]>([]);
 
   /** Prepare the dual list items for the inline roles selector */
   private prepareDualListItems(): void {
     // Get all available roles that are NOT currently selected
-    this.dualListAvailableItems = this.availableRoles
+    this.dualListAvailableItems.set(this.availableRoles()
       .filter(role => !this.userForm.roles.includes(role))
       .map(role => ({
         id: role,
         label: this.formatRoleName(role),
         secondaryLabel: role
-      }));
+      })));
 
     // Get currently selected roles
-    this.dualListSelectedItems = this.userForm.roles.map(role => ({
+    this.dualListSelectedItems.set(this.userForm.roles.map(role => ({
       id: role,
       label: this.formatRoleName(role),
       secondaryLabel: role
-    }));
+    })));
   }
 
   onRolesSelectionChanged(selectedItems: DualListItem[]): void {
@@ -154,38 +156,38 @@ export class UserListComponent extends ErpListComponent implements OnInit {
   }
 
   // Dynamic fields - will be translated
-  availableFields: SpecFieldOption[] = [];
+  availableFields = signal<SpecFieldOption[]>([]);
 
   // Dynamic operators - will be translated
-  availableOperators: SpecOperatorOption[] = [];
+  availableOperators = signal<SpecOperatorOption[]>([]);
 
   // Dynamic column definitions - will be translated
-  columnDefs: ColDef[] = [];
+  columnDefs = signal<ColDef[]>([]);
 
   defaultColDef: ColDef = ERP_DEFAULT_COL_DEF;
 
-  gridOptions: GridOptions = createUserGridOptions(this.translate).gridOptions;
+  gridOptions = signal<GridOptions>(createUserGridOptions(this.translate).gridOptions);
 
   // AG Grid UI translations (used in filter dropdowns like "Choose one")
-  agLocaleText: Record<string, string> = {};
+  agLocaleText = signal<Record<string, string>>({});
 
   private rebuildTranslatedUiConfig(): void {
     const filterResult = createUserFilterOptions(this.translate);
-    this.availableFields = filterResult.fields;
-    this.availableOperators = filterResult.operators;
+    this.availableFields.set(filterResult.fields);
+    this.availableOperators.set(filterResult.operators);
 
-    this.columnDefs = createUserColumnDefs(
+    this.columnDefs.set(createUserColumnDefs(
       this.translate,
       this.zone,
       {
         onEdit: (user) => this.openEditModal(user),
         onDelete: (user) => this.deleteUser(user)
       }
-    );
+    ));
 
     const gridResult = createUserGridOptions(this.translate);
-    this.gridOptions = gridResult.gridOptions;
-    this.agLocaleText = gridResult.localeText;
+    this.gridOptions.set(gridResult.gridOptions);
+    this.agLocaleText.set(gridResult.localeText);
   }
 
   constructor() {
@@ -193,7 +195,7 @@ export class UserListComponent extends ErpListComponent implements OnInit {
     effect(() => {
       const isDark = this.themeService.isDarkMode();
       untracked(() => {
-        this.theme = createAgGridTheme(isDark);
+        this.theme.set(createAgGridTheme(isDark));
       });
     });
 
@@ -201,19 +203,19 @@ export class UserListComponent extends ErpListComponent implements OnInit {
       const availableRoles = this.facade.availableRoles();
       untracked(() => {
         // Keep the dual-list inputs in sync when roles are loaded/refreshed.
-        this.dualListAvailableItems = availableRoles
+        this.dualListAvailableItems.set(availableRoles
           .filter(role => !this.userForm.roles.includes(role))
           .map(role => ({
             id: role,
             label: this.formatRoleName(role),
             secondaryLabel: role
-          }));
+          })));
 
-        this.dualListSelectedItems = this.userForm.roles.map(role => ({
+        this.dualListSelectedItems.set(this.userForm.roles.map(role => ({
           id: role,
           label: this.formatRoleName(role),
           secondaryLabel: role
-        }));
+        })));
 
         this.cdr.markForCheck();
       });
@@ -231,10 +233,10 @@ export class UserListComponent extends ErpListComponent implements OnInit {
       .subscribe(() => {
       this.rebuildTranslatedUiConfig();
       // Force grid recreation to apply RTL/LTR
-      this.showGrid = false;
+      this.showGrid.set(false);
       
       setTimeout(() => {
-        this.showGrid = true;
+        this.showGrid.set(true);
       }, 0);
 
       this.cdr.markForCheck();
@@ -334,9 +336,9 @@ export class UserListComponent extends ErpListComponent implements OnInit {
   // Modal operations
   openCreateModal(content: TemplateRef<unknown>): void {
     // Reset form state completely
-    this.isEditMode = false;
-    this.editingUserId = null;
-    this.formError = '';
+    this.isEditMode.set(false);
+    this.editingUserId.set(null);
+    this.formError.set('');
     
     // Create new form object to ensure change detection
     this.userForm = {
@@ -363,19 +365,19 @@ export class UserListComponent extends ErpListComponent implements OnInit {
     // Reset form when modal is dismissed/closed (always handle rejection to avoid unhandled promise)
     modalRef.result.then(() => undefined, () => undefined).finally(() => {
       this.userForm = { username: '', password: '', tenantId: '', enabled: true, roles: [] };
-      this.formError = '';
-      this.isEditMode = false;
-      this.editingUserId = null;
+      this.formError.set('');
+      this.isEditMode.set(false);
+      this.editingUserId.set(null);
 
-      this.dualListAvailableItems = [];
-      this.dualListSelectedItems = [];
+      this.dualListAvailableItems.set([]);
+      this.dualListSelectedItems.set([]);
       this.cdr.detectChanges();
     });
   }
 
   openRolesModal(): void {
-    if (this.rolesLoading) return;
-    if (this.availableRoles.length === 0) return;
+    if (this.rolesLoading()) return;
+    if (this.availableRoles().length === 0) return;
     if (!this.rolesModalRef) return;
 
     this.prepareDualListItems();
@@ -389,8 +391,8 @@ export class UserListComponent extends ErpListComponent implements OnInit {
   }
 
   openEditModal(user: UserDto): void {
-    this.isEditMode = true;
-    this.editingUserId = user.id;
+    this.isEditMode.set(true);
+    this.editingUserId.set(user.id);
     const normalizedRoles = Array.isArray(user.roles) 
       ? user.roles
           .map(r => {
@@ -407,7 +409,7 @@ export class UserListComponent extends ErpListComponent implements OnInit {
       enabled: user.enabled, 
       roles: normalizedRoles
     };
-    this.formError = '';
+    this.formError.set('');
 
     this.prepareDualListItems();
 
@@ -429,12 +431,12 @@ export class UserListComponent extends ErpListComponent implements OnInit {
     // Reset form when modal is dismissed/closed (always handle rejection to avoid unhandled promise)
     modalRef.result.then(() => undefined, () => undefined).finally(() => {
       this.userForm = { username: '', password: '', tenantId: '', enabled: true, roles: [] };
-      this.formError = '';
-      this.isEditMode = false;
-      this.editingUserId = null;
+      this.formError.set('');
+      this.isEditMode.set(false);
+      this.editingUserId.set(null);
 
-      this.dualListAvailableItems = [];
-      this.dualListSelectedItems = [];
+      this.dualListAvailableItems.set([]);
+      this.dualListSelectedItems.set([]);
       this.cdr.detectChanges();
     });
   }
@@ -442,27 +444,27 @@ export class UserListComponent extends ErpListComponent implements OnInit {
   createUser(modal: NgbModalRef): void {
     this.userForm.username = this.userForm.username?.trim() || '';
     if (!this.userForm.username || this.userForm.username.length < 3) {
-      this.formError = this.userForm.username
+      this.formError.set(this.userForm.username
         ? 'USERS.USERNAME_MIN_LENGTH'
-        : 'USERS.ENTER_USERNAME';
+        : 'USERS.ENTER_USERNAME');
       return;
     }
 
-    if (!this.isEditMode && !this.userForm.password) {
-      this.formError = 'USERS.ENTER_PASSWORD';
+    if (!this.isEditMode() && !this.userForm.password) {
+      this.formError.set('USERS.ENTER_PASSWORD');
       return;
     }
 
     if (this.userForm.password && this.userForm.password.length < 6) {
-      this.formError = 'USERS.PASSWORD_MIN_LENGTH';
+      this.formError.set('USERS.PASSWORD_MIN_LENGTH');
       return;
     }
     
-    this.formSubmitting = true;
-    this.formError = '';
+    this.formSubmitting.set(true);
+    this.formError.set('');
     this.formModalRef = modal;
 
-    if (this.isEditMode && this.editingUserId) {
+    if (this.isEditMode() && this.editingUserId()) {
       const request: UpdateUserRequest = { 
         username: this.userForm.username, 
         enabled: this.userForm.enabled,
@@ -471,10 +473,12 @@ export class UserListComponent extends ErpListComponent implements OnInit {
       };
       if (this.userForm.password) request.password = this.userForm.password;
 
-      this.facade.updateUser(this.editingUserId, request).subscribe((response) => {
-        this.formSubmitting = false;
+      this.facade.updateUser(this.editingUserId()!, request)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((response) => {
+        this.formSubmitting.set(false);
         if (!response) {
-          this.formError = this.facade.actionError() || 'ERRORS.OPERATION_FAILED';
+          this.formError.set(this.facade.actionError() || 'ERRORS.OPERATION_FAILED');
           this.cdr.markForCheck();
           return;
         }
@@ -492,10 +496,12 @@ export class UserListComponent extends ErpListComponent implements OnInit {
         roleNames: this.userForm.roles.length > 0 ? this.userForm.roles : undefined
       };
       
-      this.facade.createUser(request).subscribe((response) => {
-        this.formSubmitting = false;
+      this.facade.createUser(request)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((response) => {
+        this.formSubmitting.set(false);
         if (!response) {
-          this.formError = this.facade.actionError() || 'ERRORS.OPERATION_FAILED';
+          this.formError.set(this.facade.actionError() || 'ERRORS.OPERATION_FAILED');
           this.cdr.markForCheck();
           return;
         }
@@ -510,17 +516,20 @@ export class UserListComponent extends ErpListComponent implements OnInit {
   deleteUser(user: UserDto): void {
     const deps: UserConfirmActionDeps = {
       dialog: this.erpDialogService,
-      notify: this.notificationService
+      notify: this.notificationService,
+      auth: this.authService
     };
     confirmDeleteUser(deps, user, () => this.performDelete(user.id));
   }
 
   private performDelete(userId: number): void {
-    this.deleteSubmitting = true;
+    this.deleteSubmitting.set(true);
     this.cdr.markForCheck();
 
-    this.facade.deleteUser(userId).subscribe((result) => {
-      this.deleteSubmitting = false;
+    this.facade.deleteUser(userId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((result) => {
+      this.deleteSubmitting.set(false);
 
       if (result === null) {
         this.notificationService.error(this.facade.actionError() || 'MESSAGES.DELETE_FAILED');
@@ -535,7 +544,7 @@ export class UserListComponent extends ErpListComponent implements OnInit {
 
   // Advanced filters
   toggleAdvancedFilters(): void {
-    this.showAdvancedFilters = !this.showAdvancedFilters;
+    this.showAdvancedFilters.update(v => !v);
   }
 
   onSpecFiltersApply(filters: SpecFilter[]): void {
@@ -561,6 +570,10 @@ export class UserListComponent extends ErpListComponent implements OnInit {
       this.prepareDualListItems();
     }
     this.cdr.markForCheck();
+  }
+
+  ngOnDestroy(): void {
+    this.facade.clearCurrentEntity();
   }
 
 }

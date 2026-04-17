@@ -1,11 +1,13 @@
 import { ErpDialogService } from 'src/app/shared/services/erp-dialog.service';
 import { ErpNotificationService } from 'src/app/shared/services/erp-notification.service';
+import { AuthenticationService } from 'src/app/core/services/authentication.service';
 import { RoleAccessFacade } from '../facades/role-access.facade';
 import { RoleDto } from '../models/role-access.model';
 
 export interface RoleConfirmActionDeps {
   dialog: ErpDialogService;
   notify: ErpNotificationService;
+  auth: AuthenticationService;
   facade: RoleAccessFacade;
 }
 
@@ -16,6 +18,11 @@ export function confirmToggleRoleActive(
   role: RoleDto,
   onDone: () => void
 ): void {
+  if (!deps.auth.hasPermission('PERM_ROLE_UPDATE')) {
+    deps.notify.warning('MESSAGES.NO_PERMISSION');
+    return;
+  }
+
   const titleKey = role.active ? 'COMMON.DEACTIVATE' : 'COMMON.ACTIVATE';
   const messageKey = role.active ? 'MESSAGES.CONFIRM_ACTION' : 'MESSAGES.CONFIRM_ACTIVATE';
 
@@ -45,6 +52,11 @@ export function confirmDeleteRole(
   role: RoleDto,
   onDone: () => void
 ): void {
+  if (!deps.auth.hasPermission('PERM_ROLE_DELETE')) {
+    deps.notify.warning('MESSAGES.NO_PERMISSION');
+    return;
+  }
+
   deps.dialog
     .confirm({
       titleKey: 'ROLE_ACCESS.DELETE_CONFIRM_TITLE',
@@ -71,6 +83,11 @@ export function confirmRemoveRolePage(
   pageCode: string,
   onDone: () => void
 ): void {
+  if (!deps.auth.hasPermission('PERM_ROLE_UPDATE')) {
+    deps.notify.warning('MESSAGES.NO_PERMISSION');
+    return;
+  }
+
   deps.dialog
     .confirm({
       titleKey: 'ROLE_ACCESS.REMOVE_PAGE',

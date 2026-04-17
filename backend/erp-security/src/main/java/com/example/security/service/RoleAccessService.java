@@ -97,7 +97,9 @@ public class RoleAccessService {
 
         // Check for duplicate assignment (page already assigned to role)
         boolean hasViewForPage = role.getPermissions().stream()
-                .anyMatch(p -> p.getName().equals(PermissionType.VIEW.buildPermissionKey(pageCode)));
+            .anyMatch(p -> p.getPage() != null
+                && Objects.equals(p.getPage().getId(), page.getId())
+                && p.getPermissionType() == PermissionType.VIEW);
         if (hasViewForPage) {
             throw new LocalizedException(Status.ALREADY_EXISTS, SecurityErrorCodes.PAGE_ALREADY_ASSIGNED_TO_ROLE, pageCode, role.getRoleName());
         }
@@ -112,24 +114,15 @@ public class RoleAccessService {
             validCrudPermissions.add(upperPermType);
         }
 
-        // Build permission keys: VIEW + requested CRUD
-        Set<String> permKeysToAdd = new HashSet<>();
-        permKeysToAdd.add(PermissionType.VIEW.buildPermissionKey(pageCode)); // ALWAYS add VIEW
-
+        // Build required permission types: VIEW + requested CRUD
+        EnumSet<PermissionType> requiredTypes = EnumSet.of(PermissionType.VIEW);
         for (String permType : validCrudPermissions) {
             PermissionType type = PermissionType.valueOf(permType);
-            permKeysToAdd.add(type.buildPermissionKey(pageCode));
+            requiredTypes.add(type);
         }
 
-        // Fetch permissions by keys
-        List<Permission> permissions = permissionRepository.findByNameInAndTenantId(
-            new ArrayList<>(permKeysToAdd), 
-            tenantId
-        );
-
-        if (permissions.size() != permKeysToAdd.size()) {
-            throw new LocalizedException(Status.NOT_FOUND, SecurityErrorCodes.PERMISSIONS_NOT_FOUND);
-        }
+        // Resolve permissions by page FK + type to avoid hard dependency on name conventions.
+        List<Permission> permissions = resolvePagePermissions(page, requiredTypes, tenantId);
 
         // Add permissions to role
         role.getPermissions().addAll(permissions);
@@ -170,8 +163,8 @@ public class RoleAccessService {
         Role role = roleRepository.findByIdWithPermissions(roleId, tenantId)
                 .orElseThrow(() -> new LocalizedException(Status.NOT_FOUND, SecurityErrorCodes.ROLE_NOT_FOUND, roleId));
 
-        // Build target permission set
-        Set<String> targetPermissionKeys = new HashSet<>();
+        // Build target permission set by page FK + type
+        Set<Permission> targetPermissionSet = new LinkedHashSet<>();
 
         for (SyncRolePagesRequest.PageAssignmentDto assignment : request.getAssignments()) {
             String pageCode = assignment.getPageCode().toUpperCase().trim();
@@ -180,8 +173,7 @@ public class RoleAccessService {
             Page page = pageRepository.findByPageCodeAndTenantId(pageCode, tenantId)
                     .orElseThrow(() -> new LocalizedException(Status.NOT_FOUND, SecurityErrorCodes.PAGE_NOT_FOUND_BY_CODE, pageCode));
 
-            // ALWAYS add VIEW
-            targetPermissionKeys.add(PermissionType.VIEW.buildPermissionKey(pageCode));
+            EnumSet<PermissionType> requiredTypes = EnumSet.of(PermissionType.VIEW);
 
             // Validate and add requested CRUD permissions
             for (String permType : assignment.getPermissions()) {
@@ -190,22 +182,13 @@ public class RoleAccessService {
                     throw new LocalizedException(Status.BAD_REQUEST, SecurityErrorCodes.INVALID_PERMISSION_TYPE, permType);
                 }
                 PermissionType type = PermissionType.valueOf(upperPermType);
-                targetPermissionKeys.add(type.buildPermissionKey(pageCode));
+                requiredTypes.add(type);
             }
+
+            targetPermissionSet.addAll(resolvePagePermissions(page, requiredTypes, tenantId));
         }
 
-        // Fetch all target permissions (if any)
-        List<Permission> targetPermissions = new ArrayList<>();
-        if (!targetPermissionKeys.isEmpty()) {
-            targetPermissions = permissionRepository.findByNameInAndTenantId(
-                new ArrayList<>(targetPermissionKeys),
-                tenantId
-            );
-
-            if (targetPermissions.size() != targetPermissionKeys.size()) {
-                throw new LocalizedException(Status.NOT_FOUND, SecurityErrorCodes.PERMISSIONS_NOT_FOUND);
-            }
-        }
+        List<Permission> targetPermissions = new ArrayList<>(targetPermissionSet);
 
         // Get current page-related permissions for this role (PERM_*_*)
         Set<Permission> currentPagePermissions = role.getPermissions().stream()
@@ -231,6 +214,27 @@ public class RoleAccessService {
                 .roleName(role.getRoleName())
                 .assignments(assignments)
                 .build(), Status.UPDATED);
+    }
+
+    private List<Permission> resolvePagePermissions(Page page, EnumSet<PermissionType> requiredTypes, String tenantId) {
+        List<Permission> pagePermissions = permissionRepository.findByPageIdAndTenantId(page.getId(), tenantId);
+
+        Map<PermissionType, Permission> byType = new EnumMap<>(PermissionType.class);
+        for (Permission permission : pagePermissions) {
+            if (permission.getPermissionType() != null) {
+                byType.put(permission.getPermissionType(), permission);
+            }
+        }
+
+        if (!byType.keySet().containsAll(requiredTypes)) {
+            throw new LocalizedException(Status.NOT_FOUND, SecurityErrorCodes.PERMISSIONS_NOT_FOUND);
+        }
+
+        List<Permission> resolved = new ArrayList<>(requiredTypes.size());
+        for (PermissionType type : requiredTypes) {
+            resolved.add(byType.get(type));
+        }
+        return resolved;
     }
 
     /**

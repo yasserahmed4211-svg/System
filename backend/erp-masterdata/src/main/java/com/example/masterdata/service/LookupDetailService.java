@@ -312,16 +312,6 @@ public class LookupDetailService {
                 id
             ));
 
-        // Check for references
-        long activityReferences = lookupDetailRepository.countActivityReferences(id);
-        if (activityReferences > 0) {
-            throw new LocalizedException(
-                Status.CONFLICT,
-                MasterDataErrorCodes.ACTIVITY_REFERENCES_EXIST,
-                activityReferences
-            );
-        }
-
         // Delete - DataIntegrityViolationException handled by GlobalExceptionHandler
         lookupDetailRepository.delete(entity);
         log.info("Lookup detail deleted: {}", id);
@@ -347,8 +337,6 @@ public class LookupDetailService {
                 id
             ));
 
-        long activityReferences = lookupDetailRepository.countActivityReferences(id);
-
-        return ServiceResult.success(lookupDetailMapper.toUsageResponse(entity, activityReferences));
+        return ServiceResult.success(lookupDetailMapper.toUsageResponse(entity));
     }
 }

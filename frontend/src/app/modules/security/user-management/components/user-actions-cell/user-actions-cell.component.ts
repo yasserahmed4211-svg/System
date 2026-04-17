@@ -18,7 +18,8 @@ export type UserActionsCellRendererParams = ICellRendererParams<UserDto> & {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, TranslateModule, ErpPermissionDirective],
   template: `
-    <div class="d-flex align-items-center gap-1" *ngIf="user as u">
+    @if (user; as u) {
+    <div class="d-flex align-items-center gap-1">
       <button
         type="button"
         class="btn btn-sm btn-info"
@@ -39,6 +40,7 @@ export type UserActionsCellRendererParams = ICellRendererParams<UserDto> & {
         <i class="ti ti-trash"></i>
       </button>
     </div>
+    }
   `
 })
 export class UserActionsCellComponent implements ICellRendererAngularComp {

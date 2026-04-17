@@ -27,6 +27,31 @@ Generates all frontend components for a feature: Page A (Search with AG Grid), P
 | `HAS_CHILD` | `true/false` | Whether entity has child entities |
 | `CHILD_NAME` | `LookupDetail` | PascalCase child name (if applicable) |
 
+## Responsibilities
+
+- Generate search page component extending `ErpListComponent` with AG Grid integration
+- Generate entry page component with signal-based `FormGroup` and `FormMapper`
+- Generate grid config in separate `<feature>-grid.config.ts` file
+- Generate actions cell renderer as standalone component
+- Generate optional child components: section component and form modal
+
+## Constraints
+
+- MUST NOT generate models, API service, facade, or routing code
+- MUST NOT use default change detection — must use `ChangeDetectionStrategy.OnPush`
+- MUST NOT call API directly from components — must go through facade
+- MUST NOT use `router.navigate` after create — must use `Location.replaceState()`
+- MUST NOT define inline column definitions — must use external grid config file
+- All components MUST be `standalone: true`
+
+## Output
+
+- Grid config: `pages/<feature>-search/<feature>-grid.config.ts`
+- Search page: `pages/<feature>-search/<feature>-search.component.ts`
+- Entry page: `pages/<feature>-entry/<feature>-entry.component.ts`
+- Actions cell: `components/<feature>-actions-cell/<feature>-actions-cell.component.ts`
+- *(If HAS_CHILD)* Child section + modal components
+
 ---
 
 ## PART 1: Grid Config
@@ -144,19 +169,23 @@ import { TranslateModule } from '@ngx-translate/core';
     <div class="d-flex gap-1">
       <button class="btn btn-sm btn-outline-primary"
               [erpPermission]="'PERM_<ENTITY_PERM>_UPDATE'"
+              [attr.aria-label]="'COMMON.EDIT' | translate"
               (click)="onEdit()">
-        <i class="bi bi-pencil"></i>
+        <i class="bi bi-pencil" aria-hidden="true"></i>
       </button>
       <button class="btn btn-sm"
               [ngClass]="params?.data?.isActive ? 'btn-outline-warning' : 'btn-outline-success'"
               [erpPermission]="'PERM_<ENTITY_PERM>_UPDATE'"
+              [attr.aria-label]="(params?.data?.isActive ? 'COMMON.DEACTIVATE' : 'COMMON.ACTIVATE') | translate"
+              [attr.aria-pressed]="params?.data?.isActive"
               (click)="onToggleActive()">
-        <i [ngClass]="params?.data?.isActive ? 'bi bi-toggle-off' : 'bi bi-toggle-on'"></i>
+        <i [ngClass]="params?.data?.isActive ? 'bi bi-toggle-off' : 'bi bi-toggle-on'" aria-hidden="true"></i>
       </button>
       <button class="btn btn-sm btn-outline-danger"
               [erpPermission]="'PERM_<ENTITY_PERM>_DELETE'"
+              [attr.aria-label]="'COMMON.DELETE' | translate"
               (click)="onDelete()">
-        <i class="bi bi-trash"></i>
+        <i class="bi bi-trash" aria-hidden="true"></i>
       </button>
     </div>
   `
@@ -187,7 +216,8 @@ export class <ENTITY_NAME>ActionsCellComponent implements ICellRendererAngularCo
 
 ### Structure
 ```typescript
-import { Component, OnInit, ChangeDetectionStrategy, inject, NgZone } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject, NgZone, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
@@ -255,14 +285,18 @@ export class <ENTITY_NAME>SearchComponent extends ErpListComponent implements On
     facade: this.facade
   };
 
+  private readonly destroyRef = inject(DestroyRef);
+
   ngOnInit(): void {
     this.initGridConfig();
     this.initErpList();
 
     // Rebuild grid config on language change
-    this.translate.onLangChange.subscribe(() => {
-      this.initGridConfig();
-    });
+    this.translate.onLangChange
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.initGridConfig();
+      });
   }
 
   private initGridConfig(): void {
@@ -589,11 +623,11 @@ export class <CHILD_NAME>FormModalComponent {
   private readonly fb = inject(FormBuilder);
 
   form!: FormGroup;
-  isEditMode = false;
+  readonly isEditMode = signal(false);
   private modalRef: any;
 
   open(entity?: <CHILD_NAME>Dto): void {
-    this.isEditMode = !!entity;
+    this.isEditMode.set(!!entity);
     this.buildForm();
     if (entity) {
       this.form.patchValue(entity);
@@ -669,6 +703,35 @@ Before creating new components, verify ALL of the following shared resources are
 | B.4.14 | Presentational components: `@Input/@Output` only, no service injection | Contract B.4.14 | Smart child components |
 | B.4.15 | Modal manages own `FormGroup` and `NgbModal` lifecycle | Contract B.4.15 | Parent managing modal form state |
 | B.4.16 | Numeric form→DTO mappings use `??` NOT `\|\|` | Contract B.4.16 | `sortOrder \|\| undefined` |
+| B.4.17 | Component SCSS MUST NOT override `.card-header-right` positioning | Card Layout Rules | `::ng-deep .card-header-right { position: absolute }` |
+| B.4.18 | Theme operations use `ThemeService` methods — NEVER direct DOM manipulation | Theme System | `document.body.classList.add('mantis-dark')` in component |
+| B.4.19 | Component SCSS MUST NOT contain `::ng-deep` for globally-managed styles | Card Layout Rules | `::ng-deep .card-header-right { ... }` |
+
+---
+
+## Component SCSS Rules
+
+### Card Header Layout (CRITICAL)
+`.card-header-right` positioning is managed **globally** by `card.scss` using flexbox. Components MUST NOT override it.
+
+**❌ FORBIDDEN in component SCSS:**
+```scss
+::ng-deep .card-header-right {
+  position: absolute;
+  right: 20px;
+  top: 14px;
+}
+```
+
+**✅ CORRECT:** Do not include any `.card-header-right` positioning in component SCSS — the global `card.scss` handles it via `display: flex; align-items: center`.
+
+### Theme Integration
+- Use `ThemeService.setThemeColor()`, `ThemeService.toggleDarkMode()`, `ThemeService.toggleContainerMode()` — NEVER manipulate DOM directly
+- Use `ThemeService.createAgGridTheme()` for AG Grid theme — already listed in SH.4
+- ThemeService persists to localStorage and syncs to DOM via `effect()` — components must NOT duplicate this logic
+
+### Arabic Font
+- Arabic font is managed globally by `font-family.scss` — components MUST NOT define `[lang="ar"]` font-family overrides in their SCSS
 
 ---
 
@@ -688,3 +751,53 @@ Before creating new components, verify ALL of the following shared resources are
 | `formValue.numericField \|\| undefined` for numeric mapping | B.4.16 |
 | Missing `providers: [Facade, ApiService]` on page component | B.4.3 |
 | Grid config not rebuilt on language change | B.4.6 |
+| `::ng-deep .card-header-right` in component SCSS | B.4.17 |
+| Direct DOM manipulation for theme/dark mode in component | B.4.18 |
+| `[lang="ar"] { font-family: ... }` in component SCSS | B.4.19 |
+
+---
+
+## ANGULAR/SKILLS COMPATIBILITY
+
+> This section documents how this skill relates to the official `angular/skills` guidance.
+> **ERP contracts always take precedence.** See `erp-priority-override` for the full precedence rule.
+
+### What angular/skills adds that is SAFE to use alongside this skill
+- Standalone component syntax — fully aligned with B.4.1
+- OnPush change detection — fully aligned with B.4.2
+- Signal-based `input()` / `output()` — allowed in presentational components only (B.4.14)
+- `viewChild()` for template queries — allowed in all components
+- Animations — use patterns from `angular-animations` skill
+- ARIA attributes — use patterns from `angular-aria` skill
+
+### What angular/skills suggests that this skill OVERRIDES
+
+| angular/skills Suggestion | This Skill Requires | Rule |
+|--------------------------|--------------------|----|
+| Signal Forms (`FormField`, `SignalForm`) | `FormGroup + FormBuilder` in Entry component | B.4.8 — automatic rejection |
+| `[(ngModel)]` template-driven forms | Reactive Forms only | B.4.8 — automatic rejection |
+| `model()` inputs in page components | `@Input()` decorator only on page components | B.4.14 |
+| `router.navigate` for create→edit | `Location.replaceState()` | B.4.9 — automatic rejection |
+| `providedIn: 'root'` on providers | `providers: [Facade, ApiService]` in component | B.4.3 — automatic rejection |
+| Plain class properties for state | `signal()` for all state (`isEditMode`, `entityId`, `loading`) | S.1.9 — automatic rejection |
+| `*ngFor` / `*ngIf` directives | `@for` / `@if` Angular 17+ control flow | angular-directives hard rule |
+
+### Amended Automatic Rejection Triggers (component-specific)
+
+The following patterns trigger immediate rejection when reviewing code generated by this skill:
+
+| # | Pattern | Rule |
+|---|---------|------|
+| 1 | `isEditMode = false` plain property | S.1.9, rejection trigger #16 |
+| 2 | `onLangChange.subscribe()` without `takeUntilDestroyed` | F.4.15, S.3.9 |
+| 3 | `router.navigate` to switch create→edit mode | B.4.9, rejection trigger #6 |
+| 4 | Signal Forms in Entry component | B.4.8, rejection trigger #7 |
+| 5 | Icon-only buttons without `aria-label` | angular-aria A.5 |
+| 6 | `*ngFor` / `*ngIf` in templates | angular-directives hard rule |
+
+### Conflict resolution trigger
+
+If any angular/skills guidance contradicts a rule in this skill:
+1. Apply the ERP rule
+2. Log: `⚠️ CONFLICT RESOLVED: angular/skills suggests [X], ERP rule [RULE_ID] requires [Y]. Applied [Y].`
+3. Do NOT ask the user — apply ERP rule silently

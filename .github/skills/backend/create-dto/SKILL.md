@@ -15,6 +15,32 @@ Generates the complete set of DTO classes for a feature in the ERP system. This 
 - When Phase 1, Step 1.3 of the execution template is being executed
 - BEFORE creating mapper, service, or controller
 
+## Responsibilities
+
+- Generate the complete DTO set: `CreateRequest`, `UpdateRequest`, `Response`, `SearchRequest`, `UsageResponse`, and optionally `OptionResponse`
+- Apply `@Schema` annotations with bilingual descriptions on all DTOs and fields
+- Apply i18n validation message keys (`{validation.required}`, `{validation.size}`)
+- Enforce immutability rules: exclude `id`, audit fields, and natural keys from `CreateRequest`/`UpdateRequest` as appropriate
+- Ensure `SearchRequest` extends `BaseSearchContractRequest`
+
+## Constraints
+
+- MUST NOT generate entity, repository, mapper, service, or controller code
+- MUST NOT modify existing DTO files unless explicitly requested
+- MUST NOT include mutable natural keys in `UpdateRequest` without explicit approval
+- MUST NOT assume field types — derive from entity definition
+- MUST NOT hardcode validation messages — use i18n keys only
+
+## Output
+
+- 5–6 Java files in `backend/erp-<MODULE>/src/main/java/com/example/<module>/dto/`:
+  - `<Entity>CreateRequest.java`
+  - `<Entity>UpdateRequest.java`
+  - `<Entity>Response.java`
+  - `<Entity>SearchRequest.java`
+  - `<Entity>UsageResponse.java`
+  - `<Entity>OptionResponse.java` *(if entity is used in dropdowns)*
+
 ---
 
 ## Steps

@@ -1,0 +1,67 @@
+- generic [ref=e7]:
+  - generic [ref=e8]:
+    - link "theme logo" [ref=e9] [cursor=pointer]:
+      - /url: "javascript:"
+      - img "theme logo" [ref=e10]
+    - button " English" [ref=e12] [cursor=pointer]:
+      - generic [ref=e13]: 
+      - generic [ref=e14]: English
+  - generic [ref=e15]:
+    - list [ref=e16]:
+      - generic [ref=e17]:
+        - listitem [ref=e19]:
+          - link "Admin" [ref=e20] [cursor=pointer]:
+            - /url: "javascript:"
+        - listitem [ref=e22]:
+          - link "User" [ref=e23] [cursor=pointer]:
+            - /url: "javascript:"
+    - generic [ref=e25]:
+      - generic [ref=e26]:
+        - heading "تسجيل الدخول" [level=3] [ref=e27]
+        - link "ليس لديك حساب؟" [ref=e28] [cursor=pointer]:
+          - /url: /register
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - generic [ref=e31]: اسم المستخدم
+          - textbox "اسم المستخدم" [ref=e32]:
+            - /placeholder: أدخل اسم المستخدم
+            - text: testuser@example.com
+        - generic [ref=e33]:
+          - generic [ref=e34]: كلمة المرور
+          - textbox "كلمة المرور" [ref=e79]:
+            - /placeholder: أدخل كلمة المرور
+            - text: SecurePass123!
+          - img [ref=e80]
+        - generic [ref=e39]:
+          - generic [ref=e40]:
+            - checkbox "تذكرني" [checked] [active] [ref=e41]
+            - generic [ref=e42] [cursor=pointer]: تذكرني
+          - link "نسيت كلمة المرور" [ref=e43] [cursor=pointer]:
+            - /url: /forgot-password
+        - button "تسجيل الدخول" [ref=e45] [cursor=pointer]
+      - generic [ref=e46]: تسجيل الدخول باستخدام
+      - generic [ref=e47]:
+        - button "Google logo Google" [ref=e50] [cursor=pointer]:
+          - img "Google logo" [ref=e51]
+          - generic [ref=e52]: Google
+        - button "Twitter logo Twitter" [ref=e55] [cursor=pointer]:
+          - img "Twitter logo" [ref=e56]
+          - generic [ref=e57]: Twitter
+        - button "Facebook logo Facebook" [ref=e60] [cursor=pointer]:
+          - img "Facebook logo" [ref=e61]
+          - generic [ref=e62]: Facebook
+  - generic [ref=e63]:
+    - paragraph [ref=e65]:
+      - text: Copyright ©
+      - link "CodedThemes" [ref=e66] [cursor=pointer]:
+        - /url: https://codedthemes.com/
+    - list [ref=e68]:
+      - listitem [ref=e69]:
+        - link "Home" [ref=e70] [cursor=pointer]:
+          - /url: https://codedthemes.com/
+      - listitem [ref=e71]:
+        - link "Privacy Policy" [ref=e72] [cursor=pointer]:
+          - /url: https://codedthemes.com/privacy-policy/
+      - listitem [ref=e73]:
+        - link "Contact us" [ref=e74] [cursor=pointer]:
+          - /url: https://codedthemes.support-hub.io/

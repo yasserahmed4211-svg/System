@@ -168,7 +168,7 @@ export class PagesFormComponent implements OnInit, OnDestroy {
           route: page.route,
           icon: page.icon || '',
           module: page.module || '',
-          parentId: page.parentId || null,
+          parentId: page.parentId ?? null,
           displayOrder: page.displayOrder,
           active: page.active
         });

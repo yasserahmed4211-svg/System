@@ -1,0 +1,772 @@
+- generic [ref=e3]:
+  - navigation [ref=e5]:
+    - generic [ref=e6]:
+      - link "theme-logo" [ref=e8] [cursor=pointer]:
+        - /url: index.html
+        - img "theme-logo" [ref=e9]
+      - generic [ref=e10]:
+        - generic [ref=e14]:
+          - list [ref=e15]:
+            - generic [ref=e16]:
+              - listitem [ref=e17] [cursor=pointer]:
+                - generic [ref=e18]: المالية
+              - generic [ref=e20]:
+                - listitem [ref=e22]:
+                  - link "دليل الحسابات" [ref=e23] [cursor=pointer]:
+                    - /url: /finance/gl/accounts
+                    - img [ref=e26]
+                    - generic [ref=e28]: دليل الحسابات
+                - listitem [ref=e30]:
+                  - link "قواعد المحاسبة" [ref=e31] [cursor=pointer]:
+                    - /url: /finance/gl/rules
+                    - img [ref=e34]
+                    - generic [ref=e36]: قواعد المحاسبة
+                - listitem [ref=e38]:
+                  - link "القيود اليومية" [ref=e39] [cursor=pointer]:
+                    - /url: /finance/gl/journals
+                    - img [ref=e42]
+                    - generic [ref=e44]: القيود اليومية
+                - listitem [ref=e46]:
+                  - link "قيود الترحيل" [ref=e47] [cursor=pointer]:
+                    - /url: /finance/gl/postings
+                    - img [ref=e50]
+                    - generic [ref=e52]: قيود الترحيل
+            - generic [ref=e53]:
+              - listitem [ref=e54] [cursor=pointer]:
+                - generic [ref=e55]: الأمان
+              - generic [ref=e57]:
+                - listitem [ref=e59]:
+                  - link "إدارة المستخدمين" [ref=e60] [cursor=pointer]:
+                    - /url: /users
+                    - img [ref=e63]
+                    - generic [ref=e65]: إدارة المستخدمين
+                - listitem [ref=e67]:
+                  - link "إدارة صلاحيات الأدوار" [ref=e68] [cursor=pointer]:
+                    - /url: /role-access
+                    - img [ref=e71]
+                    - generic [ref=e74]: إدارة صلاحيات الأدوار
+                - listitem [ref=e76]:
+                  - link "إدارة الصفحات" [ref=e77] [cursor=pointer]:
+                    - /url: /pages
+                    - img [ref=e80]
+                    - generic [ref=e82]: إدارة الصفحات
+            - generic [ref=e83]:
+              - listitem [ref=e84] [cursor=pointer]:
+                - generic [ref=e85]: البيانات الرئيسية
+              - listitem [ref=e89]:
+                - link "قوائم البحث الرئيسية" [ref=e90] [cursor=pointer]:
+                  - /url: /master-data/master-lookups
+                  - img [ref=e93]
+                  - generic [ref=e95]: قوائم البحث الرئيسية
+          - generic [ref=e99]:
+            - img "user" [ref=e100]
+            - generic [ref=e101]:
+              - heading "المساعدة" [level=5] [ref=e102]
+              - text: الدعم
+            - button "الدعم" [ref=e104] [cursor=pointer]
+        - list [ref=e106]:
+          - generic [ref=e107]:
+            - img "user" [ref=e110]
+            - generic [ref=e111]:
+              - text: admin
+              - paragraph [ref=e112]: ROLE_USER
+            - img [ref=e115]
+  - banner [ref=e118]:
+    - generic [ref=e119]:
+      - list [ref=e122]:
+        - listitem [ref=e123]:
+          - link "click to menu collapse" [ref=e124] [cursor=pointer]:
+            - /url: "javascript:"
+            - img [ref=e126]
+        - text: 
+        - listitem [ref=e128]:
+          - generic [ref=e129]:
+            - img [ref=e131]
+            - searchbox "Ctrl + K" [ref=e133]
+      - list [ref=e136]:
+        - listitem [ref=e137]:
+          - link [ref=e138] [cursor=pointer]:
+            - /url: "javascript:"
+            - img [ref=e140]
+        - listitem [ref=e142]:
+          - link "ع" [ref=e143] [cursor=pointer]:
+            - /url: "javascript:"
+            - img [ref=e145]
+            - generic [ref=e148]: ع
+        - listitem [ref=e149]:
+          - link "3" [ref=e150] [cursor=pointer]:
+            - /url: "javascript:"
+            - img [ref=e152]
+            - generic [ref=e154]: "3"
+        - listitem [ref=e155]:
+          - link [ref=e156] [cursor=pointer]:
+            - /url: "javascript:"
+            - img [ref=e158]
+        - listitem [ref=e160]:
+          - link [ref=e161] [cursor=pointer]:
+            - /url: "javascript:"
+            - img [ref=e163]
+        - listitem [ref=e165]:
+          - link [ref=e166] [cursor=pointer]:
+            - /url: "javascript:"
+            - img [ref=e168]
+        - listitem [ref=e170]:
+          - link "user-image admin" [ref=e171] [cursor=pointer]:
+            - /url: "javascript:"
+            - img "user-image" [ref=e172]
+            - generic [ref=e173]: admin
+  - generic [ref=e182]:
+    - heading "دليل الحسابات" [level=5] [ref=e185]
+    - generic [ref=e186]:
+      - generic [ref=e187]:
+        - button " بحث متقدم" [ref=e188] [cursor=pointer]:
+          - generic [ref=e189]: 
+          - text: بحث متقدم
+        - button " إضافة حساب رئيسي" [ref=e190] [cursor=pointer]:
+          - generic [ref=e191]: 
+          - text: إضافة حساب رئيسي
+        - button " إضافة حساب فرعي" [ref=e340] [cursor=pointer]:
+          - generic [ref=e341]: 
+          - text: إضافة حساب فرعي
+        - button " تحديث" [ref=e192] [cursor=pointer]:
+          - generic [ref=e193]: 
+          - text: تحديث
+      - generic [ref=e194]:
+        - generic [ref=e196]:
+          - textbox "تصفية حسب الرقم أو الاسم..." [ref=e198]
+          - button "توسيع الكل" [active] [ref=e200] [cursor=pointer]:
+            - generic [ref=e201]: 
+            - text: توسيع الكل
+          - button "طي الكل" [ref=e202] [cursor=pointer]:
+            - generic [ref=e203]: 
+            - text: طي الكل
+          - generic [ref=e205]: 6 حسابات رئيسية
+        - generic [ref=e473]:
+          - generic [ref=e474]:
+            - generic [ref=e475] [cursor=pointer]:
+              - button "COMMON.EXPAND" [expanded] [ref=e476]:
+                - generic [ref=e477]: 
+              - generic "undefined" [ref=e478]: 
+              - generic [ref=e479]: 1 – الأصول
+              - generic [ref=e480]:
+                - generic "المستوى" [ref=e481]: L0
+                - generic "عدد الفروع" [ref=e482]:
+                  - generic [ref=e483]: 
+                  - text: "2"
+                - generic [ref=e484]:
+                  - button "" [ref=e485]:
+                    - generic [ref=e486]: 
+                  - button "" [ref=e487]:
+                    - generic [ref=e488]: 
+                  - button "" [ref=e489]:
+                    - generic [ref=e490]: 
+            - generic [ref=e596]:
+              - generic [ref=e597] [cursor=pointer]:
+                - button "COMMON.EXPAND" [expanded] [ref=e598]:
+                  - generic [ref=e599]: 
+                - generic "undefined" [ref=e600]: 
+                - generic [ref=e601]: 11 – أصول متداولة
+                - generic [ref=e602]:
+                  - generic "المستوى" [ref=e603]: L1
+                  - generic "عدد الفروع" [ref=e604]:
+                    - generic [ref=e605]: 
+                    - text: "4"
+                  - generic [ref=e606]:
+                    - button "" [ref=e607]:
+                      - generic [ref=e608]: 
+                    - button "" [ref=e609]:
+                      - generic [ref=e610]: 
+                    - button "" [ref=e611]:
+                      - generic [ref=e612]: 
+              - generic [ref=e614] [cursor=pointer]:
+                - generic [ref=e616]: 
+                - generic "undefined" [ref=e617]: 
+                - generic [ref=e618]: 1101 – الصندوق
+                - generic [ref=e619]:
+                  - generic "المستوى" [ref=e620]: L2
+                  - generic "حساب فرعي (مؤهل للقيد)" [ref=e621]:
+                    - generic [ref=e622]: 
+                  - generic [ref=e623]:
+                    - button "" [ref=e624]:
+                      - generic [ref=e625]: 
+                    - button "" [ref=e626]:
+                      - generic [ref=e627]: 
+                    - button "" [ref=e628]:
+                      - generic [ref=e629]: 
+              - generic [ref=e631] [cursor=pointer]:
+                - generic [ref=e633]: 
+                - generic "undefined" [ref=e634]: 
+                - generic [ref=e635]: 1102 – البنك - حساب جاري
+                - generic [ref=e636]:
+                  - generic "المستوى" [ref=e637]: L2
+                  - generic "حساب فرعي (مؤهل للقيد)" [ref=e638]:
+                    - generic [ref=e639]: 
+                  - generic [ref=e640]:
+                    - button "" [ref=e641]:
+                      - generic [ref=e642]: 
+                    - button "" [ref=e643]:
+                      - generic [ref=e644]: 
+                    - button "" [ref=e645]:
+                      - generic [ref=e646]: 
+              - generic [ref=e648] [cursor=pointer]:
+                - generic [ref=e650]: 
+                - generic "undefined" [ref=e651]: 
+                - generic [ref=e652]: 1103 – العملاء (ذمم مدينة)
+                - generic [ref=e653]:
+                  - generic "المستوى" [ref=e654]: L2
+                  - generic "حساب فرعي (مؤهل للقيد)" [ref=e655]:
+                    - generic [ref=e656]: 
+                  - generic [ref=e657]:
+                    - button "" [ref=e658]:
+                      - generic [ref=e659]: 
+                    - button "" [ref=e660]:
+                      - generic [ref=e661]: 
+                    - button "" [ref=e662]:
+                      - generic [ref=e663]: 
+              - generic [ref=e665] [cursor=pointer]:
+                - generic [ref=e667]: 
+                - generic "undefined" [ref=e668]: 
+                - generic [ref=e669]: 1104 – المخزون
+                - generic [ref=e670]:
+                  - generic "المستوى" [ref=e671]: L2
+                  - generic "حساب فرعي (مؤهل للقيد)" [ref=e672]:
+                    - generic [ref=e673]: 
+                  - generic [ref=e674]:
+                    - button "" [ref=e675]:
+                      - generic [ref=e676]: 
+                    - button "" [ref=e677]:
+                      - generic [ref=e678]: 
+                    - button "" [ref=e679]:
+                      - generic [ref=e680]: 
+            - generic [ref=e681]:
+              - generic [ref=e682] [cursor=pointer]:
+                - button "COMMON.EXPAND" [expanded] [ref=e683]:
+                  - generic [ref=e684]: 
+                - generic "undefined" [ref=e685]: 
+                - generic [ref=e686]: 12 – أصول ثابتة
+                - generic [ref=e687]:
+                  - generic "المستوى" [ref=e688]: L1
+                  - generic "عدد الفروع" [ref=e689]:
+                    - generic [ref=e690]: 
+                    - text: "4"
+                  - generic [ref=e691]:
+                    - button "" [ref=e692]:
+                      - generic [ref=e693]: 
+                    - button "" [ref=e694]:
+                      - generic [ref=e695]: 
+                    - button "" [ref=e696]:
+                      - generic [ref=e697]: 
+              - generic [ref=e699] [cursor=pointer]:
+                - generic [ref=e701]: 
+                - generic "undefined" [ref=e702]: 
+                - generic [ref=e703]: 1201 – الأراضي
+                - generic [ref=e704]:
+                  - generic "المستوى" [ref=e705]: L2
+                  - generic "حساب فرعي (مؤهل للقيد)" [ref=e706]:
+                    - generic [ref=e707]: 
+                  - generic [ref=e708]:
+                    - button "" [ref=e709]:
+                      - generic [ref=e710]: 
+                    - button "" [ref=e711]:
+                      - generic [ref=e712]: 
+                    - button "" [ref=e713]:
+                      - generic [ref=e714]: 
+              - generic [ref=e716] [cursor=pointer]:
+                - generic [ref=e718]: 
+                - generic "undefined" [ref=e719]: 
+                - generic [ref=e720]: 1202 – المباني
+                - generic [ref=e721]:
+                  - generic "المستوى" [ref=e722]: L2
+                  - generic "حساب فرعي (مؤهل للقيد)" [ref=e723]:
+                    - generic [ref=e724]: 
+                  - generic [ref=e725]:
+                    - button "" [ref=e726]:
+                      - generic [ref=e727]: 
+                    - button "" [ref=e728]:
+                      - generic [ref=e729]: 
+                    - button "" [ref=e730]:
+                      - generic [ref=e731]: 
+              - generic [ref=e733] [cursor=pointer]:
+                - generic [ref=e735]: 
+                - generic "undefined" [ref=e736]: 
+                - generic [ref=e737]: 1203 – الآلات والمعدات
+                - generic [ref=e738]:
+                  - generic "المستوى" [ref=e739]: L2
+                  - generic "حساب فرعي (مؤهل للقيد)" [ref=e740]:
+                    - generic [ref=e741]: 
+                  - generic [ref=e742]:
+                    - button "" [ref=e743]:
+                      - generic [ref=e744]: 
+                    - button "" [ref=e745]:
+                      - generic [ref=e746]: 
+                    - button "" [ref=e747]:
+                      - generic [ref=e748]: 
+              - generic [ref=e750] [cursor=pointer]:
+                - generic [ref=e752]: 
+                - generic "undefined" [ref=e753]: 
+                - generic [ref=e754]: 1204 – سيارات
+                - generic [ref=e755]:
+                  - generic "المستوى" [ref=e756]: L2
+                  - generic "حساب فرعي (مؤهل للقيد)" [ref=e757]:
+                    - generic [ref=e758]: 
+                  - generic [ref=e759]:
+                    - button "" [ref=e760]:
+                      - generic [ref=e761]: 
+                    - button "" [ref=e762]:
+                      - generic [ref=e763]: 
+                    - button "" [ref=e764]:
+                      - generic [ref=e765]: 
+          - generic [ref=e491]:
+            - generic [ref=e492] [cursor=pointer]:
+              - button "COMMON.EXPAND" [expanded] [ref=e493]:
+                - generic [ref=e494]: 
+              - generic "undefined" [ref=e495]: 
+              - generic [ref=e496]: 13 – Test Asset Account
+              - generic [ref=e497]:
+                - generic "المستوى" [ref=e498]: L0
+                - generic "عدد الفروع" [ref=e499]:
+                  - generic [ref=e500]: 
+                  - text: "1"
+                - generic [ref=e501]:
+                  - button "" [ref=e502]:
+                    - generic [ref=e503]: 
+                  - button "" [ref=e504]:
+                    - generic [ref=e505]: 
+                  - button "" [ref=e506]:
+                    - generic [ref=e507]: 
+            - generic [ref=e509] [cursor=pointer]:
+              - generic [ref=e511]: 
+              - generic "undefined" [ref=e512]: 
+              - generic [ref=e513]: 1301 – Test Asset Child
+              - generic [ref=e514]:
+                - generic "المستوى" [ref=e515]: L1
+                - generic "حساب فرعي (مؤهل للقيد)" [ref=e516]:
+                  - generic [ref=e517]: 
+                - generic [ref=e518]:
+                  - button "" [ref=e519]:
+                    - generic [ref=e520]: 
+                  - button "" [ref=e521]:
+                    - generic [ref=e522]: 
+                  - button "" [ref=e523]:
+                    - generic [ref=e524]: 
+          - generic [ref=e525]:
+            - generic [ref=e526] [cursor=pointer]:
+              - button "COMMON.EXPAND" [expanded] [ref=e527]:
+                - generic [ref=e528]: 
+              - generic "undefined" [ref=e529]: 
+              - generic [ref=e530]: 2 – الخصوم
+              - generic [ref=e531]:
+                - generic "المستوى" [ref=e532]: L0
+                - generic "عدد الفروع" [ref=e533]:
+                  - generic [ref=e534]: 
+                  - text: "2"
+                - generic [ref=e535]:
+                  - button "" [ref=e536]:
+                    - generic [ref=e537]: 
+                  - button "" [ref=e538]:
+                    - generic [ref=e539]: 
+                  - button "" [ref=e540]:
+                    - generic [ref=e541]: 
+            - generic [ref=e766]:
+              - generic [ref=e767] [cursor=pointer]:
+                - button "COMMON.EXPAND" [expanded] [ref=e768]:
+                  - generic [ref=e769]: 
+                - generic "undefined" [ref=e770]: 
+                - generic [ref=e771]: 21 – خصوم متداولة
+                - generic [ref=e772]:
+                  - generic "المستوى" [ref=e773]: L1
+                  - generic "عدد الفروع" [ref=e774]:
+                    - generic [ref=e775]: 
+                    - text: "3"
+                  - generic [ref=e776]:
+                    - button "" [ref=e777]:
+                      - generic [ref=e778]: 
+                    - button "" [ref=e779]:
+                      - generic [ref=e780]: 
+                    - button "" [ref=e781]:
+                      - generic [ref=e782]: 
+              - generic [ref=e784] [cursor=pointer]:
+                - generic [ref=e786]: 
+                - generic "undefined" [ref=e787]: 
+                - generic [ref=e788]: 2101 – الموردون (ذمم دائنة)
+                - generic [ref=e789]:
+                  - generic "المستوى" [ref=e790]: L2
+                  - generic "حساب فرعي (مؤهل للقيد)" [ref=e791]:
+                    - generic [ref=e792]: 
+                  - generic [ref=e793]:
+                    - button "" [ref=e794]:
+                      - generic [ref=e795]: 
+                    - button "" [ref=e796]:
+                      - generic [ref=e797]: 
+                    - button "" [ref=e798]:
+                      - generic [ref=e799]: 
+              - generic [ref=e801] [cursor=pointer]:
+                - generic [ref=e803]: 
+                - generic "undefined" [ref=e804]: 
+                - generic [ref=e805]: 2102 – ضريبة القيمة المضافة
+                - generic [ref=e806]:
+                  - generic "المستوى" [ref=e807]: L2
+                  - generic "حساب فرعي (مؤهل للقيد)" [ref=e808]:
+                    - generic [ref=e809]: 
+                  - generic [ref=e810]:
+                    - button "" [ref=e811]:
+                      - generic [ref=e812]: 
+                    - button "" [ref=e813]:
+                      - generic [ref=e814]: 
+                    - button "" [ref=e815]:
+                      - generic [ref=e816]: 
+              - generic [ref=e818] [cursor=pointer]:
+                - generic [ref=e820]: 
+                - generic "undefined" [ref=e821]: 
+                - generic [ref=e822]: 2103 – رواتب مستحقة
+                - generic [ref=e823]:
+                  - generic "المستوى" [ref=e824]: L2
+                  - generic "حساب فرعي (مؤهل للقيد)" [ref=e825]:
+                    - generic [ref=e826]: 
+                  - generic [ref=e827]:
+                    - button "" [ref=e828]:
+                      - generic [ref=e829]: 
+                    - button "" [ref=e830]:
+                      - generic [ref=e831]: 
+                    - button "" [ref=e832]:
+                      - generic [ref=e833]: 
+            - generic [ref=e834]:
+              - generic [ref=e835] [cursor=pointer]:
+                - button "COMMON.EXPAND" [expanded] [ref=e836]:
+                  - generic [ref=e837]: 
+                - generic "undefined" [ref=e838]: 
+                - generic [ref=e839]: 22 – خصوم طويلة الأجل
+                - generic [ref=e840]:
+                  - generic "المستوى" [ref=e841]: L1
+                  - generic "عدد الفروع" [ref=e842]:
+                    - generic [ref=e843]: 
+                    - text: "1"
+                  - generic [ref=e844]:
+                    - button "" [ref=e845]:
+                      - generic [ref=e846]: 
+                    - button "" [ref=e847]:
+                      - generic [ref=e848]: 
+                    - button "" [ref=e849]:
+                      - generic [ref=e850]: 
+              - generic [ref=e852] [cursor=pointer]:
+                - generic [ref=e854]: 
+                - generic "undefined" [ref=e855]: 
+                - generic [ref=e856]: 2201 – قروض طويلة الأجل
+                - generic [ref=e857]:
+                  - generic "المستوى" [ref=e858]: L2
+                  - generic "حساب فرعي (مؤهل للقيد)" [ref=e859]:
+                    - generic [ref=e860]: 
+                  - generic [ref=e861]:
+                    - button "" [ref=e862]:
+                      - generic [ref=e863]: 
+                    - button "" [ref=e864]:
+                      - generic [ref=e865]: 
+                    - button "" [ref=e866]:
+                      - generic [ref=e867]: 
+          - generic [ref=e542]:
+            - generic [ref=e543] [cursor=pointer]:
+              - button "COMMON.EXPAND" [expanded] [ref=e544]:
+                - generic [ref=e545]: 
+              - generic "undefined" [ref=e546]: 
+              - generic [ref=e547]: 3 – حقوق الملكية
+              - generic [ref=e548]:
+                - generic "المستوى" [ref=e549]: L0
+                - generic "عدد الفروع" [ref=e550]:
+                  - generic [ref=e551]: 
+                  - text: "2"
+                - generic [ref=e552]:
+                  - button "" [ref=e553]:
+                    - generic [ref=e554]: 
+                  - button "" [ref=e555]:
+                    - generic [ref=e556]: 
+                  - button "" [ref=e557]:
+                    - generic [ref=e558]: 
+            - generic [ref=e869] [cursor=pointer]:
+              - generic [ref=e871]: 
+              - generic "undefined" [ref=e872]: 
+              - generic [ref=e873]: 31 – رأس المال
+              - generic [ref=e874]:
+                - generic "المستوى" [ref=e875]: L1
+                - generic "حساب فرعي (مؤهل للقيد)" [ref=e876]:
+                  - generic [ref=e877]: 
+                - generic [ref=e878]:
+                  - button "" [ref=e879]:
+                    - generic [ref=e880]: 
+                  - button "" [ref=e881]:
+                    - generic [ref=e882]: 
+                  - button "" [ref=e883]:
+                    - generic [ref=e884]: 
+            - generic [ref=e886] [cursor=pointer]:
+              - generic [ref=e888]: 
+              - generic "undefined" [ref=e889]: 
+              - generic [ref=e890]: 32 – أرباح محتجزة
+              - generic [ref=e891]:
+                - generic "المستوى" [ref=e892]: L1
+                - generic "حساب فرعي (مؤهل للقيد)" [ref=e893]:
+                  - generic [ref=e894]: 
+                - generic [ref=e895]:
+                  - button "" [ref=e896]:
+                    - generic [ref=e897]: 
+                  - button "" [ref=e898]:
+                    - generic [ref=e899]: 
+                  - button "" [ref=e900]:
+                    - generic [ref=e901]: 
+          - generic [ref=e559]:
+            - generic [ref=e560] [cursor=pointer]:
+              - button "COMMON.EXPAND" [expanded] [ref=e561]:
+                - generic [ref=e562]: 
+              - generic "undefined" [ref=e563]: 
+              - generic [ref=e564]: 4 – الإيرادات
+              - generic [ref=e565]:
+                - generic "المستوى" [ref=e566]: L0
+                - generic "عدد الفروع" [ref=e567]:
+                  - generic [ref=e568]: 
+                  - text: "2"
+                - generic [ref=e569]:
+                  - button "" [ref=e570]:
+                    - generic [ref=e571]: 
+                  - button "" [ref=e572]:
+                    - generic [ref=e573]: 
+                  - button "" [ref=e574]:
+                    - generic [ref=e575]: 
+            - generic [ref=e902]:
+              - generic [ref=e903] [cursor=pointer]:
+                - button "COMMON.EXPAND" [expanded] [ref=e904]:
+                  - generic [ref=e905]: 
+                - generic "undefined" [ref=e906]: 
+                - generic [ref=e907]: 41 – إيرادات تشغيلية
+                - generic [ref=e908]:
+                  - generic "المستوى" [ref=e909]: L1
+                  - generic "عدد الفروع" [ref=e910]:
+                    - generic [ref=e911]: 
+                    - text: "2"
+                  - generic [ref=e912]:
+                    - button "" [ref=e913]:
+                      - generic [ref=e914]: 
+                    - button "" [ref=e915]:
+                      - generic [ref=e916]: 
+                    - button "" [ref=e917]:
+                      - generic [ref=e918]: 
+              - generic [ref=e920] [cursor=pointer]:
+                - generic [ref=e922]: 
+                - generic "undefined" [ref=e923]: 
+                - generic [ref=e924]: 4101 – إيرادات مبيعات
+                - generic [ref=e925]:
+                  - generic "المستوى" [ref=e926]: L2
+                  - generic "حساب فرعي (مؤهل للقيد)" [ref=e927]:
+                    - generic [ref=e928]: 
+                  - generic [ref=e929]:
+                    - button "" [ref=e930]:
+                      - generic [ref=e931]: 
+                    - button "" [ref=e932]:
+                      - generic [ref=e933]: 
+                    - button "" [ref=e934]:
+                      - generic [ref=e935]: 
+              - generic [ref=e937] [cursor=pointer]:
+                - generic [ref=e939]: 
+                - generic "undefined" [ref=e940]: 
+                - generic [ref=e941]: 4102 – إيرادات خدمات
+                - generic [ref=e942]:
+                  - generic "المستوى" [ref=e943]: L2
+                  - generic "حساب فرعي (مؤهل للقيد)" [ref=e944]:
+                    - generic [ref=e945]: 
+                  - generic [ref=e946]:
+                    - button "" [ref=e947]:
+                      - generic [ref=e948]: 
+                    - button "" [ref=e949]:
+                      - generic [ref=e950]: 
+                    - button "" [ref=e951]:
+                      - generic [ref=e952]: 
+            - generic [ref=e953]:
+              - generic [ref=e954] [cursor=pointer]:
+                - button "COMMON.EXPAND" [expanded] [ref=e955]:
+                  - generic [ref=e956]: 
+                - generic "undefined" [ref=e957]: 
+                - generic [ref=e958]: 42 – إيرادات أخرى
+                - generic [ref=e959]:
+                  - generic "المستوى" [ref=e960]: L1
+                  - generic "عدد الفروع" [ref=e961]:
+                    - generic [ref=e962]: 
+                    - text: "1"
+                  - generic [ref=e963]:
+                    - button "" [ref=e964]:
+                      - generic [ref=e965]: 
+                    - button "" [ref=e966]:
+                      - generic [ref=e967]: 
+                    - button "" [ref=e968]:
+                      - generic [ref=e969]: 
+              - generic [ref=e971] [cursor=pointer]:
+                - generic [ref=e973]: 
+                - generic "undefined" [ref=e974]: 
+                - generic [ref=e975]: 4201 – إيرادات فوائد
+                - generic [ref=e976]:
+                  - generic "المستوى" [ref=e977]: L2
+                  - generic "حساب فرعي (مؤهل للقيد)" [ref=e978]:
+                    - generic [ref=e979]: 
+                  - generic [ref=e980]:
+                    - button "" [ref=e981]:
+                      - generic [ref=e982]: 
+                    - button "" [ref=e983]:
+                      - generic [ref=e984]: 
+                    - button "" [ref=e985]:
+                      - generic [ref=e986]: 
+          - generic [ref=e576]:
+            - generic [ref=e577] [cursor=pointer]:
+              - button "COMMON.EXPAND" [expanded] [ref=e578]:
+                - generic [ref=e579]: 
+              - generic "undefined" [ref=e580]: 
+              - generic [ref=e581]: 5 – المصروفات
+              - generic [ref=e582]:
+                - generic "المستوى" [ref=e583]: L0
+                - generic "عدد الفروع" [ref=e584]:
+                  - generic [ref=e585]: 
+                  - text: "2"
+                - generic [ref=e586]:
+                  - button "" [ref=e587]:
+                    - generic [ref=e588]: 
+                  - button "" [ref=e589]:
+                    - generic [ref=e590]: 
+                  - button "" [ref=e591]:
+                    - generic [ref=e592]: 
+            - generic [ref=e987]:
+              - generic [ref=e988] [cursor=pointer]:
+                - button "COMMON.EXPAND" [expanded] [ref=e989]:
+                  - generic [ref=e990]: 
+                - generic "undefined" [ref=e991]: 
+                - generic [ref=e992]: 51 – مصروفات تشغيلية
+                - generic [ref=e993]:
+                  - generic "المستوى" [ref=e994]: L1
+                  - generic "عدد الفروع" [ref=e995]:
+                    - generic [ref=e996]: 
+                    - text: "2"
+                  - generic [ref=e997]:
+                    - button "" [ref=e998]:
+                      - generic [ref=e999]: 
+                    - button "" [ref=e1000]:
+                      - generic [ref=e1001]: 
+                    - button "" [ref=e1002]:
+                      - generic [ref=e1003]: 
+              - generic [ref=e1005] [cursor=pointer]:
+                - generic [ref=e1007]: 
+                - generic "undefined" [ref=e1008]: 
+                - generic [ref=e1009]: 5101 – تكلفة البضاعة المباعة
+                - generic [ref=e1010]:
+                  - generic "المستوى" [ref=e1011]: L2
+                  - generic "حساب فرعي (مؤهل للقيد)" [ref=e1012]:
+                    - generic [ref=e1013]: 
+                  - generic [ref=e1014]:
+                    - button "" [ref=e1015]:
+                      - generic [ref=e1016]: 
+                    - button "" [ref=e1017]:
+                      - generic [ref=e1018]: 
+                    - button "" [ref=e1019]:
+                      - generic [ref=e1020]: 
+              - generic [ref=e1022] [cursor=pointer]:
+                - generic [ref=e1024]: 
+                - generic "undefined" [ref=e1025]: 
+                - generic [ref=e1026]: 5102 – مصروفات نقل
+                - generic [ref=e1027]:
+                  - generic "المستوى" [ref=e1028]: L2
+                  - generic "حساب فرعي (مؤهل للقيد)" [ref=e1029]:
+                    - generic [ref=e1030]: 
+                  - generic [ref=e1031]:
+                    - button "" [ref=e1032]:
+                      - generic [ref=e1033]: 
+                    - button "" [ref=e1034]:
+                      - generic [ref=e1035]: 
+                    - button "" [ref=e1036]:
+                      - generic [ref=e1037]: 
+            - generic [ref=e1038]:
+              - generic [ref=e1039] [cursor=pointer]:
+                - button "COMMON.EXPAND" [expanded] [ref=e1040]:
+                  - generic [ref=e1041]: 
+                - generic "undefined" [ref=e1042]: 
+                - generic [ref=e1043]: 52 – مصروفات إدارية
+                - generic [ref=e1044]:
+                  - generic "المستوى" [ref=e1045]: L1
+                  - generic "عدد الفروع" [ref=e1046]:
+                    - generic [ref=e1047]: 
+                    - text: "4"
+                  - generic [ref=e1048]:
+                    - button "" [ref=e1049]:
+                      - generic [ref=e1050]: 
+                    - button "" [ref=e1051]:
+                      - generic [ref=e1052]: 
+                    - button "" [ref=e1053]:
+                      - generic [ref=e1054]: 
+              - generic [ref=e1056] [cursor=pointer]:
+                - generic [ref=e1058]: 
+                - generic "undefined" [ref=e1059]: 
+                - generic [ref=e1060]: 5201 – رواتب وأجور
+                - generic [ref=e1061]:
+                  - generic "المستوى" [ref=e1062]: L2
+                  - generic "حساب فرعي (مؤهل للقيد)" [ref=e1063]:
+                    - generic [ref=e1064]: 
+                  - generic [ref=e1065]:
+                    - button "" [ref=e1066]:
+                      - generic [ref=e1067]: 
+                    - button "" [ref=e1068]:
+                      - generic [ref=e1069]: 
+                    - button "" [ref=e1070]:
+                      - generic [ref=e1071]: 
+              - generic [ref=e1073] [cursor=pointer]:
+                - generic [ref=e1075]: 
+                - generic "undefined" [ref=e1076]: 
+                - generic [ref=e1077]: 5202 – إيجار
+                - generic [ref=e1078]:
+                  - generic "المستوى" [ref=e1079]: L2
+                  - generic "حساب فرعي (مؤهل للقيد)" [ref=e1080]:
+                    - generic [ref=e1081]: 
+                  - generic [ref=e1082]:
+                    - button "" [ref=e1083]:
+                      - generic [ref=e1084]: 
+                    - button "" [ref=e1085]:
+                      - generic [ref=e1086]: 
+                    - button "" [ref=e1087]:
+                      - generic [ref=e1088]: 
+              - generic [ref=e1090] [cursor=pointer]:
+                - generic [ref=e1092]: 
+                - generic "undefined" [ref=e1093]: 
+                - generic [ref=e1094]: 5203 – مصروفات كهرباء ومياه
+                - generic [ref=e1095]:
+                  - generic "المستوى" [ref=e1096]: L2
+                  - generic "حساب فرعي (مؤهل للقيد)" [ref=e1097]:
+                    - generic [ref=e1098]: 
+                  - generic [ref=e1099]:
+                    - button "" [ref=e1100]:
+                      - generic [ref=e1101]: 
+                    - button "" [ref=e1102]:
+                      - generic [ref=e1103]: 
+                    - button "" [ref=e1104]:
+                      - generic [ref=e1105]: 
+              - generic [ref=e1107] [cursor=pointer]:
+                - generic [ref=e1109]: 
+                - generic "undefined" [ref=e1110]: 
+                - generic [ref=e1111]: 5204 – مصروفات اتصالات
+                - generic [ref=e1112]:
+                  - generic "المستوى" [ref=e1113]: L2
+                  - generic "حساب فرعي (مؤهل للقيد)" [ref=e1114]:
+                    - generic [ref=e1115]: 
+                  - generic [ref=e1116]:
+                    - button "" [ref=e1117]:
+                      - generic [ref=e1118]: 
+                    - button "" [ref=e1119]:
+                      - generic [ref=e1120]: 
+                    - button "" [ref=e1121]:
+                      - generic [ref=e1122]: 
+  - contentinfo [ref=e292]:
+    - generic [ref=e294]:
+      - paragraph [ref=e296]:
+        - text: Copyright ©
+        - link "CodedThemes" [ref=e297] [cursor=pointer]:
+          - /url: https://codedthemes.com
+      - list [ref=e299]:
+        - listitem [ref=e300]:
+          - link "Home" [ref=e301] [cursor=pointer]:
+            - /url: https://codedthemes.com/
+        - listitem [ref=e302]:
+          - link "Privacy Policy" [ref=e303] [cursor=pointer]:
+            - /url: https://codedthemes.com/privacy-policy/
+        - listitem [ref=e304]:
+          - link "Contact us" [ref=e305] [cursor=pointer]:
+            - /url: https://codedthemes.support-hub.io/

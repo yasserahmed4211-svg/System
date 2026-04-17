@@ -1,0 +1,233 @@
+<app-card [cardTitle]="pageTitleKey | translate" [padding]="20">
+  <div class="card-body">
+    @if (loading()) {
+      <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">{{ 'COMMON.LOADING' | translate }}</span>
+        </div>
+      </div>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="save()">
+
+        <!-- SECTION 1: بيانات الفرع الأساسية -->
+        <erp-section [titleKey]="'BRANCHES.SECTION_BASIC_INFO'">
+          <div class="row">
+            @if (isEditMode()) {
+              <div class="col-md-4 mb-3">
+                <erp-form-field labelKey="COMMON.ID" [control]="form.get('branchPk')">
+                  <input type="text" formControlName="branchPk" class="form-control" readonly />
+                </erp-form-field>
+              </div>
+
+              <div class="col-md-4 mb-3">
+                <erp-form-field labelKey="BRANCHES.CODE" [control]="form.get('branchCode')">
+                  <input type="text" formControlName="branchCode" class="form-control" readonly />
+                </erp-form-field>
+              </div>
+            }
+
+            <div class="col-md-4 mb-3">
+              <erp-form-field labelKey="BRANCHES.NAME_AR" [control]="form.get('branchNameAr')" [required]="true">
+                <input
+                  type="text"
+                  formControlName="branchNameAr"
+                  class="form-control"
+                  maxlength="200"
+                  [class.is-invalid]="!!(form.get('branchNameAr')?.invalid && (form.get('branchNameAr')?.touched || form.get('branchNameAr')?.dirty))"
+                />
+              </erp-form-field>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <erp-form-field labelKey="BRANCHES.NAME_EN" [control]="form.get('branchNameEn')" [required]="true">
+                <input
+                  type="text"
+                  formControlName="branchNameEn"
+                  class="form-control"
+                  maxlength="200"
+                  [class.is-invalid]="!!(form.get('branchNameEn')?.invalid && (form.get('branchNameEn')?.touched || form.get('branchNameEn')?.dirty))"
+                />
+              </erp-form-field>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <erp-form-field labelKey="BRANCHES.BRANCH_TYPE" [control]="form.get('branchTypeId')" [required]="true">
+                <select formControlName="branchTypeId" class="form-select"
+                  [class.is-invalid]="!!(form.get('branchTypeId')?.invalid && (form.get('branchTypeId')?.touched || form.get('branchTypeId')?.dirty))">
+                  <option value="">{{ 'COMMON.SELECT' | translate }}</option>
+                  @for (option of branchTypeOptions; track option.value) {
+                    <option [value]="option.value">{{ option.label }}</option>
+                  }
+                </select>
+              </erp-form-field>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <erp-form-field labelKey="COMMON.STATUS" [control]="form.get('statusId')" [required]="true">
+                <select formControlName="statusId" class="form-select">
+                  <option value="">{{ 'COMMON.SELECT' | translate }}</option>
+                  @for (option of statusOptions; track option.value) {
+                    <option [value]="option.value">{{ option.label }}</option>
+                  }
+                </select>
+              </erp-form-field>
+            </div>
+
+            <div class="col-md-4 mb-3 d-flex align-items-center pt-4">
+              <div class="form-check form-switch">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="isHeadquarterFl"
+                  formControlName="isHeadquarterFl"
+                  [checked]="form.get('isHeadquarterFl')?.value === 1"
+                  (change)="form.get('isHeadquarterFl')?.setValue($any($event.target).checked ? 1 : 0)"
+                />
+                <label class="form-check-label" for="isHeadquarterFl">
+                  {{ 'BRANCHES.IS_HEADQUARTER' | translate }}
+                </label>
+              </div>
+            </div>
+          </div>
+        </erp-section>
+
+        <!-- SECTION 2: الانتماء التنظيمي -->
+        <erp-section [titleKey]="'BRANCHES.SECTION_ORGANIZATIONAL'">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <erp-form-field labelKey="BRANCHES.LEGAL_ENTITY" [control]="form.get('legalEntityFk')" [required]="true">
+                <erp-lookup-field
+                  formControlName="legalEntityFk"
+                  [config]="legalEntityLookupConfig"
+                  (itemSelected)="onLegalEntitySelected($event)"
+                ></erp-lookup-field>
+              </erp-form-field>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <erp-form-field labelKey="BRANCHES.REGION" [control]="form.get('regionFk')">
+                <erp-lookup-field
+                  formControlName="regionFk"
+                  [config]="regionLookupConfig()"
+                ></erp-lookup-field>
+              </erp-form-field>
+            </div>
+          </div>
+        </erp-section>
+
+        <!-- SECTION 3: بيانات التواصل -->
+        <erp-section [titleKey]="'BRANCHES.SECTION_CONTACT'">
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <erp-form-field labelKey="COMMON.ADDRESS_LINE1" [control]="form.get('addressLine1')">
+                <input type="text" formControlName="addressLine1" class="form-control" maxlength="300" />
+              </erp-form-field>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <erp-form-field labelKey="COMMON.ADDRESS_LINE2" [control]="form.get('addressLine2')">
+                <input type="text" formControlName="addressLine2" class="form-control" maxlength="300" />
+              </erp-form-field>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <erp-form-field labelKey="COMMON.CITY" [control]="form.get('cityName')">
+                <input type="text" formControlName="cityName" class="form-control" maxlength="100" />
+              </erp-form-field>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <erp-form-field labelKey="COMMON.PHONE" [control]="form.get('phone')">
+                <input type="tel" formControlName="phone" class="form-control" maxlength="50" />
+              </erp-form-field>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <erp-form-field labelKey="COMMON.EMAIL" [control]="form.get('email')">
+                <input type="email" formControlName="email" class="form-control" maxlength="150" />
+              </erp-form-field>
+            </div>
+          </div>
+        </erp-section>
+
+        <!-- ─── SEPARATOR ─── -->
+        <hr class="my-4" />
+
+        <!-- SECTION 4: أقسام الفرع (Inline) -->
+        <erp-section [titleKey]="'BRANCHES.SECTION_DEPARTMENTS'">
+          @if (isEditMode()) {
+            <app-departments-section
+              [departments]="departments"
+              [saving]="facade.deptSaving()"
+              [isEditMode]="isEditMode()"
+              [departmentTypeOptions]="departmentTypeOptions"
+              [rowErrors]="deptRowErrors()"
+              [showValidationSummary]="deptShowSummary()"
+              (addRow)="onAddDeptRow()"
+              (removeRow)="onRemoveDeptRow($event)"
+              (deactivateRow)="onDeactivateDeptRow($event)"
+              (changeField)="onDeptFieldChange($event)"
+              (saveAll)="onSaveDepartments()"
+            />
+          } @else {
+            <div class="text-center text-muted py-3">
+              <i class="ti ti-info-circle me-1"></i>
+              {{ 'BRANCHES.SAVE_FIRST_TO_ADD_DEPTS' | translate }}
+            </div>
+          }
+        </erp-section>
+
+        <!-- SECTION 5: حقول النظام (Edit Only) -->
+        @if (isEditMode()) {
+          <erp-section [titleKey]="'COMMON.SECTION_SYSTEM_FIELDS'">
+            <div class="row text-muted small">
+              <div class="col-md-3 mb-2">
+                <span class="fw-semibold d-block">{{ 'COMMON.CREATED_AT' | translate }}</span>
+                <span>{{ facade.currentEntity()?.createdAt || '—' }}</span>
+              </div>
+              <div class="col-md-3 mb-2">
+                <span class="fw-semibold d-block">{{ 'COMMON.CREATED_BY' | translate }}</span>
+                <span>{{ facade.currentEntity()?.createdBy || '—' }}</span>
+              </div>
+              <div class="col-md-3 mb-2">
+                <span class="fw-semibold d-block">{{ 'COMMON.UPDATED_AT' | translate }}</span>
+                <span>{{ facade.currentEntity()?.updatedAt || '—' }}</span>
+              </div>
+              <div class="col-md-3 mb-2">
+                <span class="fw-semibold d-block">{{ 'COMMON.UPDATED_BY' | translate }}</span>
+                <span>{{ facade.currentEntity()?.updatedBy || '—' }}</span>
+              </div>
+              <div class="col-md-3 mb-2">
+                <span class="fw-semibold d-block">{{ 'COMMON.ACTIVE' | translate }}</span>
+                @if (facade.currentEntity()?.activeFl === 1) {
+                  <span class="badge bg-success">{{ 'COMMON.ACTIVE' | translate }}</span>
+                } @else {
+                  <span class="badge bg-secondary">{{ 'COMMON.INACTIVE' | translate }}</span>
+                }
+              </div>
+            </div>
+          </erp-section>
+        }
+
+        <!-- FOOTER: Action Bar -->
+        <erp-action-bar>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [erpPermission]="isEditMode() ? 'PERM_BRANCH_UPDATE' : 'PERM_BRANCH_CREATE'"
+            [disabled]="facade.saving()"
+          >
+            @if (facade.saving()) {
+              <span class="spinner-border spinner-border-sm me-1"></span>
+            }
+            {{ 'COMMON.SAVE' | translate }}
+          </button>
+          <button type="button" class="btn btn-secondary ms-2" (click)="onCancel()">
+            {{ 'COMMON.CANCEL' | translate }}
+          </button>
+        </erp-action-bar>
+
+      </form>
+    }
+  </div>
+</app-card>

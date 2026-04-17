@@ -1,6 +1,6 @@
 package com.example.security.dto;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.util.Set;
@@ -13,6 +13,6 @@ import java.util.Set;
 public class AssignRolesRequest {
     
     /** قائمة أسماء الأدوار المراد ربطها بالمستخدم (استبدال كامل) */
-    @NotEmpty(message = "{validation.not_empty}")
+    @NotNull(message = "{validation.not_null}")
     private Set<String> roleNames;
 }

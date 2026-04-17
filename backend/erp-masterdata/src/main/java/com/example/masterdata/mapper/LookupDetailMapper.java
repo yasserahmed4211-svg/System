@@ -122,36 +122,20 @@ public class LookupDetailMapper {
      * Convert Entity to Usage Response DTO
      * 
      * @param entity Lookup detail entity
-     * @param activityReferencesCount References in Activity
      * @return Usage response DTO
      */
-    public LookupDetailUsageResponse toUsageResponse(
-            MdLookupDetail entity,
-            long activityReferencesCount) {
+    public LookupDetailUsageResponse toUsageResponse(MdLookupDetail entity) {
         
         if (entity == null) {
             return null;
         }
 
-        long totalReferences = activityReferencesCount;
-        boolean canBeDeleted = totalReferences == 0;
-
-        String reason = null;
-        if (!canBeDeleted) {
-            StringBuilder reasonBuilder = new StringBuilder();
-            if (activityReferencesCount > 0) {
-                reasonBuilder.append(String.format("Referenced by %d activities", activityReferencesCount));
-            }
-            reason = reasonBuilder.toString();
-        }
-
         return LookupDetailUsageResponse.builder()
                 .id(entity.getId())
                 .code(entity.getCode())
-                .activityReferencesCount(activityReferencesCount)
-                .totalReferencesCount(totalReferences)
-                .canBeDeleted(canBeDeleted)
-                .reason(reason)
+                .totalReferencesCount(0L)
+                .canBeDeleted(true)
+                .reason(null)
                 .build();
     }
 }

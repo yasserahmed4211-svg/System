@@ -1,0 +1,66 @@
+<app-card [cardTitle]="'LEGAL_ENTITIES.TITLE' | translate" [padding]="0">
+  <div class="card-header-right">
+    <button class="btn btn-info btn-sm me-2" (click)="toggleAdvancedFilters()">
+      <i class="ti ti-filter"></i>
+      {{ showAdvancedFilters ? ('COMMON.HIDE_FILTERS' | translate) : ('COMMON.ADVANCED_FILTERS' | translate) }}
+    </button>
+    <button
+      class="btn btn-success btn-sm me-2"
+      erpPermission="PERM_LEGAL_ENTITY_CREATE"
+      (click)="navigateToCreate()"
+    >
+      <i class="ti ti-plus"></i> {{ 'LEGAL_ENTITIES.CREATE' | translate }}
+    </button>
+    <button class="btn btn-primary btn-sm" (click)="refreshData()">
+      <i class="ti ti-refresh"></i> {{ 'COMMON.REFRESH' | translate }}
+    </button>
+  </div>
+
+  @if (showAdvancedFilters) {
+    <div class="card-body border-bottom bg-light">
+      <erp-specification-filter
+        [availableFields]="availableFields"
+        [availableOperators]="availableOperators"
+        (apply)="onSpecFiltersApply($event)"
+        (clear)="onSpecFiltersClear()"
+      />
+    </div>
+  }
+
+  <div class="card-body p-0">
+    @if (showGrid) {
+      @if (!isLoading && hasError) {
+        <div class="p-3">
+          <erp-empty-state
+            icon="ti ti-alert-circle"
+            titleKey="ERRORS.OPERATION_FAILED"
+            messageKey="ERRORS.TRY_AGAIN"
+            actionLabelKey="COMMON.REFRESH"
+            (actionClicked)="refreshData()"
+          />
+        </div>
+      } @else if (!isLoading && rowData.length === 0) {
+        <div class="p-3">
+          <erp-empty-state
+            icon="ti ti-building"
+            titleKey="COMMON.NO_DATA"
+            messageKey="LEGAL_ENTITIES.NO_ENTITIES"
+          />
+        </div>
+      } @else {
+        <ag-grid-angular
+          class="ag-theme-alpine"
+          [columnDefs]="columnDefs"
+          [defaultColDef]="defaultColDef"
+          [gridOptions]="gridOptions"
+          [theme]="theme"
+          [rowData]="rowData"
+          [localeText]="agLocaleText"
+          (gridReady)="onGridReady($event)"
+          (paginationChanged)="onPaginationChanged()"
+          [style.height.px]="600"
+        />
+      }
+    }
+  </div>
+</app-card>

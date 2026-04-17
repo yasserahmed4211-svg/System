@@ -1,4 +1,5 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
+import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Observable, catchError, tap, of, map, finalize } from 'rxjs';
 
 import { AuthenticationService } from 'src/app/core/services/authentication.service';
@@ -29,6 +30,7 @@ export class UserFacade {
   private userApiService = inject(UserApiService);
   private authService = inject(AuthenticationService);
   private readonly errorMapper = inject(ErpErrorMapperService);
+  private readonly destroyRef = inject(DestroyRef);
 
   // State signals
   private usersSignal = signal<UserDto[]>([]);
@@ -102,7 +104,7 @@ export class UserFacade {
         }));
 
         this.usersSignal.set(normalizedUsers);
-        this.totalElementsSignal.set(page.totalElements || 0);
+        this.totalElementsSignal.set(page.totalElements ?? 0);
       }),
       catchError(error => {
         const backendCode = extractBackendErrorCode(error);
@@ -115,7 +117,8 @@ export class UserFacade {
         this.totalElementsSignal.set(0);
         return of(null);
       }),
-      finalize(() => this.loadingSignal.set(false))
+      finalize(() => this.loadingSignal.set(false)),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe();
   }
 
@@ -215,7 +218,8 @@ export class UserFacade {
         this.availableRolesSignal.set([]);
         return of([]);
       }),
-      finalize(() => this.rolesLoadingSignal.set(false))
+      finalize(() => this.rolesLoadingSignal.set(false)),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe();
   }
 

@@ -16,6 +16,26 @@ Validates that frontend permission enforcement follows the triple-enforcement pa
 - During security review of frontend pull requests
 - When diagnosing permission bypass issues
 
+## Responsibilities
+
+- Validate route guards: `authGuard` + `permissionGuard` on all routes
+- Validate UI directives: `erpPermission` on action buttons and elements
+- Validate programmatic checks: `hasPermission()` before dialog/action
+- Verify backend-frontend permission constant alignment
+- Validate confirm action permission ordering (check BEFORE dialog)
+
+## Constraints
+
+- MUST NOT generate or modify application code — this skill only validates
+- MUST NOT skip any enforcement layer — all three (route, UI, programmatic) are required
+- MUST NOT validate backend permission implementation — scope is frontend only
+- MUST NOT modify `SecurityPermissions` constants
+
+## Output
+
+- Permission compliance report with 35 checks across 5 sections
+- Specific violations identifying which enforcement layer is missing
+
 ---
 
 ## CHECK MATRIX
@@ -199,3 +219,30 @@ VERDICT: APPROVED / APPROVED WITH WARNINGS / REJECTED
 | `enforce-reusability` | Validates that shared permission utilities (`ErpPermissionDirective`, `AuthenticationService.hasPermission()`) are consumed and not reinvented |
 | `enforce-frontend-architecture` | Validates overall architectural compliance including permission layer |
 | `enforce-state-management` | Validates Signal-based state management patterns |
+
+
+---
+
+## ANGULAR/SKILLS COMPATIBILITY
+
+> This section documents how this skill relates to the official `angular/skills` guidance.
+> **ERP contracts always take precedence.** See `erp-priority-override` for the full precedence rule.
+
+### What angular/skills adds that is SAFE to use alongside this skill
+- No conflict  angular/skills does not cover permission patterns
+- General Angular guard syntax is fully compatible with authGuard + permissionGuard
+
+### What angular/skills suggests that this skill OVERRIDES
+- None  this skill covers a domain not addressed by angular/skills
+
+### Compatibility note
+The `erpPermission` directive follows the same attribute directive pattern described in
+`angular-directives`. The triple-enforcement pattern (route + directive + programmatic) has
+no equivalent in angular/skills and stands independently.
+
+### Conflict resolution trigger
+
+If any angular/skills guidance contradicts a rule in this skill:
+1. Apply the ERP rule
+2. Log: ` CONFLICT RESOLVED: angular/skills suggests [X], ERP rule [RULE_ID] requires [Y]. Applied [Y].`
+3. Do NOT ask the user  apply ERP rule silently

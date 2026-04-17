@@ -1,0 +1,383 @@
+- generic [ref=e3]:
+  - navigation [ref=e5]:
+    - generic [ref=e6]:
+      - link "theme-logo" [ref=e8] [cursor=pointer]:
+        - /url: index.html
+        - img "theme-logo" [ref=e9]
+      - generic [ref=e10]:
+        - generic [ref=e14]:
+          - list [ref=e15]:
+            - generic [ref=e16]:
+              - listitem [ref=e17] [cursor=pointer]:
+                - generic [ref=e18]: أخرى
+              - generic [ref=e20]:
+                - listitem [ref=e22]:
+                  - link "Dashboard":
+                    - /url: /dashboard
+                    - generic:
+                      - generic:
+                        - img
+                    - generic: Dashboard
+                - listitem [ref=e24]:
+                  - link "مستويات القائمة ":
+                    - /url: "javascript:"
+                    - generic:
+                      - generic:
+                        - img
+                    - generic: مستويات القائمة
+                    - text: 
+          - generic [ref=e28]:
+            - img "user" [ref=e29]
+            - generic [ref=e30]:
+              - heading "المساعدة" [level=5] [ref=e31]
+              - text: الدعم
+            - button "الدعم" [ref=e33] [cursor=pointer]
+        - list [ref=e35]:
+          - generic [ref=e36]:
+            - img "user" [ref=e39]
+            - generic [ref=e40]:
+              - text: admin
+              - paragraph [ref=e41]: ROLE_USER
+            - img [ref=e44]
+  - banner [ref=e47]:
+    - generic [ref=e48]:
+      - list [ref=e51]:
+        - listitem [ref=e52]:
+          - link "click to menu collapse" [ref=e53] [cursor=pointer]:
+            - /url: "javascript:"
+            - img [ref=e55]
+        - text: 
+        - listitem [ref=e57]:
+          - generic [ref=e58]:
+            - img [ref=e60]
+            - searchbox "Ctrl + K" [ref=e62]
+      - list [ref=e65]:
+        - listitem [ref=e66]:
+          - link [ref=e67] [cursor=pointer]:
+            - /url: "javascript:"
+            - img [ref=e69]
+        - listitem [ref=e71]:
+          - link "ع" [ref=e72] [cursor=pointer]:
+            - /url: "javascript:"
+            - img [ref=e74]
+            - generic [ref=e77]: ع
+        - listitem [ref=e78]:
+          - link "3" [ref=e79] [cursor=pointer]:
+            - /url: "javascript:"
+            - img [ref=e81]
+            - generic [ref=e83]: "3"
+        - listitem [ref=e84]:
+          - link [ref=e85] [cursor=pointer]:
+            - /url: "javascript:"
+            - img [ref=e87]
+        - listitem [ref=e89]:
+          - link [ref=e90] [cursor=pointer]:
+            - /url: "javascript:"
+            - img [ref=e92]
+        - listitem [ref=e94]:
+          - link [ref=e95] [cursor=pointer]:
+            - /url: "javascript:"
+            - img [ref=e97]
+        - listitem [ref=e99]:
+          - link "user-image admin" [ref=e100] [cursor=pointer]:
+            - /url: "javascript:"
+            - img "user-image" [ref=e101]
+            - generic [ref=e102]: admin
+  - generic [ref=e111]:
+    - heading "إدارة المستخدمين" [level=5] [ref=e114]
+    - generic [ref=e115]:
+      - generic [ref=e116]:
+        - button " فلاتر متقدمة" [ref=e117] [cursor=pointer]:
+          - generic [ref=e118]: 
+          - text: فلاتر متقدمة
+        - button " إضافة مستخدم" [ref=e119] [cursor=pointer]:
+          - generic [ref=e120]: 
+          - text: إضافة مستخدم
+        - button " تحديث" [ref=e121] [cursor=pointer]:
+          - generic [ref=e122]: 
+          - text: تحديث
+      - generic [ref=e124]:
+        - generic [ref=e125]: No Rows To Show. 0 to 0 of 0. Page 0 of 0
+        - grid [ref=e126]:
+          - rowgroup [ref=e127]:
+            - row "المعرف اسم المستخدم معرف المستأجر الحالة الأدوار الإجراءات" [ref=e128]:
+              - columnheader "المعرف" [ref=e129]:
+                - generic [ref=e131] [cursor=pointer]: المعرف
+              - columnheader "اسم المستخدم" [ref=e132]:
+                - generic [ref=e134] [cursor=pointer]: اسم المستخدم
+              - columnheader "معرف المستأجر" [ref=e135]:
+                - generic [ref=e137] [cursor=pointer]: معرف المستأجر
+              - columnheader "الحالة" [ref=e138]:
+                - generic [ref=e141] [cursor=pointer]: الحالة
+              - columnheader "الأدوار" [ref=e142]:
+                - generic [ref=e144]: الأدوار
+              - columnheader "الإجراءات" [ref=e145]:
+                - generic [ref=e147]: الإجراءات
+            - row "Open Filter Menu Open Filter Menu Open Filter Menu" [ref=e148]:
+              - gridcell "Open Filter Menu" [ref=e149]:
+                - spinbutton "المعرف Filter Input" [ref=e150]
+                - button "Open Filter Menu" [ref=e152] [cursor=pointer]
+              - gridcell "Open Filter Menu" [ref=e153]:
+                - textbox "اسم المستخدم Filter Input" [ref=e154]
+                - button "Open Filter Menu" [ref=e156] [cursor=pointer]
+              - gridcell "Open Filter Menu" [ref=e157]:
+                - textbox "معرف المستأجر Filter Input" [ref=e158]
+                - button "Open Filter Menu" [ref=e160] [cursor=pointer]
+              - gridcell [ref=e161]
+              - gridcell [ref=e162]
+              - gridcell [ref=e163]
+          - rowgroup [ref=e164]:
+            - row "286 usr_mo2u7h1hbaz3 default نشط ROLE_USER  " [ref=e165]:
+              - gridcell "286" [ref=e166]
+              - gridcell "usr_mo2u7h1hbaz3" [ref=e167]
+              - gridcell "default" [ref=e168]
+              - gridcell "نشط" [ref=e169]:
+                - generic [ref=e171]: نشط
+              - gridcell "ROLE_USER" [ref=e172]:
+                - generic "ROLE_USER" [ref=e174] [cursor=pointer]
+              - gridcell " " [ref=e175]:
+                - generic [ref=e177]:
+                  - button "" [ref=e178] [cursor=pointer]:
+                    - generic [ref=e179]: 
+                  - button "" [ref=e180] [cursor=pointer]:
+                    - generic [ref=e181]: 
+            - row "285 usr_mo2u7ex56c7r default نشط ROLE_USER  " [ref=e182]:
+              - gridcell "285" [ref=e183]
+              - gridcell "usr_mo2u7ex56c7r" [ref=e184]
+              - gridcell "default" [ref=e185]
+              - gridcell "نشط" [ref=e186]:
+                - generic [ref=e188]: نشط
+              - gridcell "ROLE_USER" [ref=e189]:
+                - generic "ROLE_USER" [ref=e191] [cursor=pointer]
+              - gridcell " " [ref=e192]:
+                - generic [ref=e194]:
+                  - button "" [ref=e195] [cursor=pointer]:
+                    - generic [ref=e196]: 
+                  - button "" [ref=e197] [cursor=pointer]:
+                    - generic [ref=e198]: 
+            - row "284 usr_mo2u7e1heeox default نشط ROLE_MO2U7E1H148S  " [ref=e199]:
+              - gridcell "284" [ref=e200]
+              - gridcell "usr_mo2u7e1heeox" [ref=e201]
+              - gridcell "default" [ref=e202]
+              - gridcell "نشط" [ref=e203]:
+                - generic [ref=e205]: نشط
+              - gridcell "ROLE_MO2U7E1H148S" [ref=e206]:
+                - generic "ROLE_MO2U7E1H148S" [ref=e208] [cursor=pointer]
+              - gridcell " " [ref=e209]:
+                - generic [ref=e211]:
+                  - button "" [ref=e212] [cursor=pointer]:
+                    - generic [ref=e213]: 
+                  - button "" [ref=e214] [cursor=pointer]:
+                    - generic [ref=e215]: 
+            - row "283 usr_mo2u7djjn1t5 default غير نشط ROLE_USER  " [ref=e216]:
+              - gridcell "283" [ref=e217]
+              - gridcell "usr_mo2u7djjn1t5" [ref=e218]
+              - gridcell "default" [ref=e219]
+              - gridcell "غير نشط" [ref=e220]:
+                - generic [ref=e222]: غير نشط
+              - gridcell "ROLE_USER" [ref=e223]:
+                - generic "ROLE_USER" [ref=e225] [cursor=pointer]
+              - gridcell " " [ref=e226]:
+                - generic [ref=e228]:
+                  - button "" [ref=e229] [cursor=pointer]:
+                    - generic [ref=e230]: 
+                  - button "" [ref=e231] [cursor=pointer]:
+                    - generic [ref=e232]: 
+            - row "282 usr_mo2u7dfo80rn default نشط ROLE_USER  " [ref=e233]:
+              - gridcell "282" [ref=e234]
+              - gridcell "usr_mo2u7dfo80rn" [ref=e235]
+              - gridcell "default" [ref=e236]
+              - gridcell "نشط" [ref=e237]:
+                - generic [ref=e239]: نشط
+              - gridcell "ROLE_USER" [ref=e240]:
+                - generic "ROLE_USER" [ref=e242] [cursor=pointer]
+              - gridcell " " [ref=e243]:
+                - generic [ref=e245]:
+                  - button "" [ref=e246] [cursor=pointer]:
+                    - generic [ref=e247]: 
+                  - button "" [ref=e248] [cursor=pointer]:
+                    - generic [ref=e249]: 
+            - row "280 usr_mo2u7d16epez default نشط ROLE_USER  " [ref=e250]:
+              - gridcell "280" [ref=e251]
+              - gridcell "usr_mo2u7d16epez" [ref=e252]
+              - gridcell "default" [ref=e253]
+              - gridcell "نشط" [ref=e254]:
+                - generic [ref=e256]: نشط
+              - gridcell "ROLE_USER" [ref=e257]:
+                - generic "ROLE_USER" [ref=e259] [cursor=pointer]
+              - gridcell " " [ref=e260]:
+                - generic [ref=e262]:
+                  - button "" [ref=e263] [cursor=pointer]:
+                    - generic [ref=e264]: 
+                  - button "" [ref=e265] [cursor=pointer]:
+                    - generic [ref=e266]: 
+            - row "279 usr_mo2u7cwto81x default نشط ROLE_USER  " [ref=e267]:
+              - gridcell "279" [ref=e268]
+              - gridcell "usr_mo2u7cwto81x" [ref=e269]
+              - gridcell "default" [ref=e270]
+              - gridcell "نشط" [ref=e271]:
+                - generic [ref=e273]: نشط
+              - gridcell "ROLE_USER" [ref=e274]:
+                - generic "ROLE_USER" [ref=e276] [cursor=pointer]
+              - gridcell " " [ref=e277]:
+                - generic [ref=e279]:
+                  - button "" [ref=e280] [cursor=pointer]:
+                    - generic [ref=e281]: 
+                  - button "" [ref=e282] [cursor=pointer]:
+                    - generic [ref=e283]: 
+            - row "278 usr_mo2u7cs1v1j2 default نشط ROLE_USER  " [ref=e284]:
+              - gridcell "278" [ref=e285]
+              - gridcell "usr_mo2u7cs1v1j2" [ref=e286]
+              - gridcell "default" [ref=e287]
+              - gridcell "نشط" [ref=e288]:
+                - generic [ref=e290]: نشط
+              - gridcell "ROLE_USER" [ref=e291]:
+                - generic "ROLE_USER" [ref=e293] [cursor=pointer]
+              - gridcell " " [ref=e294]:
+                - generic [ref=e296]:
+                  - button "" [ref=e297] [cursor=pointer]:
+                    - generic [ref=e298]: 
+                  - button "" [ref=e299] [cursor=pointer]:
+                    - generic [ref=e300]: 
+            - row "277 usr_mo2u7cdkz1wc default نشط ROLE_USER  " [ref=e301]:
+              - gridcell "277" [ref=e302]
+              - gridcell "usr_mo2u7cdkz1wc" [ref=e303]
+              - gridcell "default" [ref=e304]
+              - gridcell "نشط" [ref=e305]:
+                - generic [ref=e307]: نشط
+              - gridcell "ROLE_USER" [ref=e308]:
+                - generic "ROLE_USER" [ref=e310] [cursor=pointer]
+              - gridcell " " [ref=e311]:
+                - generic [ref=e313]:
+                  - button "" [ref=e314] [cursor=pointer]:
+                    - generic [ref=e315]: 
+                  - button "" [ref=e316] [cursor=pointer]:
+                    - generic [ref=e317]: 
+            - row "276 usr_mo2u7c5g5lz2 default نشط ROLE_USER  " [ref=e318]:
+              - gridcell "276" [ref=e319]
+              - gridcell "usr_mo2u7c5g5lz2" [ref=e320]
+              - gridcell "default" [ref=e321]
+              - gridcell "نشط" [ref=e322]:
+                - generic [ref=e324]: نشط
+              - gridcell "ROLE_USER" [ref=e325]:
+                - generic "ROLE_USER" [ref=e327] [cursor=pointer]
+              - gridcell " " [ref=e328]:
+                - generic [ref=e330]:
+                  - button "" [ref=e331] [cursor=pointer]:
+                    - generic [ref=e332]: 
+                  - button "" [ref=e333] [cursor=pointer]:
+                    - generic [ref=e334]: 
+            - row "275 usr_mo2u7c1ef9rp default نشط ROLE_USER  " [ref=e335]:
+              - gridcell "275" [ref=e336]
+              - gridcell "usr_mo2u7c1ef9rp" [ref=e337]
+              - gridcell "default" [ref=e338]
+              - gridcell "نشط" [ref=e339]:
+                - generic [ref=e341]: نشط
+              - gridcell "ROLE_USER" [ref=e342]:
+                - generic "ROLE_USER" [ref=e344] [cursor=pointer]
+              - gridcell " " [ref=e345]:
+                - generic [ref=e347]:
+                  - button "" [ref=e348] [cursor=pointer]:
+                    - generic [ref=e349]: 
+                  - button "" [ref=e350] [cursor=pointer]:
+                    - generic [ref=e351]: 
+            - row "273 usr_mo2u76zbvcfg default نشط ROLE_USER  " [ref=e352]:
+              - gridcell "273" [ref=e353]
+              - gridcell "usr_mo2u76zbvcfg" [ref=e354]
+              - gridcell "default" [ref=e355]
+              - gridcell "نشط" [ref=e356]:
+                - generic [ref=e358]: نشط
+              - gridcell "ROLE_USER" [ref=e359]:
+                - generic "ROLE_USER" [ref=e361] [cursor=pointer]
+              - gridcell " " [ref=e362]:
+                - generic [ref=e364]:
+                  - button "" [ref=e365] [cursor=pointer]:
+                    - generic [ref=e366]: 
+                  - button "" [ref=e367] [cursor=pointer]:
+                    - generic [ref=e368]: 
+            - row "272 usr_mo2u74xvhe8d default نشط ROLE_USER  " [ref=e369]:
+              - gridcell "272" [ref=e370]
+              - gridcell "usr_mo2u74xvhe8d" [ref=e371]
+              - gridcell "default" [ref=e372]
+              - gridcell "نشط" [ref=e373]:
+                - generic [ref=e375]: نشط
+              - gridcell "ROLE_USER" [ref=e376]:
+                - generic "ROLE_USER" [ref=e378] [cursor=pointer]
+              - gridcell " " [ref=e379]:
+                - generic [ref=e381]:
+                  - button "" [ref=e382] [cursor=pointer]:
+                    - generic [ref=e383]: 
+                  - button "" [ref=e384] [cursor=pointer]:
+                    - generic [ref=e385]: 
+            - row "271 usr_mo2u740ipenr default نشط ROLE_MO2U740INQPN  " [ref=e386]:
+              - gridcell "271" [ref=e387]
+              - gridcell "usr_mo2u740ipenr" [ref=e388]
+              - gridcell "default" [ref=e389]
+              - gridcell "نشط" [ref=e390]:
+                - generic [ref=e392]: نشط
+              - gridcell "ROLE_MO2U740INQPN" [ref=e393]:
+                - generic "ROLE_MO2U740INQPN" [ref=e395] [cursor=pointer]
+              - gridcell " " [ref=e396]:
+                - generic [ref=e398]:
+                  - button "" [ref=e399] [cursor=pointer]:
+                    - generic [ref=e400]: 
+                  - button "" [ref=e401] [cursor=pointer]:
+                    - generic [ref=e402]: 
+            - row "270 usr_mo2u73iw2nln default غير نشط ROLE_USER  " [ref=e403]:
+              - gridcell "270" [ref=e404]
+              - gridcell "usr_mo2u73iw2nln" [ref=e405]
+              - gridcell "default" [ref=e406]
+              - gridcell "غير نشط" [ref=e407]:
+                - generic [ref=e409]: غير نشط
+              - gridcell "ROLE_USER" [ref=e410]:
+                - generic "ROLE_USER" [ref=e412] [cursor=pointer]
+              - gridcell " " [ref=e413]:
+                - generic [ref=e415]:
+                  - button "" [ref=e416] [cursor=pointer]:
+                    - generic [ref=e417]: 
+                  - button "" [ref=e418] [cursor=pointer]:
+                    - generic [ref=e419]: 
+            - row "269 usr_mo2u73f2vai4 default نشط ROLE_USER  " [ref=e420]:
+              - gridcell "269" [ref=e421]
+              - gridcell "usr_mo2u73f2vai4" [ref=e422]
+              - gridcell "default" [ref=e423]
+              - gridcell "نشط" [ref=e424]:
+                - generic [ref=e426]: نشط
+              - gridcell "ROLE_USER" [ref=e427]:
+                - generic "ROLE_USER" [ref=e429] [cursor=pointer]
+              - gridcell " " [ref=e430]:
+                - generic [ref=e432]:
+                  - button "" [ref=e433] [cursor=pointer]:
+                    - generic [ref=e434]: 
+                  - button "" [ref=e435] [cursor=pointer]:
+                    - generic [ref=e436]: 
+          - rowgroup
+          - rowgroup
+          - rowgroup
+        - generic [ref=e437]:
+          - generic [ref=e438]:
+            - generic [ref=e439]: "Page Size:"
+            - combobox "Page Size" [ref=e440]:
+              - generic [ref=e441]: "20"
+          - generic [ref=e443]: 1 to 20 of 20
+          - button "First Page" [disabled] [ref=e444]
+          - button "Previous Page" [disabled] [ref=e445]
+          - generic [ref=e446]: Page 1 of 1
+          - button "Next Page" [disabled] [ref=e447]
+          - button "Last Page" [disabled] [ref=e448]
+  - contentinfo [ref=e449]:
+    - generic [ref=e451]:
+      - paragraph [ref=e453]:
+        - text: Copyright ©
+        - link "CodedThemes" [ref=e454] [cursor=pointer]:
+          - /url: https://codedthemes.com
+      - list [ref=e456]:
+        - listitem [ref=e457]:
+          - link "Home" [ref=e458] [cursor=pointer]:
+            - /url: https://codedthemes.com/
+        - listitem [ref=e459]:
+          - link "Privacy Policy" [ref=e460] [cursor=pointer]:
+            - /url: https://codedthemes.com/privacy-policy/
+        - listitem [ref=e461]:
+          - link "Contact us" [ref=e462] [cursor=pointer]:
+            - /url: https://codedthemes.support-hub.io/

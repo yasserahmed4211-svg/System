@@ -20,6 +20,29 @@ Validates that all frontend UI renders human-readable, consistent, and user-frie
 - When adding or reviewing translation keys (en.json / ar.json)
 - During feature validation alongside `enforce-frontend-architecture`
 
+## Responsibilities
+
+- Validate data display: no raw IDs, ENUMs, or timestamps reach the UI
+- Verify display model mapping: human-readable labels, status badges, formatted dates
+- Validate action feedback: loading states, success/error notifications
+- Verify column sizing, tooltip enforcement, and layout consistency
+- Validate bilingual support: Arabic + English translations, RTL/LTR behavior
+
+## Constraints
+
+- MUST NOT generate or modify application code — this skill only validates
+- MUST NOT validate CSS token usage — that belongs to `enforce-design-system`
+- MUST NOT validate code structure — that belongs to `enforce-frontend-architecture`
+- MUST NOT validate state patterns — that belongs to `enforce-state-management`
+
+## Output
+
+- UI/UX compliance report identifying:
+  - Raw data display violations
+  - Missing feedback patterns
+  - Column readability issues
+  - Bilingual support gaps
+
 ---
 
 ## CORE PRINCIPLE
@@ -123,6 +146,19 @@ The UI is for **end users**, not developers. No database internals, raw codes, o
 | UX.9.5 | Grid rebuilds on language change | `translate.onLangChange.subscribe()` triggers column/filter/grid option rebuild | Grid headers stay in old language after switch |
 | UX.9.6 | RTL layout supported | Grid sets `enableRtl` based on current language; layout adapts for Arabic | Fixed LTR layout in Arabic mode |
 
+### Layer 10: Theme & Layout UX (8 checks)
+
+| # | Check | Pass Criteria | Violation |
+|---|-------|--------------|----------|
+| UX.10.1 | Theme persists across sessions | Theme color, dark mode, and container mode persist via `localStorage` through `ThemeService` | Theme resets on page refresh |
+| UX.10.2 | Dark mode toggle works reactively | `ThemeService.toggleDarkMode()` toggles `body.mantis-dark` via effect — no manual DOM in component | Component adds/removes `mantis-dark` class directly |
+| UX.10.3 | Theme color change works reactively | `ThemeService.setThemeColor(preset)` updates `body[part]` via effect | Component manipulates `body.part` directly |
+| UX.10.4 | Card header actions use flexbox | `.card-header-right` uses `display: flex` — NOT `position: absolute` | Absolute positioning breaks RTL overlap |
+| UX.10.5 | No `::ng-deep` for card-header-right | Component SCSS does NOT override `.card-header-right` positioning via `::ng-deep` | `::ng-deep { .card-header-right { position: absolute; ... } }` |
+| UX.10.6 | Navigation text is translated | All text in `nav-right` and `nav-content` uses `\| translate` pipe | Hardcoded "Notification", "Logout", "Profile" |
+| UX.10.7 | User role is dynamic | User role display uses `authenticationService.currentUserValue?.roles?.[0]` — not hardcoded | Hardcoded "UI/UX Designer" |
+| UX.10.8 | Arabic font is Droid Arabic Naskh | `[lang="ar"]` uses Droid Arabic Naskh from `font-family.scss` — no conflicting font rules | Duplicate `[lang="ar"]` font-family in `styles.scss` |
+
 ---
 
 ## AUTOMATIC REJECTION TRIGGERS
@@ -143,6 +179,12 @@ Any of the following causes **immediate rejection**:
 | 10 | Hardcoded user-facing string (not a translation key) | UX.9.1 |
 | 11 | Translation key missing from `en.json` or `ar.json` | UX.9.2 |
 | 12 | Grid does not rebuild columns on language change | UX.9.5 |
+| 13 | `::ng-deep` overriding `.card-header-right` with absolute positioning | UX.10.5 |
+| 14 | Hardcoded text in navigation components (`nav-right`, `nav-content`) | UX.10.6 |
+| 15 | Hardcoded user role string (e.g., "UI/UX Designer") | UX.10.7 |
+| 16 | Theme state not persisted to `localStorage` | UX.10.1 |
+| 17 | Direct DOM manipulation for theme/dark mode in component code | UX.10.2, UX.10.3 |
+| 18 | Duplicate `[lang="ar"]` font-family rule overriding `font-family.scss` | UX.10.8 |
 
 ---
 
@@ -342,3 +384,31 @@ VIOLATIONS: [list of failed checks with file locations]
 
 VERDICT: APPROVED / APPROVED WITH WARNINGS / REJECTED
 ```
+
+
+---
+
+## ANGULAR/SKILLS COMPATIBILITY
+
+> This section documents how this skill relates to the official `angular/skills` guidance.
+> **ERP contracts always take precedence.** See `erp-priority-override` for the full precedence rule.
+
+### What angular/skills adds that is SAFE to use alongside this skill
+- `angular-aria` patterns are fully additive  reinforce this skill's display rules
+- Animation feedback patterns from `angular-animations` align with action feedback rules
+
+### What angular/skills suggests that this skill OVERRIDES
+- None  this skill covers a domain not addressed by angular/skills
+
+### Compatibility note
+ARIA patterns from `angular-aria` skill extend this skill's requirements:
+- Status badges (UI.x) must also include `aria-label` (A.10)
+- Loading states must include `aria-busy` (A.7)
+- Action buttons must include `aria-label` (A.5)
+
+### Conflict resolution trigger
+
+If any angular/skills guidance contradicts a rule in this skill:
+1. Apply the ERP rule
+2. Log: ` CONFLICT RESOLVED: angular/skills suggests [X], ERP rule [RULE_ID] requires [Y]. Applied [Y].`
+3. Do NOT ask the user  apply ERP rule silently

@@ -128,12 +128,4 @@ public interface LookupDetailRepository extends JpaRepository<MdLookupDetail, Lo
         @Param("lookupKey") String lookupKey,
         @Param("isActive") Boolean isActive);
 
-    /**
-     * Count references in Activity entity (default_stock_uom_id_fk)
-     * 
-     * @param lookupDetailId Lookup detail ID
-     * @return Count of references
-     */
-    @Query("SELECT COUNT(a) FROM Activity a WHERE a.defaultStockUomId = :lookupDetailId")
-    long countActivityReferences(@Param("lookupDetailId") Long lookupDetailId);
 }

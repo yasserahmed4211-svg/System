@@ -15,6 +15,27 @@ Generates the entity-to-DTO mapper class for the ERP system. This is **Phase 1, 
 - When Phase 1, Step 1.4 of the execution template is being executed
 - BEFORE creating service or controller
 
+## Responsibilities
+
+- Generate a `@Component` mapper class with manual entity-to-DTO mapping (no MapStruct)
+- Implement `toEntity()` for CreateRequest → Entity conversion
+- Implement `updateEntityFromRequest()` as void method that mutates entity in-place, skipping immutable fields
+- Implement `toResponse()` mapping booleans with `Boolean.TRUE.equals()`
+- Implement `toUsageResponse()` for usage/dependency checks
+- Handle null input gracefully in all methods
+
+## Constraints
+
+- MUST NOT generate entity, repository, DTO, service, or controller code
+- MUST NOT set FK relationships in `toEntity()` — service sets those
+- MUST NOT apply uppercase/case normalization — entity `@PrePersist` handles it
+- MUST NOT update natural keys or FK references in `updateEntityFromRequest()`
+- MUST NOT call repository or service from mapper — mappers are pure
+
+## Output
+
+- Single file: `backend/erp-<MODULE>/src/main/java/com/example/<module>/mapper/<Entity>Mapper.java`
+
 ---
 
 ## Steps

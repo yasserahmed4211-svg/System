@@ -39,10 +39,12 @@ export interface RoleSearchRequest {
 }
 
 export interface RolePagePermissionDto {
-  pageCode: string;
-  create: boolean;
-  update: boolean;
-  delete: boolean;
+  pageCode:    string;
+  pageName?:   string;   // English page name
+  pageNameAr?: string;   // Arabic page name
+  create:  boolean;
+  update:  boolean;
+  delete:  boolean;
 }
 
 export interface RolePagesResponse {

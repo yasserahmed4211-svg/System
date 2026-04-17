@@ -1,0 +1,132 @@
+<app-card [cardTitle]="pageTitleKey | translate" [padding]="20">
+  <div class="card-body">
+    @if (loading()) {
+      <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">{{ 'COMMON.LOADING' | translate }}</span>
+        </div>
+      </div>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="save()">
+
+        <!-- SECTION 1: المعلومات الأساسية -->
+        <erp-section [titleKey]="'REGIONS.SECTION_BASIC_INFO'">
+          <div class="row">
+            @if (isEditMode()) {
+              <div class="col-md-4 mb-3">
+                <erp-form-field labelKey="COMMON.ID" [control]="form.get('regionPk')">
+                  <input type="text" formControlName="regionPk" class="form-control" readonly />
+                </erp-form-field>
+              </div>
+
+              <div class="col-md-4 mb-3">
+                <erp-form-field labelKey="REGIONS.CODE" [control]="form.get('regionCode')">
+                  <input type="text" formControlName="regionCode" class="form-control" readonly />
+                </erp-form-field>
+              </div>
+            }
+
+            <div class="col-md-4 mb-3">
+              <erp-form-field labelKey="REGIONS.LEGAL_ENTITY" [control]="form.get('legalEntityFk')" [required]="true">
+                <erp-lookup-field
+                  formControlName="legalEntityFk"
+                  [config]="legalEntityLookupConfig"
+                ></erp-lookup-field>
+              </erp-form-field>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <erp-form-field labelKey="REGIONS.NAME_AR" [control]="form.get('regionNameAr')" [required]="true">
+                <input
+                  type="text"
+                  formControlName="regionNameAr"
+                  class="form-control"
+                  maxlength="200"
+                  [class.is-invalid]="!!(form.get('regionNameAr')?.invalid && (form.get('regionNameAr')?.touched || form.get('regionNameAr')?.dirty))"
+                />
+              </erp-form-field>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <erp-form-field labelKey="REGIONS.NAME_EN" [control]="form.get('regionNameEn')" [required]="true">
+                <input
+                  type="text"
+                  formControlName="regionNameEn"
+                  class="form-control"
+                  maxlength="200"
+                  [class.is-invalid]="!!(form.get('regionNameEn')?.invalid && (form.get('regionNameEn')?.touched || form.get('regionNameEn')?.dirty))"
+                />
+              </erp-form-field>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <erp-form-field labelKey="REGIONS.DESCRIPTION_AR" [control]="form.get('descriptionAr')">
+                <textarea formControlName="descriptionAr" class="form-control" rows="2" maxlength="500"></textarea>
+              </erp-form-field>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <erp-form-field labelKey="COMMON.STATUS" [control]="form.get('statusId')" [required]="true">
+                <select formControlName="statusId" class="form-select">
+                  <option value="">{{ 'COMMON.SELECT' | translate }}</option>
+                  @for (option of statusOptions; track option.value) {
+                    <option [value]="option.value">{{ option.label }}</option>
+                  }
+                </select>
+              </erp-form-field>
+            </div>
+          </div>
+        </erp-section>
+
+        <!-- SECTION 2: حقول النظام — Edit mode only -->
+        @if (isEditMode()) {
+          <erp-section [titleKey]="'COMMON.SECTION_SYSTEM_FIELDS'">
+            <div class="row text-muted small">
+              @if (facade.currentEntity()?.createdAt) {
+                <div class="col-md-3 mb-2">
+                  <strong>{{ 'COMMON.CREATED_AT' | translate }}:</strong>
+                  {{ facade.currentEntity()?.createdAt | date:'medium' }}
+                </div>
+              }
+              @if (facade.currentEntity()?.createdBy) {
+                <div class="col-md-3 mb-2">
+                  <strong>{{ 'COMMON.CREATED_BY' | translate }}:</strong>
+                  {{ facade.currentEntity()?.createdBy }}
+                </div>
+              }
+              @if (facade.currentEntity()?.updatedAt) {
+                <div class="col-md-3 mb-2">
+                  <strong>{{ 'COMMON.UPDATED_AT' | translate }}:</strong>
+                  {{ facade.currentEntity()?.updatedAt | date:'medium' }}
+                </div>
+              }
+              @if (facade.currentEntity()?.updatedBy) {
+                <div class="col-md-3 mb-2">
+                  <strong>{{ 'COMMON.UPDATED_BY' | translate }}:</strong>
+                  {{ facade.currentEntity()?.updatedBy }}
+                </div>
+              }
+              <div class="col-md-3 mb-2">
+                <strong>{{ 'COMMON.ACTIVE' | translate }}:</strong>
+                @if (facade.currentEntity()?.activeFl === 1) {
+                  <span class="badge bg-success ms-1">{{ 'COMMON.ACTIVE' | translate }}</span>
+                } @else {
+                  <span class="badge bg-secondary ms-1">{{ 'COMMON.INACTIVE' | translate }}</span>
+                }
+              </div>
+            </div>
+          </erp-section>
+        }
+
+        <erp-action-bar
+          [saveKey]="isEditMode() ? 'COMMON.UPDATE' : 'COMMON.SAVE'"
+          [loading]="facade.saving()"
+          [disabled]="form.invalid"
+          [showCancel]="true"
+          (saveClicked)="save()"
+          (backClicked)="onCancel()"
+        />
+      </form>
+    }
+  </div>
+</app-card>

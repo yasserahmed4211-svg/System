@@ -9,7 +9,7 @@ import {
   inject,
   untracked
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -27,12 +27,15 @@ import { ErpNotificationService } from 'src/app/shared/services/erp-notification
 
 import { ErpPermissionDirective } from 'src/app/shared/directives/erp-permission.directive';
 
+import { AuthenticationService } from 'src/app/core/services/authentication.service';
+
 import { RoleAccessFacade } from '../../facades/role-access.facade';
 import { RoleAccessApiService } from '../../services/role-access-api.service';
 import { ActivePageDto, AddRolePagesRequestItem, RoleDto, RolePagePermissionDto } from '../../models/role-access.model';
 import { confirmRemoveRolePage, RoleConfirmActionDeps } from '../../helpers/role-confirm-actions';
 
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { LanguageService } from 'src/app/core/services/language.service';
 
 @Component({
   selector: 'app-role-access-form',
@@ -57,15 +60,18 @@ export class RoleAccessFormComponent implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly location = inject(Location);
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly modalService = inject(NgbModal);
 
   readonly translate = inject(TranslateService);
+  readonly languageService = inject(LanguageService);
   readonly facade = inject(RoleAccessFacade);
 
   private readonly dialogService = inject(ErpDialogService);
   private readonly notificationService = inject(ErpNotificationService);
+  private readonly authService = inject(AuthenticationService);
 
   roleForm!: FormGroup;
   isEditMode = false;
@@ -96,6 +102,10 @@ export class RoleAccessFormComponent implements OnInit, OnDestroy {
 
   get isSaving(): boolean {
     return this.facade.saving();
+  }
+
+  get isRtl(): boolean {
+    return this.languageService.isArabic();
   }
 
   constructor() {
@@ -204,7 +214,19 @@ export class RoleAccessFormComponent implements OnInit, OnDestroy {
       },
       (created) => {
         this.notificationService.success('MESSAGES.CREATE_SUCCESS');
-        this.router.navigate(['/security/role-access/edit', created.id]);
+
+        // Switch to edit mode in-place (no full navigation)
+        this.isEditMode = true;
+        this.roleId = created.id;
+        this.roleForm.disable({ emitEvent: false });
+        this.facade.loadRoleDetails(created.id);
+        this.facade.loadRolePages(created.id);
+        this.facade.setFilters([]);
+        this.facade.setSize(50);
+        this.facade.setPage(0);
+        this.facade.loadRoles();
+        this.location.replaceState('/security/role-access/edit/' + created.id);
+        this.cdr.markForCheck();
       }
     );
   }
@@ -233,6 +255,7 @@ export class RoleAccessFormComponent implements OnInit, OnDestroy {
     const deps: RoleConfirmActionDeps = {
       dialog: this.dialogService,
       notify: this.notificationService,
+      auth: this.authService,
       facade: this.facade
     };
     confirmRemoveRolePage(deps, this.roleId, pageCode, () => {});

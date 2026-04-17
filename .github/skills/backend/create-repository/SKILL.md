@@ -15,6 +15,26 @@ Generates a JPA repository interface for the ERP system following the canonical 
 - When Phase 1, Step 1.2 of the execution template is being executed
 - BEFORE creating DTOs, mapper, service, or controller
 
+## Responsibilities
+
+- Generate a JPA repository interface extending `JpaRepository` and `JpaSpecificationExecutor`
+- Define `existsBy<Field>()` methods for uniqueness checks
+- Define `existsBy<Field>AndIdNot()` ONLY if the unique field is mutable on update
+- Add `countChildren()` and `countActiveChildren()` JPQL queries if parent entity
+- Add `JOIN FETCH` queries for child entities loading parent relationships
+
+## Constraints
+
+- MUST NOT generate entity, DTO, mapper, service, or controller code
+- MUST NOT modify existing repository files unless explicitly requested
+- MUST NOT assume entity field names — derive from entity definition
+- MUST NOT add `existsBy<Field>AndIdNot()` for immutable natural keys
+- Repository is module-internal — MUST NOT be designed for cross-module use
+
+## Output
+
+- Single file: `backend/erp-<MODULE>/src/main/java/com/example/<module>/repository/<Entity>Repository.java`
+
 ---
 
 ## Steps

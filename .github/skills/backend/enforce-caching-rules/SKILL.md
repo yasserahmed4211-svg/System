@@ -17,6 +17,27 @@ description: "CACHING GOVERNANCE ENFORCER — validates @Cacheable/@CacheEvict u
 - When a developer proposes caching a new entity
 - As part of the full `validate-backend-feature` pipeline
 
+## Responsibilities
+
+- Verify entity cache eligibility against the approved governance list
+- Validate `@Cacheable`/`@CacheEvict` annotation usage, placement, and ordering
+- Ensure cache names match between read and write methods
+- Detect unauthorized caching of transactional, financial, or workflow entities
+
+## Constraints
+
+- MUST NOT generate or modify application code — this skill only validates
+- MUST NOT approve caching for entities not on the governance-approved list
+- MUST NOT modify the approved cache entity list — that requires governance approval
+- MUST NOT place caching annotations on repositories or controllers
+
+## Output
+
+- Caching compliance report identifying:
+  - Cache eligibility determination (approved or rejected with reason)
+  - Annotation correctness (order, placement, cache name consistency)
+  - Specific violations with rule references
+
 ---
 
 ## Cache Eligibility Gate (FIRST CHECK)

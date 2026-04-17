@@ -29,4 +29,13 @@ public class PermissionDto {
 
     @Schema(description = "Permission description", example = "View user management page")
     private String description;
+
+    @Schema(description = "ID of the page this permission belongs to (null for system permissions)", example = "5")
+    private Long pageId;
+
+    @Schema(description = "Code of the page this permission belongs to (null for system permissions)", example = "USER")
+    private String pageCode;
+
+    @Schema(description = "Permission type: VIEW, CREATE, UPDATE, DELETE", example = "VIEW")
+    private String permissionType;
 }

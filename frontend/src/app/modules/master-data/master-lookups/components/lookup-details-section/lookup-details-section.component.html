@@ -1,4 +1,4 @@
-<div class="card-header-right">
+<div class="d-flex justify-content-end mb-3">
   <button
     type="button"
     class="btn btn-success btn-sm"
@@ -9,106 +9,107 @@
   </button>
 </div>
 
-<div class="card-body p-0">
-  @if (loading) {
-    <div class="text-center py-4">
-      <span class="spinner-border"></span>
-    </div>
-  } @else if (details.length === 0) {
-    <div class="p-3">
-      <erp-empty-state
-        icon="ti ti-list"
-        titleKey="MASTER_LOOKUPS.NO_DETAILS"
-        messageKey="MASTER_LOOKUPS.ADD_DETAIL_HINT"
-      />
-    </div>
-  } @else {
-    <div class="table-responsive">
-      <table class="table table-hover mb-0">
-        <thead>
+@if (loading) {
+  <div class="text-center py-4">
+    <span class="spinner-border"></span>
+  </div>
+} @else if (details.length === 0) {
+  <div class="p-3">
+    <erp-empty-state
+      icon="ti ti-list"
+      titleKey="COMMON.NO_DATA"
+      messageKey="MASTER_LOOKUPS.ADD_DETAIL_HINT"
+    />
+  </div>
+} @else {
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th class="sortable" (click)="onSort('code')" [class.active]="isSortActive('code')">
+            {{ 'MASTER_LOOKUPS.DETAIL_CODE' | translate }}
+            @if (isSortActive('code')) {
+              <i [class]="getSortDirection('code') === 'ASC' ? 'ti ti-sort-ascending' : 'ti ti-sort-descending'"></i>
+            }
+          </th>
+          <th class="sortable" (click)="onSort('nameAr')" [class.active]="isSortActive('nameAr')">
+            {{ 'MASTER_LOOKUPS.DETAIL_NAME_AR' | translate }}
+            @if (isSortActive('nameAr')) {
+              <i [class]="getSortDirection('nameAr') === 'ASC' ? 'ti ti-sort-ascending' : 'ti ti-sort-descending'"></i>
+            }
+          </th>
+          <th class="sortable" (click)="onSort('nameEn')" [class.active]="isSortActive('nameEn')">
+            {{ 'MASTER_LOOKUPS.DETAIL_NAME_EN' | translate }}
+            @if (isSortActive('nameEn')) {
+              <i [class]="getSortDirection('nameEn') === 'ASC' ? 'ti ti-sort-ascending' : 'ti ti-sort-descending'"></i>
+            }
+          </th>
+          <th>{{ 'MASTER_LOOKUPS.EXTRA_VALUE' | translate }}</th>
+          <th class="sortable" (click)="onSort('sortOrder')" [class.active]="isSortActive('sortOrder')">
+            {{ 'MASTER_LOOKUPS.SORT_ORDER' | translate }}
+            @if (isSortActive('sortOrder')) {
+              <i [class]="getSortDirection('sortOrder') === 'ASC' ? 'ti ti-sort-ascending' : 'ti ti-sort-descending'"></i>
+            }
+          </th>
+          <th class="sortable" (click)="onSort('isActive')" [class.active]="isSortActive('isActive')">
+            {{ 'MASTER_LOOKUPS.STATUS' | translate }}
+            @if (isSortActive('isActive')) {
+              <i [class]="getSortDirection('isActive') === 'ASC' ? 'ti ti-sort-ascending' : 'ti ti-sort-descending'"></i>
+            }
+          </th>
+          <th class="text-center">{{ 'COMMON.ACTIONS' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (detail of details; track detail.id) {
           <tr>
-            <th class="sortable" (click)="onSort('code')" [class.active]="isSortActive('code')">
-              {{ 'MASTER_LOOKUPS.DETAIL_CODE' | translate }}
-              @if (isSortActive('code')) {
-                <i [class]="getSortDirection('code') === 'ASC' ? 'ti ti-sort-ascending' : 'ti ti-sort-descending'"></i>
-              }
-            </th>
-            <th class="sortable" (click)="onSort('nameAr')" [class.active]="isSortActive('nameAr')">
-              {{ 'MASTER_LOOKUPS.DETAIL_NAME_AR' | translate }}
-              @if (isSortActive('nameAr')) {
-                <i [class]="getSortDirection('nameAr') === 'ASC' ? 'ti ti-sort-ascending' : 'ti ti-sort-descending'"></i>
-              }
-            </th>
-            <th class="sortable" (click)="onSort('nameEn')" [class.active]="isSortActive('nameEn')">
-              {{ 'MASTER_LOOKUPS.DETAIL_NAME_EN' | translate }}
-              @if (isSortActive('nameEn')) {
-                <i [class]="getSortDirection('nameEn') === 'ASC' ? 'ti ti-sort-ascending' : 'ti ti-sort-descending'"></i>
-              }
-            </th>
-            <th>{{ 'MASTER_LOOKUPS.EXTRA_VALUE' | translate }}</th>
-            <th class="sortable" (click)="onSort('sortOrder')" [class.active]="isSortActive('sortOrder')">
-              {{ 'MASTER_LOOKUPS.SORT_ORDER' | translate }}
-              @if (isSortActive('sortOrder')) {
-                <i [class]="getSortDirection('sortOrder') === 'ASC' ? 'ti ti-sort-ascending' : 'ti ti-sort-descending'"></i>
-              }
-            </th>
-            <th class="sortable" (click)="onSort('isActive')" [class.active]="isSortActive('isActive')">
-              {{ 'MASTER_LOOKUPS.STATUS' | translate }}
-              @if (isSortActive('isActive')) {
-                <i [class]="getSortDirection('isActive') === 'ASC' ? 'ti ti-sort-ascending' : 'ti ti-sort-descending'"></i>
-              }
-            </th>
-            <th class="text-center">{{ 'COMMON.ACTIONS' | translate }}</th>
+            <td>{{ detail.code }}</td>
+            <td>{{ detail.nameAr }}</td>
+            <td>{{ detail.nameEn }}</td>
+            <td>{{ detail.extraValue }}</td>
+            <td>{{ detail.sortOrder }}</td>
+            <td>
+              <span [class]="detail.isActive ? 'badge bg-success' : 'badge bg-secondary'">
+                {{ detail.isActive ? ('COMMON.ACTIVE' | translate) : ('COMMON.INACTIVE' | translate) }}
+              </span>
+            </td>
+            <td class="text-center">
+              <div class="btn-group btn-group-sm">
+                <button
+                  type="button"
+                  class="btn btn-outline-primary"
+                  *erpPermission="'PERM_MASTER_LOOKUP_UPDATE'"
+                  [title]="'COMMON.EDIT' | translate"
+                  [attr.aria-label]="'COMMON.EDIT' | translate"
+                  (click)="editDetail.emit(detail)"
+                >
+                  <i class="ti ti-edit" aria-hidden="true"></i>
+                </button>
+                <button
+                  type="button"
+                  [class]="detail.isActive ? 'btn btn-outline-warning' : 'btn btn-outline-success'"
+                  *erpPermission="'PERM_MASTER_LOOKUP_UPDATE'"
+                  [title]="detail.isActive ? ('MASTER_LOOKUPS.DEACTIVATE' | translate) : ('MASTER_LOOKUPS.ACTIVATE' | translate)"
+                  [attr.aria-label]="detail.isActive ? ('MASTER_LOOKUPS.DEACTIVATE' | translate) : ('MASTER_LOOKUPS.ACTIVATE' | translate)"
+                  (click)="toggleActive.emit(detail)"
+                >
+                  <i [class]="detail.isActive ? 'ti ti-toggle-right' : 'ti ti-toggle-left'" aria-hidden="true"></i>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-danger"
+                  *erpPermission="'PERM_MASTER_LOOKUP_DELETE'"
+                  [title]="'COMMON.DELETE' | translate"
+                  [attr.aria-label]="'COMMON.DELETE' | translate"
+                  (click)="deleteDetail.emit(detail)"
+                >
+                  <i class="ti ti-trash" aria-hidden="true"></i>
+                </button>
+              </div>
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          @for (detail of details; track detail.id) {
-            <tr>
-              <td>{{ detail.code }}</td>
-              <td>{{ detail.nameAr }}</td>
-              <td>{{ detail.nameEn }}</td>
-              <td>{{ detail.extraValue }}</td>
-              <td>{{ detail.sortOrder }}</td>
-              <td>
-                <span [class]="detail.isActive ? 'badge bg-success' : 'badge bg-secondary'">
-                  {{ detail.isActive ? ('COMMON.ACTIVE' | translate) : ('COMMON.INACTIVE' | translate) }}
-                </span>
-              </td>
-              <td class="text-center">
-                <div class="btn-group btn-group-sm">
-                  <button
-                    type="button"
-                    class="btn btn-outline-primary"
-                    *erpPermission="'PERM_MASTER_LOOKUP_UPDATE'"
-                    [title]="'COMMON.EDIT' | translate"
-                    (click)="editDetail.emit(detail)"
-                  >
-                    <i class="ti ti-edit"></i>
-                  </button>
-                  <button
-                    type="button"
-                    [class]="detail.isActive ? 'btn btn-outline-warning' : 'btn btn-outline-success'"
-                    *erpPermission="'PERM_MASTER_LOOKUP_UPDATE'"
-                    [title]="detail.isActive ? ('MASTER_LOOKUPS.DEACTIVATE' | translate) : ('MASTER_LOOKUPS.ACTIVATE' | translate)"
-                    (click)="toggleActive.emit(detail)"
-                  >
-                    <i [class]="detail.isActive ? 'ti ti-toggle-right' : 'ti ti-toggle-left'"></i>
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-outline-danger"
-                    *erpPermission="'PERM_MASTER_LOOKUP_DELETE'"
-                    [title]="'COMMON.DELETE' | translate"
-                    (click)="deleteDetail.emit(detail)"
-                  >
-                    <i class="ti ti-trash"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  }
-</div>
+        }
+      </tbody>
+    </table>
+  </div>
+}

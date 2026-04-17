@@ -1,43 +1,49 @@
 <div class="erp-action-bar">
   <div class="erp-action-bar__start">
-    <button
-      *ngIf="showBack"
-      type="button"
-      class="btn btn-outline-secondary btn-sm"
-      (click)="onBack()"
-    >
-      <i class="ti ti-arrow-left" aria-hidden="true"></i>
-      <span class="ms-1">{{ 'COMMON.BACK' | translate }}</span>
-    </button>
+    @if (showBack) {
+      <button
+        type="button"
+        class="btn btn-outline-secondary btn-sm"
+        (click)="onBack()"
+      >
+        <i class="ti ti-arrow-left" aria-hidden="true"></i>
+        <span class="ms-1">{{ 'COMMON.BACK' | translate }}</span>
+      </button>
+    }
     <ng-content select="[actionBarStart]"></ng-content>
   </div>
 
   <div class="erp-action-bar__end">
     <ng-content select="[actionBarEnd]"></ng-content>
-    <button
-      *ngIf="showCancel"
-      type="button"
-      class="btn btn-outline-secondary btn-sm"
-      [disabled]="loading"
-      (click)="onCancel()"
-    >
-      {{ cancelKey | translate }}
-    </button>
-    <button
-      *ngIf="showSave"
-      type="button"
-      class="btn btn-primary"
-      [disabled]="loading || disabled"
-      (click)="onSave()"
-    >
-      <span
-        *ngIf="loading"
-        class="spinner-border spinner-border-sm me-1"
-        role="status"
-        aria-hidden="true"
-      ></span>
-      <i *ngIf="!loading" class="ti ti-device-floppy me-1" aria-hidden="true"></i>
-      {{ (loading ? loadingKey : saveKey) | translate }}
-    </button>
+    @if (showCancel) {
+      <button
+        type="button"
+        class="btn btn-outline-secondary btn-sm"
+        [disabled]="loading"
+        (click)="onCancel()"
+      >
+        {{ cancelKey | translate }}
+      </button>
+    }
+    @if (showSave) {
+      <button
+        type="button"
+        class="btn btn-primary"
+        [disabled]="loading || disabled"
+        (click)="onSave()"
+      >
+        @if (loading) {
+          <span
+            class="spinner-border spinner-border-sm me-1"
+            role="status"
+            aria-hidden="true"
+          ></span>
+        }
+        @if (!loading) {
+          <i class="ti ti-device-floppy me-1" aria-hidden="true"></i>
+        }
+        {{ (loading ? loadingKey : saveKey) | translate }}
+      </button>
+    }
   </div>
 </div>

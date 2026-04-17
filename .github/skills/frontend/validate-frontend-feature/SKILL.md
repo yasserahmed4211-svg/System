@@ -16,6 +16,29 @@ Master validation skill that comprehensively scores a complete frontend feature 
 - When performing a comprehensive audit of an existing frontend feature
 - During final review before merge
 
+## Responsibilities
+
+- Score a complete frontend feature across 5 stages (120 points total)
+- Verify file completeness (models, services, facade, components, routing)
+- Validate architectural compliance across all governance rules
+- Run all enforcement checks: architecture, permissions, state management, UI/UX, design system
+- Apply automatic rejection for critical violations
+
+## Constraints
+
+- MUST NOT generate or modify application code — this skill only validates and scores
+- MUST NOT accept partial features — all required artifacts must be present
+- MUST NOT skip any validation stage — all 5 stages are mandatory
+- MUST NOT fix violations automatically — report with specific skill references
+
+## Output
+
+- Weighted scoring report (120 points) with:
+  - Stage-by-stage scores and check results
+  - Auto-reject violations identified
+  - Final verdict: APPROVED or REJECTED with reasons
+  - Remediation guidance referencing specific skills
+
 ---
 
 ## SCORING FRAMEWORK
@@ -251,3 +274,36 @@ This master validation skill cross-references all enforcement skills. Run these 
 | `enforce-state-management` | 43-check Signal-based state management validation |
 | `enforce-ui-ux` | UI/UX display, readability, and i18n validation |
 | `enforce-design-system` | CSS token consumption and design system compliance |
+
+
+---
+
+## ANGULAR/SKILLS COMPATIBILITY
+
+> This section documents how this skill relates to the official `angular/skills` guidance.
+> **ERP contracts always take precedence.** See `erp-priority-override` for the full precedence rule.
+
+### What angular/skills adds that is SAFE to use alongside this skill
+- No change to scoring framework
+- New skills (angular-signals, angular-aria, angular-animations) are additive checks
+
+### What angular/skills suggests that this skill OVERRIDES
+
+| angular/skills Suggestion | This Skill Requires | Impact on Score |
+|--------------------------|--------------------|----|
+| Signal Forms usage | Reactive Forms  V.2.2, V.4.9 | -10 points + rejection trigger #7 |
+| `providedIn: 'root'` | Component-scoped  V.3.3, V.3.9 | -10 points + rejection trigger #1 |
+| BehaviorSubject state | Signals only  V.3.7 | -15 points + rejection trigger #2 |
+
+### Future scoring additions (optional)
+When `angular-aria` skill is active, the following can be added to Stage 4 scoring:
+- V.4.19: Key interactive elements have ARIA labels (+1 point)
+- V.4.20: Loading states have aria-busy (+1 point)
+These are optional until formally added to the ERP contract.
+
+### Conflict resolution trigger
+
+If any angular/skills guidance contradicts a rule in this skill:
+1. Apply the ERP rule
+2. Log: ` CONFLICT RESOLVED: angular/skills suggests [X], ERP rule [RULE_ID] requires [Y]. Applied [Y].`
+3. Do NOT ask the user  apply ERP rule silently

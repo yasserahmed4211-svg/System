@@ -1,0 +1,171 @@
+<div class="departments-section">
+  <!-- Section Header -->
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h6 class="mb-0 fw-semibold text-muted">{{ 'BRANCHES.DEPARTMENTS' | translate }}</h6>
+    <div class="d-flex gap-2">
+      @if (hasUnsavedRows) {
+        <button
+          type="button"
+          class="btn btn-sm btn-primary"
+          erpPermission="PERM_BRANCH_UPDATE"
+          [disabled]="saving"
+          (click)="onSaveAll()"
+        >
+          <i class="ti ti-device-floppy me-1"></i>{{ 'BRANCHES.SAVE_ALL_DEPARTMENTS' | translate }}
+        </button>
+      }
+      <button
+        type="button"
+        class="btn btn-sm btn-outline-success"
+        erpPermission="PERM_BRANCH_UPDATE"
+        [disabled]="saving"
+        (click)="onAddRow()"
+      >
+        <i class="ti ti-plus me-1"></i>{{ 'BRANCHES.ADD_DEPARTMENT' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Validation Summary -->
+  @if (showValidationSummary) {
+    <div class="alert alert-danger py-2 px-3 mb-3 small">
+      <i class="ti ti-alert-circle me-1"></i>
+      {{ 'BRANCHES.DEPT_VALIDATION_SUMMARY' | translate }}
+    </div>
+  }
+
+  <!-- Departments Table -->
+  @if (departments.length === 0) {
+    <div class="text-center text-muted py-4">
+      <i class="ti ti-building-community fs-3 d-block mb-2"></i>
+      <p class="mb-0 small">{{ 'BRANCHES.NO_DEPARTMENTS' | translate }}</p>
+    </div>
+  } @else {
+    <div class="table-responsive">
+      <table class="table table-sm table-bordered align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            @if (isEditMode) {
+              <th class="text-muted fw-normal" style="width: 110px">
+                {{ 'BRANCHES.DEPT_CODE' | translate }}
+              </th>
+            }
+            <th>{{ 'BRANCHES.DEPT_NAME_AR' | translate }} <span class="text-danger">*</span></th>
+            <th>{{ 'BRANCHES.DEPT_NAME_EN' | translate }} <span class="text-danger">*</span></th>
+            <th style="width: 160px">{{ 'BRANCHES.DEPT_TYPE' | translate }} <span class="text-danger">*</span></th>
+            <th style="width: 110px" class="text-center">{{ 'COMMON.ACTIVE' | translate }}</th>
+            <th style="width: 56px"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (dept of departments; track dept.departmentPk || $index; let i = $index) {
+            <tr [class.table-secondary]="dept.activeFl === 0"
+                [class.table-danger]="isRowInvalid(i)">
+              <!-- Code (edit mode only, readonly) -->
+              @if (isEditMode) {
+                <td>
+                  <span class="badge bg-light text-dark border font-monospace small">
+                    {{ dept.departmentCode || '—' }}
+                  </span>
+                </td>
+              }
+
+              <!-- Name AR -->
+              <td>
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  [class.is-invalid]="isRowInvalid(i) && !dept.departmentNameAr"
+                  [value]="dept.departmentNameAr"
+                  [disabled]="saving || dept.activeFl === 0"
+                  [placeholder]="'BRANCHES.DEPT_NAME_AR' | translate"
+                  (input)="onFieldChange(i, 'departmentNameAr', $any($event.target).value)"
+                  dir="rtl"
+                />
+              </td>
+
+              <!-- Name EN -->
+              <td>
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  [class.is-invalid]="isRowInvalid(i) && !dept.departmentNameEn"
+                  [value]="dept.departmentNameEn"
+                  [disabled]="saving || dept.activeFl === 0"
+                  [placeholder]="'BRANCHES.DEPT_NAME_EN' | translate"
+                  (input)="onFieldChange(i, 'departmentNameEn', $any($event.target).value)"
+                  dir="ltr"
+                />
+              </td>
+
+              <!-- Type -->
+              <td>
+                <select
+                  class="form-select form-select-sm"
+                  [class.is-invalid]="isRowInvalid(i) && !dept.departmentTypeId"
+                  [value]="dept.departmentTypeId"
+                  [disabled]="saving || dept.activeFl === 0"
+                  (change)="onFieldChange(i, 'departmentTypeId', $any($event.target).value)"
+                >
+                  <option value="">{{ 'COMMON.SELECT' | translate }}</option>
+                  @for (opt of departmentTypeOptions; track opt.value) {
+                    <option [value]="opt.value">{{ opt.label }}</option>
+                  }
+                </select>
+              </td>
+
+              <!-- Active state -->
+              <td class="text-center">
+                @if (isSaved(dept)) {
+                  @if (dept.activeFl === 1) {
+                    <span class="badge bg-success">{{ 'COMMON.ACTIVE' | translate }}</span>
+                  } @else {
+                    <span class="badge bg-secondary">{{ 'COMMON.INACTIVE' | translate }}</span>
+                  }
+                } @else {
+                  <div class="form-check form-switch d-inline-flex justify-content-center">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      [checked]="dept.activeFl === 1"
+                      [disabled]="saving"
+                      (change)="onFieldChange(i, 'activeFl', $any($event.target).checked ? 1 : 0)"
+                    />
+                  </div>
+                }
+              </td>
+
+              <!-- Action button -->
+              <td class="text-center">
+                @if (isSaved(dept)) {
+                  @if (dept.activeFl === 1) {
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-warning"
+                      erpPermission="PERM_BRANCH_UPDATE"
+                      [disabled]="saving"
+                      [title]="'COMMON.DEACTIVATE' | translate"
+                      (click)="onDeactivateRow(dept)"
+                    >
+                      <i class="ti ti-ban"></i>
+                    </button>
+                  }
+                } @else {
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-danger"
+                    [disabled]="saving"
+                    [title]="'COMMON.REMOVE' | translate"
+                    (click)="onRemoveRow(i)"
+                  >
+                    <i class="ti ti-x"></i>
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

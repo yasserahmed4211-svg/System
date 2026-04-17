@@ -20,7 +20,8 @@ import java.util.Properties;
     basePackages = {
         "com.example.security.repo",
         "com.example.masterdata.repository",
-        "com.example.erp.finance.gl.repository"
+        "com.example.erp.finance.gl.repository",
+        "com.example.org.repository"
     }
 )
 public class JpaConfig {
@@ -45,7 +46,8 @@ public class JpaConfig {
         em.setPackagesToScan(
             "com.example.security.domain",
             "com.example.masterdata.entity",
-            "com.example.erp.finance.gl.entity"
+            "com.example.erp.finance.gl.entity",
+            "com.example.org.entity"
         );
 
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();

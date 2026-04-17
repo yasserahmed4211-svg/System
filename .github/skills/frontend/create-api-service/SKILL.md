@@ -28,6 +28,25 @@ Generates the feature API service that extends `BaseApiService` for HTTP communi
 | `HAS_CHILD` | `true/false` | Whether entity has child entities |
 | `CHILD_NAME` | `LookupDetail` | PascalCase child name (if applicable) |
 
+## Responsibilities
+
+- Generate API service class extending `BaseApiService`
+- Implement CRUD methods using `doGet`, `doPost`, `doPut`, `doDelete` from base class
+- Use `environment.authApiUrl` for base URL construction
+- Include child entity API methods if `HAS_CHILD` is true
+
+## Constraints
+
+- MUST NOT generate models, facade, or component code
+- MUST NOT use `HttpClient` directly — must extend `BaseApiService`
+- MUST NOT use `providedIn: 'root'` — service is component-scoped
+- MUST NOT use `.pipe(map(...))` for response unwrapping — base class handles it
+- MUST NOT hardcode API URLs
+
+## Output
+
+- Single file: `frontend/src/app/modules/<DOMAIN_DIR>/<FEATURE_DIR>/services/<feature>-api.service.ts`
+
 ---
 
 ## Steps
@@ -250,3 +269,31 @@ export class MasterLookupApiService extends BaseApiService {
   }
 }
 ```
+
+
+---
+
+## ANGULAR/SKILLS COMPATIBILITY
+
+> This section documents how this skill relates to the official `angular/skills` guidance.
+> **ERP contracts always take precedence.** See `erp-priority-override` for the full precedence rule.
+
+### What angular/skills adds that is SAFE to use alongside this skill
+- General TypeScript and Observable patterns
+- Understanding of Angular DI
+
+### What angular/skills suggests that this skill OVERRIDES
+
+| angular/skills Suggestion | This Skill Requires | Rule |
+|--------------------------|--------------------|----|
+| Direct `HttpClient` injection | `extends BaseApiService` always | B.2.1 |
+| `shareReplay` for performance | PROHIBITED in CRUD services | D.5.2 |
+| `providedIn: 'root'` | Component-scoped `providers: []` only | B.2.3 |
+| Custom response unwrapping | `doGet/doPost/doPut/doDelete` from base | B.2.2 |
+
+### Conflict resolution trigger
+
+If any angular/skills guidance contradicts a rule in this skill:
+1. Apply the ERP rule
+2. Log: ` CONFLICT RESOLVED: angular/skills suggests [X], ERP rule [RULE_ID] requires [Y]. Applied [Y].`
+3. Do NOT ask the user  apply ERP rule silently

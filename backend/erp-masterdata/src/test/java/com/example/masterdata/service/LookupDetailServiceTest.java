@@ -174,31 +174,18 @@ class LookupDetailServiceTest {
     }
 
     @Test
-    void delete_ShouldFail_WhenReferencedByActivity() {
-        // Given
-        when(lookupDetailRepository.findById(1L)).thenReturn(Optional.of(testEntity));
-        when(lookupDetailRepository.countActivityReferences(1L)).thenReturn(5L);
-
-        // When & Then
-        assertThrows(LocalizedException.class, () -> lookupDetailService.delete(1L));
-        verify(lookupDetailRepository, never()).delete((MdLookupDetail) any());
-    }
-
-    @Test
     void getUsage_ShouldReturnUsageInfo() {
         // Given
         when(lookupDetailRepository.findById(1L)).thenReturn(Optional.of(testEntity));
-        when(lookupDetailRepository.countActivityReferences(1L)).thenReturn(5L);
 
         LookupDetailUsageResponse usageResponse = LookupDetailUsageResponse.builder()
                 .id(1L)
                 .code("RED")
-                .activityReferencesCount(5L)
-                .totalReferencesCount(5L)
-                .canBeDeleted(false)
+                .totalReferencesCount(0L)
+                .canBeDeleted(true)
                 .build();
 
-        when(lookupDetailMapper.toUsageResponse(testEntity, 5L)).thenReturn(usageResponse);
+        when(lookupDetailMapper.toUsageResponse(testEntity)).thenReturn(usageResponse);
 
         // When
         ServiceResult<LookupDetailUsageResponse> result = lookupDetailService.getUsage(1L);
@@ -206,8 +193,7 @@ class LookupDetailServiceTest {
         // Then
         assertTrue(result.isSuccess());
         assertNotNull(result.getData());
-        assertEquals(5L, result.getData().getActivityReferencesCount());
-        assertEquals(5L, result.getData().getTotalReferencesCount());
-        assertFalse(result.getData().getCanBeDeleted());
+        assertEquals(0L, result.getData().getTotalReferencesCount());
+        assertTrue(result.getData().getCanBeDeleted());
     }
 }

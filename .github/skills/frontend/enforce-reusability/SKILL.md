@@ -19,6 +19,27 @@ Detects duplicated or near-duplicate logic across ERP frontend feature modules a
 - When refactoring to extract repeated patterns into shared code
 - During feature validation alongside `enforce-frontend-architecture`
 
+## Responsibilities
+
+- Detect duplicated or near-duplicate logic across feature modules
+- Enforce extraction of repeated patterns into `shared/` or `core/`
+- Validate that existing shared utilities, components, and services are consumed
+- Identify candidates for shared code extraction
+
+## Constraints
+
+- MUST NOT generate or modify application code — this skill only detects and reports
+- MUST NOT refactor shared code itself — report recommendations
+- MUST NOT validate architectural rules — that belongs to `enforce-frontend-architecture`
+- MUST NOT validate UI display rules — that belongs to `enforce-ui-ux`
+
+## Output
+
+- Reusability report identifying:
+  - Duplicated logic across feature modules
+  - Existing shared code not being consumed
+  - Candidates for extraction to `shared/` or `core/`
+
 ---
 
 ## CORE PRINCIPLE
@@ -124,6 +145,16 @@ Before applying checks, classify any candidate extraction:
 | RE.8.3 | Token management via `TokenStoreService` | Token read/write through `TokenStoreService` — not direct `localStorage` access | `localStorage.getItem('accessToken')` in feature code |
 | RE.8.4 | Barrel exports maintained | `shared/index.ts` and `core/index.ts` re-export all public APIs — feature modules import from barrel | Direct deep imports like `import { ... } from 'src/app/shared/services/erp-notification.service'` |
 
+### Layer 9: Theme & Layout Reuse (5 checks)
+
+| # | Check | Pass Criteria | Violation |
+|---|-------|--------------|-----------|
+| RE.9.1 | Theme state via ThemeService | All theme switching uses `ThemeService` methods (`setThemeColor`, `toggleDarkMode`, `toggleContainerMode`) — not direct DOM | Component adds `mantis-dark` class or `body.part` directly |
+| RE.9.2 | No duplicate card positioning | Card header layout handled by global `card.scss` flexbox — no per-component `::ng-deep` overrides | `::ng-deep { .card-header-right { position: absolute } }` copied across components |
+| RE.9.3 | Navigation i18n via translate pipe | All nav text uses `\| translate` — not hardcoded strings per navigation component | Hardcoded "Notification", "Logout" in nav templates |
+| RE.9.4 | Arabic font via font-family.scss only | Single source of truth for `[lang="ar"]` font in `font-family.scss` | Duplicate `[lang="ar"] { font-family: ... }` in `styles.scss` or component SCSS |
+| RE.9.5 | Theme localStorage via ThemeService only | Theme preferences stored/loaded only through `ThemeService` — no direct `localStorage` in components for theme keys | `localStorage.getItem('erp_theme_color')` in a component |
+
 ---
 
 ## AUTOMATIC REJECTION TRIGGERS
@@ -137,9 +168,11 @@ Any of the following causes **immediate rejection**:
 | 3 | List page does not extend `ErpListComponent` | RE.1.1 |
 | 4 | Grid does not use `ERP_DEFAULT_COL_DEF` | RE.2.1 |
 | 5 | `window.confirm()` or `window.alert()` used anywhere | RE.5.1, RE.5.3 |
-| 6 | Direct `localStorage` access outside `TokenStoreService` / `LanguageService` | RE.8.3 |
+| 6 | Direct `localStorage` access outside `TokenStoreService` / `LanguageService` / `ThemeService` | RE.8.3, RE.9.5 |
 | 7 | Inline `ModuleRegistry.registerModules()` in a feature component | RE.2.4 |
 | 8 | Hardcoded error message string instead of translation key or `ErpErrorMapperService` | RE.5.4, RE.5.5 |
+| 9 | `::ng-deep` overriding `.card-header-right` with absolute positioning in any component | RE.9.2 |
+| 10 | Direct DOM manipulation for theme state (`body.classList`, `body.part`) in components | RE.9.1 |
 
 ---
 
@@ -400,3 +433,29 @@ EXTRACTION CANDIDATES:
 
 VERDICT: APPROVED / APPROVED WITH WARNINGS / REJECTED
 ```
+
+
+---
+
+## ANGULAR/SKILLS COMPATIBILITY
+
+> This section documents how this skill relates to the official `angular/skills` guidance.
+> **ERP contracts always take precedence.** See `erp-priority-override` for the full precedence rule.
+
+### What angular/skills adds that is SAFE to use alongside this skill
+- No conflict  angular/skills does not cover code reuse enforcement
+
+### What angular/skills suggests that this skill OVERRIDES
+- None  this skill covers a domain not addressed by angular/skills
+
+### Compatibility note
+New shared utilities introduced via angular/skills patterns (e.g., animation helpers,
+ARIA utilities, directive compositions) must follow the same extraction rules enforced here.
+If a pattern is used in 2+ features, it must be extracted to `shared/`.
+
+### Conflict resolution trigger
+
+If any angular/skills guidance contradicts a rule in this skill:
+1. Apply the ERP rule
+2. Log: ` CONFLICT RESOLVED: angular/skills suggests [X], ERP rule [RULE_ID] requires [Y]. Applied [Y].`
+3. Do NOT ask the user  apply ERP rule silently

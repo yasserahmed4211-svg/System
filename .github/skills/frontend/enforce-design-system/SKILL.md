@@ -17,6 +17,28 @@ Enforces the ERP design system by providing the complete token reference, usage 
 - When adding new tokens to `erp-tokens.scss`
 - When unsure which token maps to a specific value
 
+## Responsibilities
+
+- Validate all SCSS uses `var(--erp-*)` tokens — no hardcoded px/rem/color values
+- Provide complete token reference and mapping tables
+- Guide conversion of hardcoded CSS values to correct tokens
+- Verify new component tokens are defined in `erp-tokens.scss` using base token references
+
+## Constraints
+
+- MUST NOT generate component TypeScript or template code — SCSS only
+- MUST NOT remove or replace existing Mantis theme styles — tokens are additive only
+- MUST NOT create CSS classes that duplicate `erp-ui.scss`
+- MUST NOT modify `erp-tokens.scss` without following token definition rules
+
+## Output
+
+- Design system compliance report identifying:
+  - Hardcoded values and their correct token replacements
+  - Missing fallback values on `var()` calls
+  - Duplicate CSS classes from `erp-ui.scss`
+- Token reference guidance for specific values
+
 ---
 
 ## TOKEN REFERENCE
@@ -303,6 +325,48 @@ When reviewing or generating SCSS, check each property:
 - `--erp-color-*` delegates to `--bs-*` Bootstrap variables, so theme changes propagate automatically.
 - Dark mode is handled by the Mantis `dark.scss` — tokens inherit via the `--bs-*` delegation chain.
 - `erp-ui.scss` provides optional layout utility classes (`.erp-page`, `.erp-card`, `.erp-form`, etc.) — use them instead of creating new layout classes.
+- **Theme presets** are applied via `[part='preset-N']` CSS attribute selector on `<body>` (defined in `style-preset.scss`). ThemeService manages preset switching with `localStorage` persistence.
+- **Dark mode** is activated via `body.mantis-dark` class application. ThemeService manages this via reactive `effect()` — components MUST NOT add/remove this class directly.
+- **Card header actions** (`.card-header-right`) use **flexbox layout** (`display: flex`) — NOT absolute positioning. This is defined globally in `card.scss`. Components MUST NOT override this with `::ng-deep { .card-header-right { position: absolute; } }`.
+- **Arabic font family** (`Droid Arabic Naskh`) is defined in `font-family.scss` for `[lang="ar"]`. No other SCSS file may declare a competing `[lang="ar"] { font-family: ... }` rule.
+
+---
+
+## CARD LAYOUT RULES
+
+The card header layout uses flexbox for proper RTL/LTR support:
+
+### ✅ Correct — flexbox card header (handled by card.scss globally)
+
+```scss
+.card-header-right {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  position: static !important;
+}
+```
+
+### ❌ FORBIDDEN — absolute positioning via ::ng-deep
+
+```scss
+// ❌ Breaks RTL overlap — NEVER do this in component SCSS
+::ng-deep {
+  .card-header-right {
+    position: absolute;
+    left: 20px;
+    top: 15px;
+    z-index: 1;
+  }
+}
+```
+
+| # | Check | Pass | Fail |
+|---|---|---|---|
+| DS.18 | Card header uses flexbox | Global `card.scss` flexbox applied | Component overrides with `position: absolute` |
+| DS.19 | No `::ng-deep` for card-header-right positioning | No `::ng-deep` override | `::ng-deep { .card-header-right { position: absolute } }` |
+| DS.20 | RTL card header uses `justify-content` | `justify-content: flex-start` | `left: 10px; right: auto;` |
 
 ---
 
@@ -329,3 +393,30 @@ When writing or reviewing SCSS, ensure shared resources are consumed instead of 
 |-------|---------|
 | `enforce-reusability` | Validates that shared TypeScript code (`shared/`, `core/`) is consumed — no duplicated logic across features |
 | `enforce-ui-ux` | Validates UI/UX display patterns, readability, and i18n compliance |
+
+
+---
+
+## ANGULAR/SKILLS COMPATIBILITY
+
+> This section documents how this skill relates to the official `angular/skills` guidance.
+> **ERP contracts always take precedence.** See `erp-priority-override` for the full precedence rule.
+
+### What angular/skills adds that is SAFE to use alongside this skill
+- No conflict  angular/skills does not cover CSS token systems
+- Tailwind CSS patterns from angular/skills are NOT used in this project
+
+### What angular/skills suggests that this skill OVERRIDES
+- Tailwind CSS utility classes  PROHIBITED. Use `--erp-*` token system instead (DS.1DS.13)
+- Inline styles  PROHIBITED regardless of angular/skills guidance (DS.13)
+
+### Compatibility note
+angular-animations patterns from `angular-animations` skill are compatible with this skill.
+Animation durations must use `--erp-transition-*` tokens, not hardcoded millisecond values.
+
+### Conflict resolution trigger
+
+If any angular/skills guidance contradicts a rule in this skill:
+1. Apply the ERP rule
+2. Log: ` CONFLICT RESOLVED: angular/skills suggests [X], ERP rule [RULE_ID] requires [Y]. Applied [Y].`
+3. Do NOT ask the user  apply ERP rule silently

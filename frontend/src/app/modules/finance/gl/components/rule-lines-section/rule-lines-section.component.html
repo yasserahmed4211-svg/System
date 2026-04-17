@@ -42,17 +42,19 @@
                 type="button"
                 class="btn btn-sm btn-icon btn-outline-primary"
                 [title]="'COMMON.EDIT' | translate"
+                [attr.aria-label]="'COMMON.EDIT' | translate"
                 (click)="editLine.emit({ line: line, index: i })"
               >
-                <i class="ti ti-edit"></i>
+                <i class="ti ti-edit" aria-hidden="true"></i>
               </button>
               <button
                 type="button"
                 class="btn btn-sm btn-icon btn-outline-danger"
                 [title]="'COMMON.DELETE' | translate"
+                [attr.aria-label]="'COMMON.DELETE' | translate"
                 (click)="removeLine.emit(i)"
               >
-                <i class="ti ti-trash"></i>
+                <i class="ti ti-trash" aria-hidden="true"></i>
               </button>
             </div>
           </div>

@@ -4,6 +4,7 @@ import com.example.erp.common.web.ApiResponse;
 import com.example.erp.common.web.OperationCode;
 import com.example.security.dto.CreatePermissionRequest;
 import com.example.security.dto.PermissionDto;
+import com.example.security.dto.UpdatePermissionRequest;
 import com.example.security.dto.PermissionSearchContractRequest;
 import com.example.security.service.PermissionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,6 +39,14 @@ public class PermissionController {
     )
     public ResponseEntity<ApiResponse<Page<PermissionDto>>> searchPermissions(@RequestBody PermissionSearchContractRequest searchRequest) {
         return operationCode.craftResponse(permissionService.searchPermissions(searchRequest.toCommonSearchRequest()));
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update permission", description = "Updates an existing system permission")
+    public ResponseEntity<ApiResponse<PermissionDto>> update(
+            @PathVariable Long id,
+            @RequestBody @Valid UpdatePermissionRequest req) {
+        return operationCode.craftResponse(permissionService.updatePermission(id, req));
     }
 
 }

@@ -35,6 +35,7 @@ import { SpecificationFilterComponent } from 'src/app/shared/components/specific
 import { ErpEmptyStateComponent } from 'src/app/shared/components/erp-empty-state/erp-empty-state.component';
 import { ErpDialogService } from 'src/app/shared/services/erp-dialog.service';
 import { ErpNotificationService } from 'src/app/shared/services/erp-notification.service';
+import { AuthenticationService } from 'src/app/core/services/authentication.service';
 
 import { ErpPermissionDirective } from 'src/app/shared/directives/erp-permission.directive';
 
@@ -86,6 +87,7 @@ export class RoleAccessControlComponent extends ErpListComponent implements OnIn
   readonly facade = inject(RoleAccessFacade);
   private readonly dialogService = inject(ErpDialogService);
   private readonly notificationService = inject(ErpNotificationService);
+  private readonly authService = inject(AuthenticationService);
 
   get direction(): Direction {
     return this.translate.currentLang === 'ar' ? 'rtl' : 'ltr';
@@ -228,6 +230,7 @@ export class RoleAccessControlComponent extends ErpListComponent implements OnIn
     const deps: RoleConfirmActionDeps = {
       dialog: this.dialogService,
       notify: this.notificationService,
+      auth: this.authService,
       facade: this.facade
     };
     confirmToggleRoleActive(deps, role, () => this.reload());
@@ -237,6 +240,7 @@ export class RoleAccessControlComponent extends ErpListComponent implements OnIn
     const deps: RoleConfirmActionDeps = {
       dialog: this.dialogService,
       notify: this.notificationService,
+      auth: this.authService,
       facade: this.facade
     };
     confirmDeleteRole(deps, role, () => this.reload());

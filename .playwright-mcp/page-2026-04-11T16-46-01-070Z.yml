@@ -1,0 +1,221 @@
+- generic [ref=e2]:
+  - generic [ref=e829]:
+    - generic [ref=e830]: تم الإنشاء بنجاح
+    - button "إغلاق" [ref=e831] [cursor=pointer]
+  - generic [ref=e3]:
+    - navigation [ref=e5]:
+      - generic [ref=e6]:
+        - link "theme-logo" [ref=e832] [cursor=pointer]:
+          - /url: index.html
+          - img "theme-logo" [ref=e833]
+        - generic [ref=e10]:
+          - generic [ref=e14]:
+            - list [ref=e15]:
+              - generic [ref=e16]:
+                - listitem [ref=e17] [cursor=pointer]:
+                  - generic [ref=e18]: المالية
+                - generic [ref=e20]:
+                  - listitem [ref=e22]:
+                    - link "دليل الحسابات" [ref=e834] [cursor=pointer]:
+                      - /url: /finance/gl/accounts
+                      - img [ref=e26]
+                      - generic [ref=e28]: دليل الحسابات
+                  - listitem [ref=e30]:
+                    - link "قواعد المحاسبة" [ref=e835] [cursor=pointer]:
+                      - /url: /finance/gl/rules
+                      - img [ref=e34]
+                      - generic [ref=e36]: قواعد المحاسبة
+                  - listitem [ref=e38]:
+                    - link "القيود اليومية" [ref=e836] [cursor=pointer]:
+                      - /url: /finance/gl/journals
+                      - img [ref=e42]
+                      - generic [ref=e44]: القيود اليومية
+                  - listitem [ref=e46]:
+                    - link "قيود الترحيل" [ref=e837] [cursor=pointer]:
+                      - /url: /finance/gl/postings
+                      - img [ref=e50]
+                      - generic [ref=e52]: قيود الترحيل
+              - generic [ref=e53]:
+                - listitem [ref=e54] [cursor=pointer]:
+                  - generic [ref=e55]: التنظيم
+                - generic [ref=e57]:
+                  - listitem [ref=e59]:
+                    - link "إدارة الكيانات القانونية" [ref=e838] [cursor=pointer]:
+                      - /url: /organization/legal-entities
+                      - img [ref=e63]
+                      - generic [ref=e65]: إدارة الكيانات القانونية
+                  - listitem [ref=e67]:
+                    - link "إدارة المناطق" [ref=e839] [cursor=pointer]:
+                      - /url: /organization/regions
+                      - img [ref=e71]
+                      - generic [ref=e73]: إدارة المناطق
+                  - listitem [ref=e75]:
+                    - link "إدارة الفروع والأقسام" [ref=e840] [cursor=pointer]:
+                      - /url: /organization/branches
+                      - img [ref=e79]
+                      - generic [ref=e81]: إدارة الفروع والأقسام
+              - generic [ref=e82]:
+                - listitem [ref=e83] [cursor=pointer]:
+                  - generic [ref=e84]: الأمان
+                - generic [ref=e86]:
+                  - listitem [ref=e88]:
+                    - link "إدارة المستخدمين" [ref=e841] [cursor=pointer]:
+                      - /url: /users
+                      - img [ref=e92]
+                      - generic [ref=e94]: إدارة المستخدمين
+                  - listitem [ref=e96]:
+                    - link "إدارة صلاحيات الأدوار" [ref=e842] [cursor=pointer]:
+                      - /url: /role-access
+                      - img [ref=e100]
+                      - generic [ref=e103]: إدارة صلاحيات الأدوار
+                  - listitem [ref=e105]:
+                    - link "إدارة الصفحات" [ref=e843] [cursor=pointer]:
+                      - /url: /pages
+                      - img [ref=e109]
+                      - generic [ref=e111]: إدارة الصفحات
+              - generic [ref=e112]:
+                - listitem [ref=e113] [cursor=pointer]:
+                  - generic [ref=e114]: البيانات الرئيسية
+                - listitem [ref=e118]:
+                  - link "قوائم البحث الرئيسية" [ref=e844] [cursor=pointer]:
+                    - /url: /master-data/master-lookups
+                    - img [ref=e122]
+                    - generic [ref=e124]: قوائم البحث الرئيسية
+            - generic [ref=e128]:
+              - img "user" [ref=e845]
+              - generic [ref=e130]:
+                - heading "المساعدة" [level=5] [ref=e846]
+                - text: الدعم
+              - button "الدعم" [ref=e847] [cursor=pointer]
+          - list [ref=e140]:
+            - generic [ref=e141]:
+              - img "user" [ref=e848]
+              - generic [ref=e145]:
+                - text: admin
+                - paragraph [ref=e146]: ROLE_USER
+              - img [ref=e149]
+    - banner [ref=e152]:
+      - generic [ref=e153]:
+        - list [ref=e156]:
+          - listitem [ref=e157]:
+            - link "click to menu collapse" [ref=e849] [cursor=pointer]:
+              - /url: "javascript:"
+              - img [ref=e160]
+          - text: 
+          - listitem [ref=e162]:
+            - generic [ref=e163]:
+              - img [ref=e165]
+              - searchbox "Ctrl + K" [ref=e850]
+        - list [ref=e170]:
+          - listitem [ref=e171]:
+            - link [ref=e172] [cursor=pointer]:
+              - /url: "javascript:"
+              - img [ref=e174]
+          - listitem [ref=e176]:
+            - link "ع" [ref=e851] [cursor=pointer]:
+              - /url: "javascript:"
+              - img [ref=e179]
+              - generic [ref=e182]: ع
+          - listitem [ref=e183]:
+            - link "3" [ref=e852] [cursor=pointer]:
+              - /url: "javascript:"
+              - img [ref=e186]
+              - generic [ref=e188]: "3"
+          - listitem [ref=e189]:
+            - link [ref=e190] [cursor=pointer]:
+              - /url: "javascript:"
+              - img [ref=e192]
+          - listitem [ref=e194]:
+            - link [ref=e195] [cursor=pointer]:
+              - /url: "javascript:"
+              - img [ref=e197]
+          - listitem [ref=e199]:
+            - link [ref=e200] [cursor=pointer]:
+              - /url: "javascript:"
+              - img [ref=e202]
+          - listitem [ref=e204]:
+            - link "user-image admin" [ref=e853] [cursor=pointer]:
+              - /url: "javascript:"
+              - img "user-image" [ref=e854]
+              - generic [ref=e207]: admin
+    - generic [ref=e674]:
+      - generic [ref=e676]:
+        - heading "تعديل قائمة البحث" [level=5] [ref=e855]
+        - generic [ref=e684]:
+          - heading "المعلومات الأساسية" [level=3] [ref=e856]
+          - generic [ref=e688]:
+            - generic [ref=e691]:
+              - generic [ref=e692]:
+                - generic [ref=e693]: مفتاح القائمة
+                - generic [ref=e694]: "*"
+              - textbox [disabled] [ref=e696]: ADF_QQ
+              - generic [ref=e697]: لا يمكن تغيير مفتاح القائمة بعد الإنشاء
+            - generic [ref=e700]:
+              - generic [ref=e701]:
+                - generic [ref=e702]: اسم القائمة بالعربي
+                - generic [ref=e703]: "*"
+              - textbox [ref=e705]: sd
+            - generic [ref=e708]:
+              - generic [ref=e710]: اسم القائمة بالإنجليزي
+              - textbox [ref=e712]: df
+            - generic [ref=e715]:
+              - generic [ref=e717]: الوصف
+              - textbox [ref=e719]
+      - generic [ref=e721]:
+        - heading "تفاصيل القائمة" [level=5] [ref=e857]
+        - generic [ref=e726]:
+          - button " إضافة تفصيل" [active] [ref=e858] [cursor=pointer]:
+            - generic [ref=e729]: 
+            - text: إضافة تفصيل
+          - table [ref=e860]:
+            - rowgroup [ref=e861]:
+              - row "الكود الاسم بالعربي الاسم بالإنجليزي القيمة الإضافية ترتيب الفرز  الحالة الإجراءات" [ref=e862]:
+                - columnheader "الكود" [ref=e863] [cursor=pointer]
+                - columnheader "الاسم بالعربي" [ref=e864] [cursor=pointer]
+                - columnheader "الاسم بالإنجليزي" [ref=e865] [cursor=pointer]
+                - columnheader "القيمة الإضافية" [ref=e866]
+                - columnheader "ترتيب الفرز " [ref=e867] [cursor=pointer]:
+                  - text: ترتيب الفرز
+                  - generic [ref=e868]: 
+                - columnheader "الحالة" [ref=e869] [cursor=pointer]
+                - columnheader "الإجراءات" [ref=e870]
+            - rowgroup [ref=e871]:
+              - row "TEST01 تفصيل اختبار Test Detail 0 نشط تعديل إلغاء التفعيل حذف" [ref=e872]:
+                - cell "TEST01" [ref=e873]
+                - cell "تفصيل اختبار" [ref=e874]
+                - cell "Test Detail" [ref=e875]
+                - cell [ref=e876]
+                - cell "0" [ref=e877]
+                - cell "نشط" [ref=e878]:
+                  - generic [ref=e879]: نشط
+                - cell "تعديل إلغاء التفعيل حذف" [ref=e880]:
+                  - generic [ref=e881]:
+                    - button "تعديل" [ref=e882] [cursor=pointer]:
+                      - generic [ref=e883]: 
+                    - button "إلغاء التفعيل" [ref=e884] [cursor=pointer]:
+                      - generic [ref=e885]: 
+                    - button "حذف" [ref=e886] [cursor=pointer]:
+                      - generic [ref=e887]: 
+      - generic [ref=e738]:
+        - button "رجوع" [ref=e888] [cursor=pointer]:
+          - generic [ref=e741]: 
+          - text: رجوع
+        - button "تحديث" [ref=e889] [cursor=pointer]:
+          - generic [ref=e744]: 
+          - text: تحديث
+    - contentinfo [ref=e652]:
+      - generic [ref=e654]:
+        - paragraph [ref=e656]:
+          - text: Copyright ©
+          - link "CodedThemes" [ref=e890] [cursor=pointer]:
+            - /url: https://codedthemes.com
+        - list [ref=e659]:
+          - listitem [ref=e660]:
+            - link "Home" [ref=e891] [cursor=pointer]:
+              - /url: https://codedthemes.com/
+          - listitem [ref=e662]:
+            - link "Privacy Policy" [ref=e892] [cursor=pointer]:
+              - /url: https://codedthemes.com/privacy-policy/
+          - listitem [ref=e664]:
+            - link "Contact us" [ref=e893] [cursor=pointer]:
+              - /url: https://codedthemes.support-hub.io/

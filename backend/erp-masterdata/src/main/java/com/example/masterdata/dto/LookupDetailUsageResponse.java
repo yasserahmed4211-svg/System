@@ -26,16 +26,13 @@ public class LookupDetailUsageResponse {
     @Schema(description = "Detail code - كود القيمة", example = "RED")
     private String code;
 
-    @Schema(description = "Activity references count - عدد المراجع في الأنشطة", example = "5")
-    private Long activityReferencesCount;
-
-    @Schema(description = "Total references count - إجمالي عدد المراجع", example = "5")
+        @Schema(description = "Total references count - إجمالي عدد المراجع", example = "0")
     private Long totalReferencesCount;
 
-    @Schema(description = "Can be deleted - يمكن حذفه", example = "false")
+        @Schema(description = "Can be deleted - يمكن حذفه", example = "true")
     private Boolean canBeDeleted;
 
     @Schema(description = "Reason why it cannot be deleted", 
-            example = "Referenced by 5 activities")
+            example = "null")
     private String reason;
 }

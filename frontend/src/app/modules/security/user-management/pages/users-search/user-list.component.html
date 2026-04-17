@@ -1,7 +1,7 @@
 <app-card [cardTitle]="'USERS.TITLE' | translate" [padding]="0">
   <div class="card-header-right">
     <button class="btn btn-info btn-sm me-2" (click)="toggleAdvancedFilters()">
-      <i class="ti ti-filter"></i> {{ showAdvancedFilters ? ('USERS.HIDE_FILTERS' | translate) : ('USERS.ADVANCED_FILTERS' | translate) }}
+      <i class="ti ti-filter"></i> {{ showAdvancedFilters() ? ('USERS.HIDE_FILTERS' | translate) : ('USERS.ADVANCED_FILTERS' | translate) }}
     </button>
     <button
       class="btn btn-success btn-sm me-2"
@@ -16,25 +16,25 @@
   </div>
 
   <!-- Advanced Filters Panel -->
-  @if (showAdvancedFilters) {
+  @if (showAdvancedFilters()) {
   <div class="card-body border-bottom bg-light">
     <erp-specification-filter
-      [availableFields]="availableFields"
-      [availableOperators]="availableOperators"
+      [availableFields]="availableFields()"
+      [availableOperators]="availableOperators()"
       (apply)="onSpecFiltersApply($event)"
       (clear)="onSpecFiltersClear()"
     />
 
-    @if (currentFilters.length > 0) {
+    @if (currentFilters().length > 0) {
     <div class="alert alert-info mt-3 mb-0 py-2">
       <small>
         <i class="ti ti-info-circle"></i>
-        <strong>{{ 'USERS.ACTIVE_FILTERS' | translate }}:</strong> {{ currentFilters.length }}
-        @for (filter of currentFilters.slice(0, 3); track $index) {
+        <strong>{{ 'USERS.ACTIVE_FILTERS' | translate }}:</strong> {{ currentFilters().length }}
+        @for (filter of currentFilters().slice(0, 3); track $index) {
           <span class="badge bg-primary ms-1">{{ filter.field }} {{ filter.op }}</span>
         }
-        @if (currentFilters.length > 3) {
-          <span class="badge bg-secondary ms-1">+{{ currentFilters.length - 3 }}</span>
+        @if (currentFilters().length > 3) {
+          <span class="badge bg-secondary ms-1">+{{ currentFilters().length - 3 }}</span>
         }
       </small>
     </div>
@@ -42,7 +42,7 @@
   </div>
   }
   
-  @if (hasError) {
+  @if (hasError()) {
     <erp-empty-state
       titleKey="ERRORS.OPERATION_FAILED"
       [messageKey]="facade.error() || 'ERRORS.TRY_AGAIN'"
@@ -51,8 +51,8 @@
     ></erp-empty-state>
   } @else {
     <div class="position-relative">
-      @if (showGrid) {
-        @if (!isLoading && rowData.length === 0) {
+      @if (showGrid()) {
+        @if (!isLoading() && rowData().length === 0) {
           <div class="p-3">
             <erp-empty-state
               icon="ti ti-database"
@@ -63,19 +63,19 @@
         } @else {
           <ag-grid-angular
             style="width: 100%; height: calc(100vh - 311px)"
-            [columnDefs]="columnDefs"
+            [columnDefs]="columnDefs()"
             [defaultColDef]="defaultColDef"
-            [gridOptions]="gridOptions"
-            [theme]="theme"
-            [rowData]="rowData"
-            [localeText]="agLocaleText"
+            [gridOptions]="gridOptions()"
+            [theme]="theme()"
+            [rowData]="rowData()"
+            [localeText]="agLocaleText()"
             (gridReady)="onGridReady($event)"
             (paginationChanged)="onPaginationChanged()"
           />
         }
       }
 
-      @if (isLoading) {
+      @if (isLoading()) {
         <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
              style="background: rgba(255,255,255,0.6); z-index: 2;">
           <div class="spinner-border text-primary" role="status">
@@ -90,12 +90,12 @@
 <!-- Create/Edit User Modal -->
 <ng-template #createUserModal let-modal>
   <div class="modal-header" [class.rtl-header]="direction" [attr.dir]="direction ? 'rtl' : 'ltr'">
-    <h5 class="modal-title">{{ isEditMode ? ('USERS.EDIT_USER' | translate) : ('USERS.ADD_USER' | translate) }}</h5>
+    <h5 class="modal-title">{{ isEditMode() ? ('USERS.EDIT_USER' | translate) : ('USERS.ADD_USER' | translate) }}</h5>
     <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
   </div>
   <div class="modal-body">
-    @if (formError) {
-      <div class="alert alert-danger" role="alert">{{ formError | translate }}</div>
+    @if (formError()) {
+      <div class="alert alert-danger" role="alert">{{ formError() | translate }}</div>
     }
     
     <form autocomplete="off">
@@ -107,13 +107,13 @@
           id="username" 
           [(ngModel)]="userForm.username"
           #usernameRef="ngModel"
-          [name]="isEditMode ? 'username-edit' : 'username-create'"
+          [name]="isEditMode() ? 'username-edit' : 'username-create'"
           autocomplete="off"
           autocapitalize="none"
           autocorrect="off"
           spellcheck="false"
           [placeholder]="'USERS.ENTER_VALUE' | translate"
-          [disabled]="formSubmitting"
+          [disabled]="formSubmitting()"
           required
           minlength="3"
           [class.is-invalid]="usernameRef.invalid && (usernameRef.touched || usernameRef.dirty)"
@@ -132,7 +132,7 @@
       <div class="mb-3">
         <label for="password" class="form-label">
           {{ 'USERS.PASSWORD' | translate }}
-          @if (isEditMode) {
+          @if (isEditMode()) {
             <span class="text-muted">({{ 'COMMON.OPTIONAL' | translate }})</span>
           } @else {
             <span class="text-danger">*</span>
@@ -144,11 +144,11 @@
           id="password" 
           [(ngModel)]="userForm.password"
           #passwordRef="ngModel"
-          [name]="isEditMode ? 'password-edit' : 'password-create'"
+          [name]="isEditMode() ? 'password-edit' : 'password-create'"
           autocomplete="new-password"
-          [placeholder]="isEditMode ? ('USERS.PASSWORD_HINT_EDIT' | translate) : ('USERS.PASSWORD_HINT_CREATE' | translate)"
-          [disabled]="formSubmitting"
-          [required]="!isEditMode"
+          [placeholder]="isEditMode() ? ('USERS.PASSWORD_HINT_EDIT' | translate) : ('USERS.PASSWORD_HINT_CREATE' | translate)"
+          [disabled]="formSubmitting()"
+          [required]="!isEditMode()"
           minlength="6"
           [class.is-invalid]="passwordRef.invalid && (passwordRef.touched || passwordRef.dirty)"
         />
@@ -162,7 +162,7 @@
           </small>
         } @else {
           <small class="form-text text-muted">
-            @if (isEditMode) {
+            @if (isEditMode()) {
               {{ 'USERS.PASSWORD_HINT_EDIT' | translate }}
             } @else {
               {{ 'USERS.PASSWORD_HINT_CREATE' | translate }}
@@ -179,7 +179,7 @@
             id="enabled"
             [(ngModel)]="userForm.enabled"
             name="enabled"
-            [disabled]="formSubmitting"
+            [disabled]="formSubmitting()"
           />
           <label class="form-check-label" for="enabled">
             {{ 'USERS.IS_ACTIVE' | translate }}
@@ -197,7 +197,7 @@
           [(ngModel)]="userForm.tenantId"
           name="tenantId"
           [placeholder]="'USERS.ENTER_TENANT' | translate"
-          [disabled]="formSubmitting"
+          [disabled]="formSubmitting()"
         />
         <small class="form-text text-muted">{{ 'USERS.TENANT_HINT' | translate }}</small>
       </div>
@@ -212,12 +212,12 @@
             }
           </label>
           
-          @if (rolesLoading) {
+          @if (rolesLoading()) {
             <div class="border rounded p-3 text-center">
               <span class="spinner-border spinner-border-sm text-primary me-2"></span>
               <span class="text-muted">{{ 'USERS.LOADING_ROLES' | translate }}</span>
             </div>
-          } @else if (availableRoles.length === 0) {
+          } @else if (availableRoles().length === 0) {
             <div class="alert alert-warning mb-0">
               <i class="ti ti-alert-circle me-2"></i>
               {{ 'USERS.NO_ROLES_AVAILABLE' | translate }}
@@ -250,20 +250,20 @@
     </form>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()" [disabled]="formSubmitting">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()" [disabled]="formSubmitting()">
       {{ 'COMMON.CANCEL' | translate }}
     </button>
     <button
       type="button"
       class="btn btn-primary"
-      [erpPermission]="isEditMode ? 'USER.UPDATE' : 'USER.CREATE'"
+      [erpPermission]="isEditMode() ? 'USER.UPDATE' : 'USER.CREATE'"
       (click)="createUser(modal)"
-      [disabled]="formSubmitting"
+      [disabled]="formSubmitting()"
     >
-      @if (formSubmitting) {
+      @if (formSubmitting()) {
         <span class="spinner-border spinner-border-sm me-1"></span>
       }
-      {{ isEditMode ? ('COMMON.UPDATE' | translate) : ('COMMON.SAVE' | translate) }}
+      {{ isEditMode() ? ('COMMON.UPDATE' | translate) : ('COMMON.SAVE' | translate) }}
     </button>
   </div>
 </ng-template>
@@ -279,20 +279,20 @@
   </div>
 
   <div class="modal-body">
-    @if (rolesLoading) {
+    @if (rolesLoading()) {
       <div class="border rounded p-3 text-center">
         <span class="spinner-border spinner-border-sm text-primary me-2"></span>
         <span class="text-muted">{{ 'USERS.LOADING_ROLES' | translate }}</span>
       </div>
-    } @else if (availableRoles.length === 0) {
+    } @else if (availableRoles().length === 0) {
       <div class="alert alert-warning mb-0">
         <i class="ti ti-alert-circle me-2"></i>
         {{ 'USERS.NO_ROLES_AVAILABLE' | translate }}
       </div>
     } @else {
       <erp-dual-list
-        [availableItems]="dualListAvailableItems"
-        [selectedItems]="dualListSelectedItems"
+        [availableItems]="dualListAvailableItems()"
+        [selectedItems]="dualListSelectedItems()"
         [searchable]="true"
         availableTitleKey="USERS.AVAILABLE_ROLES"
         selectedTitleKey="USERS.SELECTED_ROLES"

@@ -23,6 +23,30 @@ Generates the service class containing all business logic for an ERP feature. Th
 - Error codes registered in `<Module>ErrorCodes`
 - Permissions registered in `SecurityPermissions`
 
+## Responsibilities
+
+- Generate service class with all CRUD operations: `create`, `getById`, `update`, `delete`, `toggleActive`, `search`, `getUsage`
+- Apply `@PreAuthorize` on every public method using `SecurityPermissions` constants
+- Apply `@Transactional` on write methods and `@Transactional(readOnly = true)` on reads
+- Apply `@CacheEvict` on writes and `@Cacheable` on reads if entity is cache-eligible
+- Return `ServiceResult<T>` from all methods except `delete()` (returns void)
+- Throw `LocalizedException` with error codes from `<Module>ErrorCodes` for all error scenarios
+- Validate sort fields against `ALLOWED_SORT_FIELDS` whitelist
+- Use `SpecBuilder` + `PageableBuilder` for search operations
+
+## Constraints
+
+- MUST NOT generate entity, repository, DTO, mapper, or controller code
+- MUST NOT modify other service files unless explicitly requested
+- MUST NOT assume missing error codes or permissions — they must be defined before service creation
+- MUST NOT hardcode error messages — use `<Module>ErrorCodes` constants only
+- MUST NOT catch `DataIntegrityViolationException` — let `GlobalExceptionHandler` handle it
+- MUST NOT set `isActive` directly — use entity’s `activate()`/`deactivate()` helpers
+
+## Output
+
+- Single file: `backend/erp-<MODULE>/src/main/java/com/example/<module>/service/<Entity>Service.java`
+
 ---
 
 ## Steps

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, Input, signal, computed, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, Input, signal, computed, OnInit, ChangeDetectorRef, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -8,6 +8,7 @@ import { ErpDualListComponent, DualListItem } from 'src/app/shared/components/er
 import { GlApiService } from 'src/app/modules/finance/gl/services/gl-api.service';
 import { EligibleParentAccountDto } from 'src/app/modules/finance/gl/models/gl.model';
 import { finalize } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 /**
  * Modal component for selecting a parent account via erp-dual-list.
@@ -131,6 +132,7 @@ export class ParentAccountModalComponent implements OnInit {
   private readonly activeModal = inject(NgbActiveModal);
   private readonly api = inject(GlApiService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
 
   /** Organization FK to scope accounts */
   @Input() organizationFk!: number;
@@ -211,7 +213,8 @@ export class ParentAccountModalComponent implements OnInit {
       finalize(() => {
         this.loading.set(false);
         this.cdr.detectChanges();
-      })
+      }),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (response) => {
         const newItems = response?.content ?? [];

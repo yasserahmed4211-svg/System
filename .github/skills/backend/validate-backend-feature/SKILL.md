@@ -17,6 +17,31 @@ description: "MASTER VALIDATION — runs ALL enforcement checks across a complet
 - During code review of any backend module
 - When verifying execution-template phase ordering
 
+## Responsibilities
+
+- Verify ALL phases were executed in correct order (entity → repository → DTO → mapper → service → controller → tests)
+- Run file inventory check to confirm all required files exist
+- Execute all layer-by-layer contract checks (73 rules)
+- Validate cross-cutting concerns: error handling, caching, security, immutability
+- Verify unit test coverage for all service method scenarios
+
+## Constraints
+
+- MUST NOT generate or modify application code — this skill only validates
+- MUST NOT accept partial features — all required phases must be present
+- MUST NOT skip any validation stage — all stages are mandatory
+- MUST NOT fix violations automatically — report them with specific skill references
+
+## Output
+
+- Comprehensive validation report with:
+  - Execution order verification (pass/fail)
+  - File inventory (present/missing per artifact)
+  - Layer-by-layer contract compliance (73 checks)
+  - Cross-cutting validation results
+  - Unit test coverage assessment
+  - Final verdict: APPROVED or REJECTED with reasons
+
 ---
 
 ## VALIDATION PIPELINE

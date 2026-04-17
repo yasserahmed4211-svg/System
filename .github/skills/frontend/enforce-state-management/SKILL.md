@@ -16,6 +16,27 @@ Validates that Angular Signal-based state management in facades and components f
 - When reviewing frontend pull requests for state-related changes
 - When diagnosing state bugs (stale data, dual ownership, leaks)
 
+## Responsibilities
+
+- Validate all state uses `signal()` — no BehaviorSubject or RxJS-based state
+- Verify signals are private with `computed()` public accessors
+- Verify `lastSearchRequestSignal` as single source of truth for pagination
+- Validate loading/error/finalize pattern in all API calls
+- Verify child entity local updates (append/map/filter) without full reload
+- Verify cleanup in `ngOnDestroy`
+
+## Constraints
+
+- MUST NOT generate or modify application code — this skill only validates
+- MUST NOT validate file structure — that belongs to `enforce-frontend-architecture`
+- MUST NOT validate UI display — that belongs to `enforce-ui-ux`
+- MUST NOT validate permissions — that belongs to `enforce-permissions`
+
+## Output
+
+- State management compliance report with 43 checks
+- Specific violations identifying signal anti-patterns and state duplication
+
 ---
 
 ## CHECK MATRIX
@@ -177,3 +198,41 @@ VERDICT: APPROVED / APPROVED WITH WARNINGS / REJECTED
 | `enforce-reusability` | Validates that shared base classes (`ErpListComponent`, `BaseApiService`) and utilities (`extractBackendErrorCode`, `ErpErrorMapperService`) are consumed — not reinvented |
 | `enforce-frontend-architecture` | Validates overall architectural compliance |
 | `enforce-permissions` | Validates triple-enforcement permission pattern |
+
+
+---
+
+## ANGULAR/SKILLS COMPATIBILITY
+
+> This section documents how this skill relates to the official `angular/skills` guidance.
+> **ERP contracts always take precedence.** See `erp-priority-override` for the full precedence rule.
+
+### What angular/skills adds that is SAFE to use alongside this skill
+- `signal()` / `computed()` syntax  fully aligned
+- `effect()` for side effects  allowed in components only (S.3.8)
+- `toSignal()` / `toObservable()`  allowed for RxJS interop
+
+### New angular/skills APIs  allowed with conditions
+
+| API | Status | Condition |
+|-----|--------|-----------|
+| `linkedSignal()` |  Allowed | Inside facades only  subject to S.1.2, S.1.3 (private/computed rule) |
+| `resource()` |  Allowed | Inside facades only  must satisfy S.3.1S.3.9 checklist |
+| `model()` |  Restricted | Presentational components only  NEVER in facade-connected components |
+| Signal Forms state |  Prohibited | Use `FormGroup` reactive state pattern (F.5.8, F.5.9) |
+
+### What angular/skills suggests that this skill OVERRIDES
+
+| angular/skills Suggestion | This Skill Requires | Rule |
+|--------------------------|--------------------|----|
+| Free use of `linkedSignal` anywhere | Facades only | S.1.4 |
+| `effect()` for API calls | API calls in methods, not effects | S.3.8 |
+| Separate page/size signals | Consolidated `lastSearchRequestSignal` | S.2.1 |
+| `shareReplay` for caching | PROHIBITED in CRUD services | S.5.1 |
+
+### Conflict resolution trigger
+
+If any angular/skills guidance contradicts a rule in this skill:
+1. Apply the ERP rule
+2. Log: ` CONFLICT RESOLVED: angular/skills suggests [X], ERP rule [RULE_ID] requires [Y]. Applied [Y].`
+3. Do NOT ask the user  apply ERP rule silently

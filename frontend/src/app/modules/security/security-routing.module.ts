@@ -108,14 +108,14 @@ const routes: Routes = [
         loadComponent: () =>
           import('./role-access/pages/role-access-form/role-access-form.component').then((c) => c.RoleAccessFormComponent),
         canActivate: [authGuard, permissionGuard],
-        data: { permission: 'PERM_ROLE_VIEW' }
+        data: { permission: 'PERM_ROLE_CREATE' }
       },
       {
         path: 'edit/:roleId',
         loadComponent: () =>
           import('./role-access/pages/role-access-form/role-access-form.component').then((c) => c.RoleAccessFormComponent),
         canActivate: [authGuard, permissionGuard],
-        data: { permission: 'PERM_ROLE_VIEW' }
+        data: { permission: 'PERM_ROLE_UPDATE' }
       }
     ]
   }

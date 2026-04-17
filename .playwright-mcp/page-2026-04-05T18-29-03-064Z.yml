@@ -1,0 +1,197 @@
+- generic [ref=e75]:
+  - navigation [ref=e77]:
+    - generic [ref=e78]:
+      - link "theme-logo" [ref=e80] [cursor=pointer]:
+        - /url: index.html
+        - img "theme-logo" [ref=e81]
+      - generic [ref=e82]:
+        - generic [ref=e86]:
+          - list [ref=e87]:
+            - generic [ref=e88]:
+              - listitem [ref=e89] [cursor=pointer]:
+                - generic [ref=e90]: المالية
+              - generic [ref=e92]:
+                - listitem [ref=e94]:
+                  - link "دليل الحسابات" [ref=e95] [cursor=pointer]:
+                    - /url: /finance/gl/accounts
+                    - img [ref=e98]
+                    - generic [ref=e100]: دليل الحسابات
+                - listitem [ref=e102]:
+                  - link "قواعد المحاسبة" [ref=e103] [cursor=pointer]:
+                    - /url: /finance/gl/rules
+                    - img [ref=e106]
+                    - generic [ref=e108]: قواعد المحاسبة
+                - listitem [ref=e110]:
+                  - link "القيود اليومية" [ref=e111] [cursor=pointer]:
+                    - /url: /finance/gl/journals
+                    - img [ref=e114]
+                    - generic [ref=e116]: القيود اليومية
+                - listitem [ref=e118]:
+                  - link "قيود الترحيل" [ref=e119] [cursor=pointer]:
+                    - /url: /finance/gl/postings
+                    - img [ref=e122]
+                    - generic [ref=e124]: قيود الترحيل
+            - generic [ref=e125]:
+              - listitem [ref=e126] [cursor=pointer]:
+                - generic [ref=e127]: الأمان
+              - generic [ref=e129]:
+                - listitem [ref=e131]:
+                  - link "إدارة المستخدمين" [ref=e132] [cursor=pointer]:
+                    - /url: /users
+                    - img [ref=e135]
+                    - generic [ref=e137]: إدارة المستخدمين
+                - listitem [ref=e139]:
+                  - link "إدارة صلاحيات الأدوار" [ref=e140] [cursor=pointer]:
+                    - /url: /role-access
+                    - img [ref=e143]
+                    - generic [ref=e146]: إدارة صلاحيات الأدوار
+                - listitem [ref=e148]:
+                  - link "إدارة الصفحات" [ref=e149] [cursor=pointer]:
+                    - /url: /pages
+                    - img [ref=e152]
+                    - generic [ref=e154]: إدارة الصفحات
+            - generic [ref=e155]:
+              - listitem [ref=e156] [cursor=pointer]:
+                - generic [ref=e157]: البيانات الرئيسية
+              - listitem [ref=e161]:
+                - link "قوائم البحث الرئيسية" [ref=e162] [cursor=pointer]:
+                  - /url: /master-data/master-lookups
+                  - img [ref=e165]
+                  - generic [ref=e167]: قوائم البحث الرئيسية
+          - generic [ref=e171]:
+            - img "user" [ref=e172]
+            - generic [ref=e173]:
+              - heading "المساعدة" [level=5] [ref=e174]
+              - text: الدعم
+            - button "الدعم" [ref=e176] [cursor=pointer]
+        - list [ref=e183]:
+          - generic [ref=e184]:
+            - img "user" [ref=e187]
+            - generic [ref=e188]:
+              - text: admin
+              - paragraph [ref=e189]: ROLE_USER
+            - img [ref=e192]
+  - banner [ref=e195]:
+    - generic [ref=e196]:
+      - list [ref=e199]:
+        - listitem [ref=e200]:
+          - link "click to menu collapse" [ref=e201] [cursor=pointer]:
+            - /url: "javascript:"
+            - img [ref=e203]
+        - text: 
+        - listitem [ref=e205]:
+          - generic [ref=e206]:
+            - img [ref=e208]
+            - searchbox "Ctrl + K" [ref=e210]
+      - list [ref=e213]:
+        - listitem [ref=e214]:
+          - link [ref=e215] [cursor=pointer]:
+            - /url: "javascript:"
+            - img [ref=e217]
+        - listitem [ref=e219]:
+          - link "ع" [ref=e220] [cursor=pointer]:
+            - /url: "javascript:"
+            - img [ref=e222]
+            - generic [ref=e225]: ع
+        - listitem [ref=e226]:
+          - link "3" [ref=e227] [cursor=pointer]:
+            - /url: "javascript:"
+            - img [ref=e229]
+            - generic [ref=e231]: "3"
+        - listitem [ref=e232]:
+          - link [ref=e233] [cursor=pointer]:
+            - /url: "javascript:"
+            - img [ref=e235]
+        - listitem [ref=e237]:
+          - link [ref=e238] [cursor=pointer]:
+            - /url: "javascript:"
+            - img [ref=e240]
+        - listitem [ref=e242]:
+          - link [ref=e243] [cursor=pointer]:
+            - /url: "javascript:"
+            - img [ref=e245]
+        - listitem [ref=e247]:
+          - link "user-image admin" [ref=e248] [cursor=pointer]:
+            - /url: "javascript:"
+            - img "user-image" [ref=e249]
+            - generic [ref=e250]: admin
+  - generic [ref=e254]:
+    - generic [ref=e258]:
+      - list [ref=e260]:
+        - listitem [ref=e261]:
+          - link "الرئيسية" [ref=e262] [cursor=pointer]:
+            - /url: /dashboard
+        - listitem [ref=e263]:
+          - text: /
+          - link "Dashboard" [ref=e264] [cursor=pointer]:
+            - /url: /dashboard
+      - heading "Dashboard" [level=2] [ref=e267]
+    - generic [ref=e270]:
+      - heading "لوحة التحكم" [level=1] [ref=e273]
+      - generic [ref=e278]:
+        - generic [ref=e279]:
+          - heading "مرحباً، admin" [level=2] [ref=e280]:
+            - text: مرحباً،
+            - strong [ref=e281]: admin
+          - paragraph [ref=e282]: هذه نظرة عامة على نظام ERP الخاص بك. انتقل إلى الوحدات التي لديك صلاحية الوصول إليها.
+        - generic [ref=e284]: 
+      - heading "وصول سريع" [level=5] [ref=e285]
+      - generic [ref=e286]:
+        - link "إدارة المستخدمين إدارة مستخدمي النظام وحساباتهم" [ref=e287] [cursor=pointer]:
+          - /url: /security/users
+          - generic [ref=e289]: 
+          - generic [ref=e290]:
+            - heading "إدارة المستخدمين" [level=6] [ref=e291]
+            - paragraph [ref=e292]: إدارة مستخدمي النظام وحساباتهم
+          - generic [ref=e294]: 
+        - link "الأدوار والصلاحيات إعداد الأدوار والتحكم في الوصول" [ref=e295] [cursor=pointer]:
+          - /url: /security/role-access
+          - generic [ref=e297]: 
+          - generic [ref=e298]:
+            - heading "الأدوار والصلاحيات" [level=6] [ref=e299]
+            - paragraph [ref=e300]: إعداد الأدوار والتحكم في الوصول
+          - generic [ref=e302]: 
+        - link "سجل الصفحات إدارة صفحات النظام المسجلة" [ref=e303] [cursor=pointer]:
+          - /url: /security/pages-registry
+          - generic [ref=e305]: 
+          - generic [ref=e306]:
+            - heading "سجل الصفحات" [level=6] [ref=e307]
+            - paragraph [ref=e308]: إدارة صفحات النظام المسجلة
+          - generic [ref=e310]: 
+        - link "الجداول المرجعية إدارة البيانات المرجعية وجداول البحث" [ref=e311] [cursor=pointer]:
+          - /url: /master-data/master-lookups
+          - generic [ref=e313]: 
+          - generic [ref=e314]:
+            - heading "الجداول المرجعية" [level=6] [ref=e315]
+            - paragraph [ref=e316]: إدارة البيانات المرجعية وجداول البحث
+          - generic [ref=e318]: 
+        - link "حسابات الأستاذ العام إدارة دليل الحسابات" [ref=e319] [cursor=pointer]:
+          - /url: /finance/gl/accounts
+          - generic [ref=e321]: 
+          - generic [ref=e322]:
+            - heading "حسابات الأستاذ العام" [level=6] [ref=e323]
+            - paragraph [ref=e324]: إدارة دليل الحسابات
+          - generic [ref=e326]: 
+        - link "قواعد الأستاذ العام إعداد قواعد الأستاذ العام" [ref=e327] [cursor=pointer]:
+          - /url: /finance/gl/rules
+          - generic [ref=e329]: 
+          - generic [ref=e330]:
+            - heading "قواعد الأستاذ العام" [level=6] [ref=e331]
+            - paragraph [ref=e332]: إعداد قواعد الأستاذ العام
+          - generic [ref=e334]: 
+  - contentinfo [ref=e335]:
+    - generic [ref=e337]:
+      - paragraph [ref=e339]:
+        - text: Copyright ©
+        - link "CodedThemes" [ref=e340] [cursor=pointer]:
+          - /url: https://codedthemes.com
+      - list [ref=e342]:
+        - listitem [ref=e343]:
+          - link "Home" [ref=e344] [cursor=pointer]:
+            - /url: https://codedthemes.com/
+        - listitem [ref=e345]:
+          - link "Privacy Policy" [ref=e346] [cursor=pointer]:
+            - /url: https://codedthemes.com/privacy-policy/
+        - listitem [ref=e347]:
+          - link "Contact us" [ref=e348] [cursor=pointer]:
+            - /url: https://codedthemes.support-hub.io/

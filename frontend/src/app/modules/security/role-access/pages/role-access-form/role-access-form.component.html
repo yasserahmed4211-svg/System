@@ -22,7 +22,8 @@
           </div>
         </div>
 
-        <div class="col-md-3 mb-3 d-flex align-items-end" *ngIf="!isEditMode">
+        @if (!isEditMode) {
+        <div class="col-md-3 mb-3 d-flex align-items-end">
           <button
             type="button"
             class="btn btn-success w-100"
@@ -35,6 +36,7 @@
             {{ 'ROLE_ACCESS.CREATE_ROLE' | translate }}
           </button>
         </div>
+        }
       </form>
     </erp-section>
 
@@ -64,7 +66,10 @@
               @for (p of permissions; track p.pageCode) {
                 <tr>
                   <td>
-                    <div class="fw-semibold">{{ p.pageCode }}</div>
+                    <div class="fw-semibold">
+                      {{ (isRtl ? p.pageNameAr : p.pageName) || p.pageCode }}
+                    </div>
+                    <div class="text-muted small">{{ p.pageCode }}</div>
                     <small class="text-muted">{{ 'COMMON.VIEW' | translate }}: {{ 'COMMON.AUTO' | translate }}</small>
                   </td>
                   <td class="text-center">
@@ -108,8 +113,9 @@
                       class="btn btn-sm btn-outline-danger"
                       erpPermission="ROLE.UPDATE"
                       (click)="confirmRemovePage(p.pageCode)"
+                      [attr.aria-label]="'COMMON.REMOVE' | translate"
                     >
-                      <i class="ti ti-x"></i>
+                      <i class="ti ti-x" aria-hidden="true"></i>
                     </button>
                   </td>
                 </tr>
@@ -199,7 +205,9 @@
       (change)="selectedSourceRoleId = $any($event.target).value ? +$any($event.target).value : null"
     >
       <option value="">{{ 'COMMON.SELECT' | translate }}</option>
-      <option *ngFor="let r of availableRolesToCopy" [value]="r.id">{{ r.roleName }}</option>
+      @for (r of availableRolesToCopy; track r.id) {
+        <option [value]="r.id">{{ r.roleName }}</option>
+      }
     </select>
   </div>
   <div class="modal-footer">

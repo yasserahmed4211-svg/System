@@ -30,13 +30,4 @@ public final class MasterDataErrorCodes {
     public static final String LOOKUP_DETAIL_CODE_DUPLICATE = "LOOKUP_DETAIL_CODE_DUPLICATE";
     public static final String LOOKUP_DETAIL_IN_USE = "LOOKUP_DETAIL_IN_USE";
     public static final String LOOKUP_DETAIL_FK_VIOLATION = "LOOKUP_DETAIL_FK_VIOLATION";
-
-    // ==================== Activity Errors ====================
-    public static final String ACTIVITY_NOT_FOUND = "ACTIVITY_NOT_FOUND";
-    public static final String ACTIVITY_CODE_ALREADY_EXISTS = "ACTIVITY_CODE_ALREADY_EXISTS";
-    public static final String ACTIVITY_REFERENCES_EXIST = "ACTIVITY_REFERENCES_EXIST";
-    public static final String ACTIVITY_ACCESS_DENIED = "ACTIVITY_ACCESS_DENIED";
-    public static final String ACTIVITY_HAS_ACTIVE_CATEGORIES = "ACTIVITY_HAS_ACTIVE_CATEGORIES";
-    public static final String ACTIVITY_CANNOT_DELETE_HAS_CATEGORIES = "ACTIVITY_CANNOT_DELETE_HAS_CATEGORIES";
-    public static final String ACTIVITY_VARIABLE_REQUIRES_WEIGHT = "ACTIVITY_VARIABLE_REQUIRES_WEIGHT";
 }

@@ -49,7 +49,10 @@ public final class SecurityPermissions {
     
     /** إنشاء صلاحية جديدة */
     public static final String PERMISSION_CREATE = "PERM_PERMISSION_CREATE";
-    
+
+    /** تعديل صلاحية موجودة */
+    public static final String PERMISSION_UPDATE = "PERM_PERMISSION_UPDATE";
+
     /** حذف صلاحية */
     public static final String PERMISSION_DELETE = "PERM_PERMISSION_DELETE";
     
@@ -108,20 +111,6 @@ public final class SecurityPermissions {
     
     /** حذف تفصيل قائمة بحث */
     public static final String LOOKUP_DETAIL_DELETE = "PERM_LOOKUP_DETAIL_DELETE";
-
-    // ==================== Activity Permissions ====================
-
-    /** عرض الأنشطة */
-    public static final String ACTIVITY_VIEW = "PERM_ACTIVITY_VIEW";
-
-    /** إنشاء نشاط جديد */
-    public static final String ACTIVITY_CREATE = "PERM_ACTIVITY_CREATE";
-
-    /** تعديل نشاط موجود */
-    public static final String ACTIVITY_UPDATE = "PERM_ACTIVITY_UPDATE";
-
-    /** حذف نشاط */
-    public static final String ACTIVITY_DELETE = "PERM_ACTIVITY_DELETE";
 
     // ==================== GL Account Permissions ====================
 
@@ -192,4 +181,60 @@ public final class SecurityPermissions {
 
     /** صلاحية مدير النظام الكاملة */
     public static final String SYSTEM_ADMIN = "PERM_SYSTEM_ADMIN";
+
+    // ==================== Legal Entity Permissions ====================
+
+    /** عرض الكيانات القانونية */
+    public static final String LEGAL_ENTITY_VIEW = "PERM_LEGAL_ENTITY_VIEW";
+
+    /** إنشاء كيان قانوني جديد */
+    public static final String LEGAL_ENTITY_CREATE = "PERM_LEGAL_ENTITY_CREATE";
+
+    /** تعديل كيان قانوني موجود */
+    public static final String LEGAL_ENTITY_UPDATE = "PERM_LEGAL_ENTITY_UPDATE";
+
+    /** حذف كيان قانوني */
+    public static final String LEGAL_ENTITY_DELETE = "PERM_LEGAL_ENTITY_DELETE";
+
+    // ==================== Region Permissions ====================
+
+    /** عرض المناطق */
+    public static final String REGION_VIEW = "PERM_REGION_VIEW";
+
+    /** إنشاء منطقة جديدة */
+    public static final String REGION_CREATE = "PERM_REGION_CREATE";
+
+    /** تعديل منطقة موجودة */
+    public static final String REGION_UPDATE = "PERM_REGION_UPDATE";
+
+    /** حذف منطقة */
+    public static final String REGION_DELETE = "PERM_REGION_DELETE";
+
+    // ==================== Branch Permissions ====================
+
+    /** عرض الفروع */
+    public static final String BRANCH_VIEW = "PERM_BRANCH_VIEW";
+
+    /** إنشاء فرع جديد */
+    public static final String BRANCH_CREATE = "PERM_BRANCH_CREATE";
+
+    /** تعديل فرع موجود */
+    public static final String BRANCH_UPDATE = "PERM_BRANCH_UPDATE";
+
+    /** حذف فرع */
+    public static final String BRANCH_DELETE = "PERM_BRANCH_DELETE";
+
+    // ==================== Department Permissions ====================
+
+    /** عرض الأقسام */
+    public static final String DEPARTMENT_VIEW = "PERM_DEPARTMENT_VIEW";
+
+    /** إنشاء قسم جديد */
+    public static final String DEPARTMENT_CREATE = "PERM_DEPARTMENT_CREATE";
+
+    /** تعديل قسم موجود */
+    public static final String DEPARTMENT_UPDATE = "PERM_DEPARTMENT_UPDATE";
+
+    /** حذف قسم */
+    public static final String DEPARTMENT_DELETE = "PERM_DEPARTMENT_DELETE";
 }

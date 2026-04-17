@@ -13,13 +13,8 @@ import java.util.Locale;
  * Note: @EnableJpaRepositories is configured in JpaConfig to avoid duplicate bean definitions.
  * This ensures proper entity/repository scanning without bean override warnings.
  */
-@SpringBootApplication(
-        excludeName = {
-                "org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration",
-                "org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration"
-        }
-)
-// @EnableCaching  // ❌ DISABLED: Redis caching disabled - will be enabled later
+@EnableCaching
+@SpringBootApplication
 @ComponentScan(basePackages = {
     "com.example.security",                      // Security module
     "com.example.erp.common.web",               // Common web components (includes CommonWebConfig)

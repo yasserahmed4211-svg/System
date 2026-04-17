@@ -69,6 +69,18 @@ public interface PageRepository extends JpaRepository<Page, Long>, JpaSpecificat
     );
 
     /**
+     * ✅ NEW: Find active pages by IDs, tenant, and active status (uses FK from PERMISSIONS)
+     * This method is used by MenuService to resolve pages using PAGE_ID_FK from PERMISSIONS table.
+     * This approach survives page code renaming and is more resilient.
+     */
+    @Query("SELECT p FROM Page p WHERE p.id IN :pageIds AND p.tenantId = :tenantId AND p.active = :active ORDER BY p.displayOrder")
+    List<Page> findByIdInAndTenantIdAndActive(
+        @Param("pageIds") Set<Long> pageIds, 
+        @Param("tenantId") String tenantId, 
+        @Param("active") Boolean active
+    );
+
+    /**
      * Find pages by module and tenant
      */
     org.springframework.data.domain.Page<Page> findByTenantIdAndModule(String tenantId, String module, Pageable pageable);

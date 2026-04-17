@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 /**
  * ERP Master Data Module - Main Application
  * 
- * Manages master data entities like Activity, Category, etc.
+ * Manages master data entities like MasterLookup, LookupDetail, etc.
  * 
  * Architecture Rules:
  * - Rule 12.3: Integration with erp-common-utils

@@ -20,6 +20,27 @@ Generates a thin REST controller that delegates ALL logic to the service layer. 
 - `OperationCode` bean available from `erp-common-utils`
 - All DTOs defined (CreateRequest, UpdateRequest, Response, SearchRequest, UsageResponse)
 
+## Responsibilities
+
+- Generate a thin `@RestController` that delegates ALL logic to the service layer
+- Use `OperationCode.craftResponse()` for all non-delete response wrapping
+- Apply `@Valid` on all `@RequestBody` parameters
+- Apply `@Operation` Swagger annotations on all endpoints
+- Use `@ResponseStatus(HttpStatus.NO_CONTENT)` ONLY on `@DeleteMapping`
+- ZERO business logic in the controller — pure delegation
+
+## Constraints
+
+- MUST NOT generate entity, repository, DTO, mapper, or service code
+- MUST NOT inject repositories or mappers — controller injects ONLY service + `OperationCode`
+- MUST NOT reference entity classes — use DTOs exclusively
+- MUST NOT use `@ResponseStatus(CREATED)` — HTTP 201 is derived from `ServiceResult.Status`
+- MUST NOT contain any business logic, validation, or conditional branching
+
+## Output
+
+- Single file: `backend/erp-<MODULE>/src/main/java/com/example/<module>/controller/<Entity>Controller.java`
+
 ---
 
 ## Steps

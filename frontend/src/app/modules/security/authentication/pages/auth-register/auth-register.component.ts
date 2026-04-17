@@ -1,4 +1,4 @@
-import { Component, signal, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, signal, inject, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -9,6 +9,7 @@ import { AuthenticationService } from 'src/app/core/services/authentication.serv
 import { DASHBOARD_PATH } from 'src/app/app-config';
 
 import { first } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface RegisterData {
   firstName: string;
@@ -28,6 +29,7 @@ interface RegisterData {
 export class AuthRegisterComponent {
   private router = inject(Router);
   authenticationService = inject(AuthenticationService);
+  private destroyRef = inject(DestroyRef);
 
   registerModel = signal<RegisterData>({
     firstName: '',
@@ -70,7 +72,7 @@ export class AuthRegisterComponent {
 
     this.authenticationService
       .register(username, formData.password)
-      .pipe(first())
+      .pipe(first(), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (success) => {
           if (success) {

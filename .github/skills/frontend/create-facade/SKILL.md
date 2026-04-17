@@ -1,4 +1,4 @@
----
+﻿---
 description: "Generates Signal-based facade for state management and API orchestration. Phase 2, Step 2.3. Private signals + computed public, lastSearchRequestSignal for pagination, takeUntilDestroyed, onSuccess callbacks, child local updates."
 ---
 
@@ -24,6 +24,27 @@ Generates the Signal-based facade for state management and API orchestration. Th
 | `DEFAULT_SORT_FIELD` | `lookupKey` | Default sort field for search |
 | `HAS_CHILD` | `true/false` | Whether entity has child entities |
 | `CHILD_NAME` | `LookupDetail` | PascalCase child name (if applicable) |
+
+## Responsibilities
+
+- Generate Signal-based facade for state management and API orchestration
+- Define private writable signals and public computed readonly accessors
+- Implement `lastSearchRequestSignal` as single source of truth for pagination
+- Implement loading/error/finalize pattern for all API calls
+- Implement child entity local state updates (append/map/filter) without full reload
+- Provide `clearCurrentEntity()` and `resetChildState()` cleanup methods
+
+## Constraints
+
+- MUST NOT generate models, API service, or component code
+- MUST NOT use `BehaviorSubject` or RxJS-based state — Angular signals only
+- MUST NOT use `providedIn: 'root'` — facade is component-scoped
+- MUST NOT expose writable signals publicly — use `computed()` for public state
+- MUST NOT maintain manual in-memory caches duplicating backend data
+
+## Output
+
+- Single file: `frontend/src/app/modules/<DOMAIN_DIR>/<FEATURE_DIR>/facades/<feature>.facade.ts`
 
 ---
 
@@ -523,3 +544,37 @@ export class MasterLookupFacade {
   }
 }
 ```
+
+---
+
+## ANGULAR/SKILLS COMPATIBILITY
+
+> This section documents how this skill relates to the official `angular/skills` guidance.
+> **ERP contracts always take precedence.** See `erp-priority-override` for the full precedence rule.
+
+### What angular/skills adds that is SAFE to use alongside this skill
+- `signal()` / `computed()` syntax — fully aligned with facade pattern
+- `effect()` for UI side effects — allowed in components only, not in facades (S.3.8)
+- `toSignal()` / `toObservable()` — allowed for RxJS interop
+- `linkedSignal()` — allowed inside facades only, subject to private/computed pattern (S.1.2, S.1.3)
+- `resource()` — allowed inside facades only if it satisfies the full S.3.1–S.3.9 checklist
+
+### What angular/skills suggests that this skill OVERRIDES
+
+| angular/skills Suggestion | This Skill Requires | Rule |
+|--------------------------|--------------------|----|
+| `BehaviorSubject` for state streams | `signal()` always | B.3.1 — automatic rejection |
+| `providedIn: 'root'` on facade | Component-scoped `providers: []` only | B.3.2 — automatic rejection |
+| Public writable signals | All public state via `computed()` — never expose writable signal | S.1.2, S.1.3 — automatic rejection |
+| Separate `currentPageSignal` / `pageSizeSignal` | Consolidated `lastSearchRequestSignal` only | S.2.1 — automatic rejection |
+| `shareReplay` for caching | PROHIBITED in CRUD facades | S.5.1 — automatic rejection |
+| `effect()` for API calls | API calls in facade methods only — never inside `effect()` | S.3.8 |
+| Free use of `linkedSignal` anywhere | Facades only — subject to S.1.2, S.1.3 | S.1.4 |
+| Free use of `resource()` anywhere | Facades only — must satisfy S.3.1–S.3.9 checklist | S.3.x |
+
+### Conflict resolution trigger
+
+If any angular/skills guidance contradicts a rule in this skill:
+1. Apply the ERP rule
+2. Log: `⚠️ CONFLICT RESOLVED: angular/skills suggests [X], ERP rule [RULE_ID] requires [Y]. Applied [Y].`
+3. Do NOT ask the user — apply ERP rule silently

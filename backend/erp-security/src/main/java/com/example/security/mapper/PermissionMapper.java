@@ -23,11 +23,18 @@ public class PermissionMapper {
             return null;
         }
 
-        return PermissionDto.builder()
+        PermissionDto.PermissionDtoBuilder builder = PermissionDto.builder()
                 .id(entity.getId())
                 .tenantId(entity.getTenantId())
                 .name(entity.getName())
                 .description(null) // Permission entity does not have description field
-                .build();
+                .permissionType(entity.getPermissionType() != null ? entity.getPermissionType().name() : null);
+
+        if (entity.getPage() != null) {
+            builder.pageId(entity.getPage().getId());
+            builder.pageCode(entity.getPage().getPageCode());
+        }
+
+        return builder.build();
     }
 }

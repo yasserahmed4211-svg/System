@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ICellRendererAngularComp } from 'ag-grid-angular';
 import { ICellRendererParams } from 'ag-grid-community';
@@ -17,8 +17,10 @@ export type MasterLookupActionsCellParams = ICellRendererParams<MasterLookupDto>
   selector: 'app-master-lookup-actions-cell',
   standalone: true,
   imports: [CommonModule, TranslateModule, ErpPermissionDirective],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="d-flex align-items-center gap-1" *ngIf="lookup as l">
+    @if (lookup; as l) {
+    <div class="d-flex align-items-center gap-1">
       <!-- Edit -->
       <button
         type="button"
@@ -52,6 +54,7 @@ export type MasterLookupActionsCellParams = ICellRendererParams<MasterLookupDto>
         <i class="ti ti-trash"></i>
       </button>
     </div>
+    }
   `
 })
 export class MasterLookupActionsCellComponent implements ICellRendererAngularComp {

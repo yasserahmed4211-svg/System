@@ -17,37 +17,43 @@
     </div>
   </div>
 
-  <div class="row g-2 align-items-end mb-2" *ngFor="let row of rows; trackBy: trackById">
+  @for (row of rows; track row.id) {
+  <div class="row g-2 align-items-end mb-2">
     <div class="col-md-4">
       <label class="form-label small mb-1">{{ 'FILTER.FIELD' | translate }}</label>
       <select class="form-select form-select-sm" [(ngModel)]="row.field" (ngModelChange)="onFieldChanged(row)">
         <option value="" disabled>{{ 'COMMON.SELECT' | translate }}</option>
-        <option *ngFor="let f of availableFields" [value]="f.value">{{ f.label | translate }}</option>
+        @for (f of availableFields; track f.value) {
+          <option [value]="f.value">{{ f.label | translate }}</option>
+        }
       </select>
     </div>
 
     <div class="col-md-3">
       <label class="form-label small mb-1">{{ 'FILTER.OPERATOR' | translate }}</label>
       <select class="form-select form-select-sm" [(ngModel)]="row.operator">
-        <option *ngFor="let op of getOperatorsForField(row.field)" [ngValue]="op.value">{{ op.label | translate }}</option>
+        @for (op of getOperatorsForField(row.field); track op.value) {
+          <option [ngValue]="op.value">{{ op.label | translate }}</option>
+        }
       </select>
     </div>
 
     <div class="col-md-4">
       <label class="form-label small mb-1">{{ 'FILTER.VALUE' | translate }}</label>
-      <ng-container *ngIf="needsValue(row.operator); else noValue">
-        <ng-container *ngIf="getFieldOptions(row.field) as opts; else freeText">
+      @if (needsValue(row.operator)) {
+        @let opts = getFieldOptions(row.field);
+        @if (opts) {
           <select class="form-select form-select-sm" [(ngModel)]="row.value">
-            <option *ngFor="let opt of opts" [ngValue]="opt.value">{{ opt.label | translate }}</option>
+            @for (opt of opts; track opt.value) {
+              <option [ngValue]="opt.value">{{ opt.label | translate }}</option>
+            }
           </select>
-        </ng-container>
-        <ng-template #freeText>
+        } @else {
           <input type="text" class="form-control form-control-sm" [(ngModel)]="row.value" [placeholder]="'FILTER.ENTER_VALUE' | translate" />
-        </ng-template>
-      </ng-container>
-      <ng-template #noValue>
+        }
+      } @else {
         <input type="text" class="form-control form-control-sm" value="-" disabled />
-      </ng-template>
+      }
     </div>
 
     <div class="col-md-1">
@@ -57,11 +63,13 @@
         (click)="removeRow(row.id)"
         [disabled]="rows.length === 1"
         [title]="'COMMON.REMOVE' | translate"
+        [attr.aria-label]="'COMMON.REMOVE' | translate"
       >
-        <i class="ti ti-trash"></i>
+        <i class="ti ti-trash" aria-hidden="true"></i>
       </button>
     </div>
   </div>
+  }
 
   <div class="form-text mt-2">
     {{ 'FILTER.NOTES_IN_VALUES' | translate }}

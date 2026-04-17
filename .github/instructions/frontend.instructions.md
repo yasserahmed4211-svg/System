@@ -378,3 +378,161 @@ Copilot MUST verify in any new or modified SCSS:
 
 If a violation is detected: STOP, fix the value to use the correct token, then continue.
 
+---
+
+## 13. Theme System (ThemeService)
+
+The ERP theme system is managed by `ThemeService` (`src/app/theme/shared/service/customs-theme.service.ts`).
+
+### Architecture
+
+```
+ThemeService (signals + effects + localStorage)
+├── customsTheme     → signal<string>   → body[part='preset-N']
+├── isDarkMode       → signal<boolean>  → body.mantis-dark
+├── isRTLMode        → signal<boolean>  → (set by LanguageService)
+└── isContainerMode  → signal<boolean>  → .coded-content.container
+```
+
+### Rules
+
+- ThemeService MUST persist theme preferences to `localStorage` with keys: `erp_theme_color`, `erp_dark_mode`, `erp_container_mode`.
+- ThemeService MUST initialize from `localStorage` first, falling back to `MantisConfig` defaults.
+- ThemeService MUST sync state to DOM via `effect()` — no manual DOM manipulation in components.
+- `isRTLMode` is owned by `LanguageService` — ThemeService only stores it, does NOT manage RTL.
+- ConfigurationComponent applies only font family from `MantisConfig`. All other theme state is handled by ThemeService effects.
+- Components MUST use `themeService.setThemeColor(preset)`, `themeService.toggleDarkMode()`, `themeService.toggleContainerMode()` — never direct DOM manipulation.
+
+### Public API
+
+| Method | Description |
+|--------|-------------|
+| `setThemeColor(preset: string)` | Sets active theme color (`preset-1` through `preset-9`) |
+| `toggleDarkMode()` | Toggles `body.mantis-dark` class |
+| `toggleContainerMode()` | Toggles `.coded-content.container` class |
+
+### Theme Presets
+
+9 color presets applied via `body[part='preset-N']` CSS attribute selector (defined in `style-preset.scss`):
+- `preset-1` through `preset-9`
+
+### Anti-Patterns (FORBIDDEN)
+
+| Pattern | Why It's Wrong |
+|---------|---------------|
+| `document.body.classList.add('mantis-dark')` in component | DOM sync is ThemeService's responsibility via effects |
+| `document.body.part.add('preset-1')` in component | Use `themeService.setThemeColor('preset-1')` |
+| `localStorage.getItem('erp_theme_color')` in component | Use `themeService.customsTheme()` signal |
+| RTL management in ThemeService or ConfigurationComponent | RTL is owned by `LanguageService` exclusively |
+
+---
+
+## 14. Layout & i18n System (LanguageService + LayoutStateService)
+
+### Service Responsibilities
+
+| Service | Responsibility |
+|---------|---------------|
+| `LanguageService` | Language switching, RTL/LTR DOM sync, translation loading, ThemeService RTL sync |
+| `LayoutStateService` | Sidebar state (collapsed, mobile open, width), body scroll lock |
+| `ThemeService` | Theme color, dark mode, container mode — with localStorage persistence |
+| `ConfigurationComponent` | Font family only — all other concerns delegated to services above |
+
+### Rules
+
+- LanguageService manages `dir`, `lang`, `mantis-rtl`/`mantis-ltr` classes on `<html>`.
+- LayoutStateService manages sidebar state via signals.
+- All layout state MUST use signals — no mutable class properties.
+- No component may directly manipulate `document.body` for theme/layout purposes.
+- No `window.location.reload()` on language change — signals + effects handle reactivity.
+
+---
+
+## 15. Card Layout Rules
+
+### Card Header Actions
+
+Card header action buttons (`.card-header-right`) use **flexbox** layout — NOT absolute positioning.
+
+### Global Style (card.scss)
+
+```scss
+.card-header-right {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid $border-color;
+  position: static !important;
+  inset: unset !important;
+}
+```
+
+### Rules
+
+- MUST NOT use `position: absolute` on `.card-header-right` — it breaks RTL layouts.
+- MUST NOT use `::ng-deep` to override `.card-header-right` positioning in component SCSS.
+- Card header title `h5` uses `flex: 1; min-width: 0` for proper flex behavior.
+- RTL override in `styles.scss` sets `justify-content: flex-start` — NOT `left`/`right` properties.
+- If a component needs custom card-header-right styling, it should use flexbox utilities (`gap`, `flex-wrap`, `align-items`), never absolute positioning.
+
+### Anti-Patterns (FORBIDDEN)
+
+```scss
+// ❌ FORBIDDEN — breaks RTL and overlaps card title
+::ng-deep {
+  .card-header-right {
+    position: absolute;
+    left: 20px;
+    top: 15px;
+    z-index: 1;
+  }
+}
+```
+
+---
+
+## 16. Navigation i18n Rules
+
+### Rules
+
+- ALL text in navigation components (`nav-right`, `nav-content`) MUST use `| translate` pipe.
+- No hardcoded labels in header, sidebar, or footer.
+- User role display MUST be dynamic: `authenticationService.currentUserValue?.roles?.[0] || ''`.
+- Navigation translation keys live under `NAVIGATION.*` namespace in `en.json`/`ar.json`.
+
+### Required Translation Keys (NAVIGATION namespace)
+
+| Key | EN | AR |
+|-----|----|----|
+| `NOTIFICATION` | Notification | الإشعارات |
+| `MESSAGE` | Message | الرسائل |
+| `VIEW_ALL` | View all | عرض الكل |
+| `MY_ACCOUNT` | My Account | حسابي |
+| `SUPPORT` | Support | الدعم |
+| `HELP` | Help | مساعدة |
+| `PROFILE` | Profile | الملف الشخصي |
+| `LOGOUT` | Logout | تسجيل الخروج |
+| `SETTINGS` | Settings | الإعدادات |
+
+---
+
+## 17. Arabic Font Rules
+
+### Rules
+
+- Arabic font family is `Droid Arabic Naskh` defined in `src/scss/theme/components/font-family.scss`.
+- MUST NOT override Arabic font in `styles.scss` or any other SCSS file.
+- The `font-family.scss` rule `[lang="ar"] { font-family: 'Droid Arabic Naskh', ... }` is the single source of truth.
+- No duplicate `[lang="ar"]` font-family rules across the codebase.
+
+### Anti-Pattern (FORBIDDEN)
+
+```scss
+// ❌ FORBIDDEN — conflicts with font-family.scss
+[lang="ar"] {
+  font-family: 'Segoe UI', 'Arial', 'Tahoma', sans-serif;
+}
+```
+

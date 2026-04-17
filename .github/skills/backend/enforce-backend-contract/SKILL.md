@@ -16,6 +16,24 @@ description: "GOVERNANCE ENFORCER — validates generated backend code against A
 - When reviewing pull requests or code changes in backend modules
 - When an AI agent or developer claims a feature is "complete"
 
+## Responsibilities
+
+- Validate generated backend code against ALL 73 contract rules across 6 layers (Entity, Repository, DTO, Mapper, Service, Controller)
+- Mark each check as PASS or VIOLATION
+- Reject any non-compliant code with specific violation references
+
+## Constraints
+
+- MUST NOT generate or modify application code — this skill only validates
+- MUST NOT fix violations automatically — report them for the appropriate create-* skill to fix
+- MUST NOT validate layers outside the backend module scope
+- MUST NOT skip any check — ALL 73 rules must be evaluated
+
+## Output
+
+- Compliance report with PASS/VIOLATION per check across all 6 layers
+- Specific violation descriptions with rule IDs for any failures
+
 ---
 
 ## Enforcement Checklist

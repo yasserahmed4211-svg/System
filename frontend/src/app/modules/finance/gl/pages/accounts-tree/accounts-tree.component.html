@@ -79,8 +79,8 @@
             [placeholder]="'GL.QUICK_FILTER' | translate"
           />
           @if (quickFilterText) {
-          <button class="btn btn-sm btn-link quick-filter-clear p-0" (click)="clearQuickFilter()">
-            <i class="ti ti-x"></i>
+          <button class="btn btn-sm btn-link quick-filter-clear p-0" (click)="clearQuickFilter()" [attr.aria-label]="'COMMON.CLEAR' | translate">
+            <i class="ti ti-x" aria-hidden="true"></i>
           </button>
           }
         </div>
@@ -290,8 +290,9 @@
             erpPermission="PERM_GL_ACCOUNT_UPDATE"
             (click)="startEdit(node); $event.stopPropagation()"
             title="{{ 'COMMON.EDIT' | translate }}"
+            [attr.aria-label]="'COMMON.EDIT' | translate"
           >
-            <i class="ti ti-pencil"></i>
+            <i class="ti ti-pencil" aria-hidden="true"></i>
           </button>
           <!-- Add Child -->
           <button
@@ -299,8 +300,9 @@
             erpPermission="PERM_GL_ACCOUNT_CREATE"
             (click)="startAddChild(node); $event.stopPropagation()"
             title="{{ 'GL.ADD_CHILD_ACCOUNT' | translate }}"
+            [attr.aria-label]="'GL.ADD_CHILD_ACCOUNT' | translate"
           >
-            <i class="ti ti-plus"></i>
+            <i class="ti ti-plus" aria-hidden="true"></i>
           </button>
           <!-- Status Toggle (Activate / Deactivate) -->
           @if (node.isActive) {
@@ -309,8 +311,9 @@
             erpPermission="PERM_GL_ACCOUNT_UPDATE"
             (click)="toggleStatus(node); $event.stopPropagation()"
             title="{{ 'COMMON.DEACTIVATE' | translate }}"
+            [attr.aria-label]="'COMMON.DEACTIVATE' | translate"
           >
-            <i class="ti ti-toggle-right"></i>
+            <i class="ti ti-toggle-right" aria-hidden="true"></i>
           </button>
           } @else {
           <button
@@ -318,8 +321,9 @@
             erpPermission="PERM_GL_ACCOUNT_UPDATE"
             (click)="toggleStatus(node); $event.stopPropagation()"
             title="{{ 'COMMON.ACTIVATE' | translate }}"
+            [attr.aria-label]="'COMMON.ACTIVATE' | translate"
           >
-            <i class="ti ti-toggle-left"></i>
+            <i class="ti ti-toggle-left" aria-hidden="true"></i>
           </button>
           }
         </div>

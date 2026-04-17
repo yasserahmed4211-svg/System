@@ -13,6 +13,7 @@ import com.example.security.constants.SecurityPermissions;
 import com.example.security.domain.Permission;
 import com.example.security.dto.CreatePermissionRequest;
 import com.example.security.dto.PermissionDto;
+import com.example.security.dto.UpdatePermissionRequest;
 import com.example.security.exception.SecurityErrorCodes;
 import com.example.security.mapper.PermissionMapper;
 import com.example.erp.common.multitenancy.TenantContext;
@@ -36,6 +37,7 @@ import java.util.Set;
 public class PermissionService {
 
     private final PermissionRepository permRepo;
+    private final com.example.security.repo.PageRepository pageRepo;
 
     // Whitelist of allowed sort fields (Rule 17.3)
     private static final Set<String> ALLOWED_PERMISSION_SORT_FIELDS = Set.of(
@@ -49,7 +51,7 @@ public class PermissionService {
 
     @Transactional
     @PreAuthorize("hasAuthority(T(com.example.security.constants.SecurityPermissions).PERMISSION_CREATE)")
-    // @CacheEvict(cacheNames = {"permissionByName", "permissionsList"}, allEntries = true)
+    @CacheEvict(cacheNames = {"permissionByName", "permissionsList"}, allEntries = true)
     public ServiceResult<PermissionDto> createPermission(CreatePermissionRequest req) {
         String tenant = TenantHelper.requireTenant();
         // تحقق من عدم التكرار داخل نفس الـtenant
@@ -60,6 +62,20 @@ public class PermissionService {
                 .tenantId(tenant)
                 .name(req.getName())
                 .build();
+
+        if (req.getPageId() != null) {
+            com.example.security.domain.Page page = pageRepo.findByIdAndTenantId(req.getPageId(), tenant)
+                    .orElseThrow(() -> new LocalizedException(Status.NOT_FOUND,
+                            SecurityErrorCodes.PAGE_NOT_FOUND, req.getPageId()));
+            p.setPage(page);
+        }
+
+        if (req.getPermissionType() != null) {
+            try {
+                p.setPermissionType(com.example.security.dto.PermissionType.valueOf(req.getPermissionType().toUpperCase()));
+            } catch (IllegalArgumentException ignored) { /* skip unknown types */ }
+        }
+
         Permission saved = permRepo.save(p);
         return ServiceResult.success(PermissionMapper.toDto(saved), Status.CREATED);
     }
@@ -107,4 +123,25 @@ public class PermissionService {
     }
 
     // tenant checking delegated to TenantHelper
+
+    @Transactional
+    @PreAuthorize("hasAuthority(T(com.example.security.constants.SecurityPermissions).PERMISSION_UPDATE)")
+    @CacheEvict(cacheNames = {"permissionByName", "permissionsList"}, allEntries = true)
+    public ServiceResult<PermissionDto> updatePermission(Long id, UpdatePermissionRequest req) {
+        String tenant = TenantHelper.requireTenant();
+        Permission permission = permRepo.findById(id)
+                .filter(p -> tenant.equals(p.getTenantId()))
+                .orElseThrow(() -> new LocalizedException(Status.NOT_FOUND, SecurityErrorCodes.PERMISSION_NOT_FOUND, id));
+
+        // Check uniqueness of new name (excluding self)
+        permRepo.findByNameAndTenantId(req.getName(), tenant)
+                .filter(existing -> !existing.getId().equals(id))
+                .ifPresent(existing -> {
+                    throw new LocalizedException(Status.ALREADY_EXISTS, SecurityErrorCodes.PERMISSION_ALREADY_EXISTS, req.getName());
+                });
+
+        permission.setName(req.getName());
+        Permission saved = permRepo.save(permission);
+        return ServiceResult.success(PermissionMapper.toDto(saved));
+    }
 }
