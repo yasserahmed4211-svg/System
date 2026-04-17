@@ -1,5 +1,20 @@
 services:
   # ============================================
+  # Redis — Cache (host network)
+  # ============================================
+  redis:
+    image: redis:7-alpine
+    container_name: erp-redis
+    network_mode: host
+    command: redis-server --save "" --appendonly no
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
   # Backend — Spring Boot (host network)
   # ============================================
   backend:
@@ -8,6 +23,9 @@ services:
       dockerfile: deploy/backend/Dockerfile
     container_name: erp-backend
     network_mode: host
+    depends_on:
+      redis:
+        condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       # DB_URL MUST be set in deploy/.env — no fallback to prevent silent misconfiguration.
@@ -16,6 +34,8 @@ services:
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
+      - REDIS_HOST=${REDIS_HOST:localhost}
+      - REDIS_PORT=${REDIS_PORT:6379}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:7272/actuator/health"]
