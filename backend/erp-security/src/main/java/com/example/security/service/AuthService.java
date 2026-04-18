@@ -226,6 +226,15 @@ public class AuthService {
         String tenant = resolveTenant(request);
         TenantContext.setTenantId(tenant);
         try {
+            // Diagnostic: verify stored hash format and encoder compatibility before delegating to Spring.
+            userAccountRepo.findByUsernameIgnoreCaseAndTenantId(username, tenant).ifPresentOrElse(u -> {
+                String hash = u.getPassword();
+                String prefix = (hash != null && hash.length() >= 4) ? hash.substring(0, 4) : "null";
+                boolean matches = passwordEncoder.matches(password, hash);
+                log.info("[AUTH-DIAG] loginWithUserInfo: user={} tenant={} hashPrefix={} bcryptMatch={} enabled={}",
+                        username, tenant, prefix, matches, u.isEnabled());
+            }, () -> log.warn("[AUTH-DIAG] loginWithUserInfo: user={} tenant={} NOT FOUND in database", username, tenant));
+
             // Authenticate user
             Authentication auth = authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password));

@@ -22,10 +22,10 @@ export class AuthInterceptor implements HttpInterceptor {
       (environment.authApiUrl !== '' && request.url.startsWith(environment.authApiUrl));
     const isAuthEndpoint = request.url.includes('/api/auth/');
 
-    if (isApiUrl) {
+    if (isApiUrl && !isAuthEndpoint) {
       const headers: Record<string, string> = {};
 
-      if (token && (!this.tokenStore.isTokenExpired() || isAuthEndpoint)) {
+      if (token && !this.tokenStore.isTokenExpired()) {
         headers['Authorization'] = `Bearer ${token}`;
       }
 

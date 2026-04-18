@@ -104,7 +104,14 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         var config = new CorsConfiguration();
-        config.setAllowedOrigins(corsProperties.getAllowedOriginsList());
+        List<String> origins = corsProperties.getAllowedOriginsList();
+        if (origins.size() == 1 && "*".equals(origins.get(0))) {
+            // Wildcard "*" is incompatible with allowCredentials=true.
+            // Use allowedOriginPatterns instead to allow all origins with credentials.
+            config.setAllowedOriginPatterns(List.of("*"));
+        } else {
+            config.setAllowedOrigins(origins);
+        }
         config.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
