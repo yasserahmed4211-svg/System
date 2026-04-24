@@ -1,260 +1,0 @@
-- generic [ref=e3]:
-  - navigation [ref=e5]:
-    - generic [ref=e6]:
-      - link "theme-logo" [ref=e8] [cursor=pointer]:
-        - /url: index.html
-        - img "theme-logo" [ref=e9]
-      - generic [ref=e10]:
-        - generic [ref=e14]:
-          - list [ref=e15]:
-            - generic [ref=e16]:
-              - listitem [ref=e17] [cursor=pointer]:
-                - generic [ref=e18]: المالية
-              - generic [ref=e20]:
-                - listitem [ref=e22]:
-                  - link "دليل الحسابات" [ref=e23] [cursor=pointer]:
-                    - /url: /finance/gl/accounts
-                    - img [ref=e26]
-                    - generic [ref=e28]: دليل الحسابات
-                - listitem [ref=e30]:
-                  - link "قواعد المحاسبة" [ref=e31] [cursor=pointer]:
-                    - /url: /finance/gl/rules
-                    - img [ref=e34]
-                    - generic [ref=e36]: قواعد المحاسبة
-                - listitem [ref=e38]:
-                  - link "القيود اليومية" [ref=e39] [cursor=pointer]:
-                    - /url: /finance/gl/journals
-                    - img [ref=e42]
-                    - generic [ref=e44]: القيود اليومية
-                - listitem [ref=e46]:
-                  - link "قيود الترحيل" [ref=e47] [cursor=pointer]:
-                    - /url: /finance/gl/postings
-                    - img [ref=e50]
-                    - generic [ref=e52]: قيود الترحيل
-            - generic [ref=e53]:
-              - listitem [ref=e54] [cursor=pointer]:
-                - generic [ref=e55]: الأمان
-              - generic [ref=e57]:
-                - listitem [ref=e59]:
-                  - link "إدارة المستخدمين" [ref=e60] [cursor=pointer]:
-                    - /url: /users
-                    - img [ref=e63]
-                    - generic [ref=e65]: إدارة المستخدمين
-                - listitem [ref=e67]:
-                  - link "إدارة صلاحيات الأدوار" [ref=e68] [cursor=pointer]:
-                    - /url: /role-access
-                    - img [ref=e71]
-                    - generic [ref=e74]: إدارة صلاحيات الأدوار
-                - listitem [ref=e76]:
-                  - link "إدارة الصفحات" [ref=e77] [cursor=pointer]:
-                    - /url: /pages
-                    - img [ref=e80]
-                    - generic [ref=e82]: إدارة الصفحات
-            - generic [ref=e83]:
-              - listitem [ref=e84] [cursor=pointer]:
-                - generic [ref=e85]: البيانات الرئيسية
-              - listitem [ref=e89]:
-                - link "قوائم البحث الرئيسية" [ref=e90] [cursor=pointer]:
-                  - /url: /master-data/master-lookups
-                  - img [ref=e93]
-                  - generic [ref=e95]: قوائم البحث الرئيسية
-          - generic [ref=e99]:
-            - img "user" [ref=e100]
-            - generic [ref=e101]:
-              - heading "المساعدة" [level=5] [ref=e102]
-              - text: الدعم
-            - button "الدعم" [ref=e104] [cursor=pointer]
-        - list [ref=e106]:
-          - generic [ref=e107]:
-            - img "user" [ref=e110]
-            - generic [ref=e111]:
-              - text: admin
-              - paragraph [ref=e112]: ROLE_USER
-            - img [ref=e115]
-  - banner [ref=e118]:
-    - generic [ref=e119]:
-      - list [ref=e122]:
-        - listitem [ref=e123]:
-          - link "click to menu collapse" [ref=e124] [cursor=pointer]:
-            - /url: "javascript:"
-            - img [ref=e126]
-        - text: 
-        - listitem [ref=e128]:
-          - generic [ref=e129]:
-            - img [ref=e131]
-            - searchbox "Ctrl + K" [ref=e133]
-      - list [ref=e136]:
-        - listitem [ref=e137]:
-          - link [ref=e138] [cursor=pointer]:
-            - /url: "javascript:"
-            - img [ref=e140]
-        - listitem [ref=e142]:
-          - link "ع" [ref=e143] [cursor=pointer]:
-            - /url: "javascript:"
-            - img [ref=e145]
-            - generic [ref=e148]: ع
-        - listitem [ref=e149]:
-          - link "3" [ref=e150] [cursor=pointer]:
-            - /url: "javascript:"
-            - img [ref=e152]
-            - generic [ref=e154]: "3"
-        - listitem [ref=e155]:
-          - link [ref=e156] [cursor=pointer]:
-            - /url: "javascript:"
-            - img [ref=e158]
-        - listitem [ref=e160]:
-          - link [ref=e161] [cursor=pointer]:
-            - /url: "javascript:"
-            - img [ref=e163]
-        - listitem [ref=e165]:
-          - link [ref=e166] [cursor=pointer]:
-            - /url: "javascript:"
-            - img [ref=e168]
-        - listitem [ref=e170]:
-          - link "user-image admin" [ref=e171] [cursor=pointer]:
-            - /url: "javascript:"
-            - img "user-image" [ref=e172]
-            - generic [ref=e173]: admin
-  - generic [ref=e182]:
-    - heading "دليل الحسابات" [level=5] [ref=e185]
-    - generic [ref=e186]:
-      - generic [ref=e187]:
-        - button " بحث متقدم" [ref=e188] [cursor=pointer]:
-          - generic [ref=e189]: 
-          - text: بحث متقدم
-        - button " إضافة حساب رئيسي" [ref=e190] [cursor=pointer]:
-          - generic [ref=e191]: 
-          - text: إضافة حساب رئيسي
-        - button " إضافة حساب فرعي" [ref=e340] [cursor=pointer]:
-          - generic [ref=e341]: 
-          - text: إضافة حساب فرعي
-        - button " تحديث" [ref=e192] [cursor=pointer]:
-          - generic [ref=e193]: 
-          - text: تحديث
-      - generic [ref=e194]:
-        - generic [ref=e196]:
-          - textbox "تصفية حسب الرقم أو الاسم..." [ref=e198]
-          - button "توسيع الكل" [ref=e200] [cursor=pointer]:
-            - generic [ref=e201]: 
-            - text: توسيع الكل
-          - button "طي الكل" [ref=e202] [cursor=pointer]:
-            - generic [ref=e203]: 
-            - text: طي الكل
-          - generic [ref=e205]: 6 حسابات رئيسية
-        - generic [ref=e342]:
-          - generic [ref=e344] [cursor=pointer]:
-            - button "COMMON.EXPAND" [ref=e345]:
-              - generic [ref=e346]: 
-            - generic "undefined" [ref=e347]: 
-            - generic [ref=e348]: 1 – الأصول
-            - generic [ref=e349]:
-              - generic "المستوى" [ref=e350]: L0
-              - generic "عدد الفروع" [ref=e351]:
-                - generic [ref=e352]: 
-                - text: "2"
-              - generic [ref=e353]:
-                - button "" [ref=e354]:
-                  - generic [ref=e355]: 
-                - button "" [ref=e356]:
-                  - generic [ref=e357]: 
-                - button "" [ref=e358]:
-                  - generic [ref=e359]: 
-          - generic [ref=e361] [cursor=pointer]:
-            - generic [ref=e363]: 
-            - generic "undefined" [ref=e364]: 
-            - generic [ref=e365]: 13 – Test Asset Account
-            - generic [ref=e366]:
-              - generic "المستوى" [ref=e367]: L0
-              - generic "حساب فرعي (مؤهل للقيد)" [ref=e368]:
-                - generic [ref=e369]: 
-              - generic [ref=e370]:
-                - button "" [ref=e371]:
-                  - generic [ref=e372]: 
-                - button "" [ref=e373]:
-                  - generic [ref=e374]: 
-                - button "" [ref=e375]:
-                  - generic [ref=e376]: 
-          - generic [ref=e378] [cursor=pointer]:
-            - button "COMMON.EXPAND" [ref=e379]:
-              - generic [ref=e380]: 
-            - generic "undefined" [ref=e381]: 
-            - generic [ref=e382]: 2 – الخصوم
-            - generic [ref=e383]:
-              - generic "المستوى" [ref=e384]: L0
-              - generic "عدد الفروع" [ref=e385]:
-                - generic [ref=e386]: 
-                - text: "2"
-              - generic [ref=e387]:
-                - button "" [ref=e388]:
-                  - generic [ref=e389]: 
-                - button "" [ref=e390]:
-                  - generic [ref=e391]: 
-                - button "" [ref=e392]:
-                  - generic [ref=e393]: 
-          - generic [ref=e395] [cursor=pointer]:
-            - button "COMMON.EXPAND" [ref=e396]:
-              - generic [ref=e397]: 
-            - generic "undefined" [ref=e398]: 
-            - generic [ref=e399]: 3 – حقوق الملكية
-            - generic [ref=e400]:
-              - generic "المستوى" [ref=e401]: L0
-              - generic "عدد الفروع" [ref=e402]:
-                - generic [ref=e403]: 
-                - text: "2"
-              - generic [ref=e404]:
-                - button "" [ref=e405]:
-                  - generic [ref=e406]: 
-                - button "" [ref=e407]:
-                  - generic [ref=e408]: 
-                - button "" [ref=e409]:
-                  - generic [ref=e410]: 
-          - generic [ref=e412] [cursor=pointer]:
-            - button "COMMON.EXPAND" [ref=e413]:
-              - generic [ref=e414]: 
-            - generic "undefined" [ref=e415]: 
-            - generic [ref=e416]: 4 – الإيرادات
-            - generic [ref=e417]:
-              - generic "المستوى" [ref=e418]: L0
-              - generic "عدد الفروع" [ref=e419]:
-                - generic [ref=e420]: 
-                - text: "2"
-              - generic [ref=e421]:
-                - button "" [ref=e422]:
-                  - generic [ref=e423]: 
-                - button "" [ref=e424]:
-                  - generic [ref=e425]: 
-                - button "" [ref=e426]:
-                  - generic [ref=e427]: 
-          - generic [ref=e429] [cursor=pointer]:
-            - button "COMMON.EXPAND" [ref=e430]:
-              - generic [ref=e431]: 
-            - generic "undefined" [ref=e432]: 
-            - generic [ref=e433]: 5 – المصروفات
-            - generic [ref=e434]:
-              - generic "المستوى" [ref=e435]: L0
-              - generic "عدد الفروع" [ref=e436]:
-                - generic [ref=e437]: 
-                - text: "2"
-              - generic [ref=e438]:
-                - button "" [ref=e439]:
-                  - generic [ref=e440]: 
-                - button "" [ref=e441]:
-                  - generic [ref=e442]: 
-                - button "" [ref=e443]:
-                  - generic [ref=e444]: 
-  - contentinfo [ref=e292]:
-    - generic [ref=e294]:
-      - paragraph [ref=e296]:
-        - text: Copyright ©
-        - link "CodedThemes" [ref=e297] [cursor=pointer]:
-          - /url: https://codedthemes.com
-      - list [ref=e299]:
-        - listitem [ref=e300]:
-          - link "Home" [ref=e301] [cursor=pointer]:
-            - /url: https://codedthemes.com/
-        - listitem [ref=e302]:
-          - link "Privacy Policy" [ref=e303] [cursor=pointer]:
-            - /url: https://codedthemes.com/privacy-policy/
-        - listitem [ref=e304]:
-          - link "Contact us" [ref=e305] [cursor=pointer]:
-            - /url: https://codedthemes.support-hub.io/
