@@ -2,6 +2,7 @@ package com.example.erp.finance.gl.mapper;
 
 import com.example.erp.finance.gl.dto.*;
 import com.example.erp.finance.gl.entity.AccountsChart;
+import com.example.erp.finance.gl.util.GlAccountTypeNormalizer;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Component;
 
@@ -44,7 +45,7 @@ public class AccountsChartMapper {
                 .accountChartPk(entity.getAccountChartPk())
                 .accountChartNo(entity.getAccountChartNo())
                 .accountChartName(entity.getAccountChartName())
-                .accountType(entity.getAccountType())
+                .accountType(GlAccountTypeNormalizer.normalize(entity.getAccountType()))
                 .accountChartFk(entity.getParent() != null ? entity.getParent().getAccountChartPk() : null)
                 .parentAccountName(resolveParentName(entity))
                 .parentAccountNo(entity.getParent() != null ? entity.getParent().getAccountChartNo() : null)
@@ -78,7 +79,7 @@ public class AccountsChartMapper {
                 .accountChartPk(entity.getAccountChartPk())
                 .accountChartNo(entity.getAccountChartNo())
                 .accountChartName(entity.getAccountChartName())
-                .accountType(entity.getAccountType())
+                .accountType(GlAccountTypeNormalizer.normalize(entity.getAccountType()))
                 .level(level)
                 .isActive(Boolean.TRUE.equals(entity.getIsActive()))
                 .isLeaf(childNodes.isEmpty())

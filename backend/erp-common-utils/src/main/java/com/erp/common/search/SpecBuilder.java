@@ -212,11 +212,15 @@ public class SpecBuilder {
         }
 
         switch (op) {
-            case EQ:
-                return cb.equal(getExpression(root, field), value);
+            case EQ: {
+                Expression<?> expr = getExpression(root, field);
+                return cb.equal(expr, coerceToFieldType(expr, value));
+            }
 
-            case NE:
-                return cb.notEqual(getExpression(root, field), value);
+            case NE: {
+                Expression<?> expr = getExpression(root, field);
+                return cb.notEqual(expr, coerceToFieldType(expr, value));
+            }
 
             case LIKE:
                 return buildLikePredicate(root, cb, field, value, "%%%s%%");
@@ -248,6 +252,36 @@ public class SpecBuilder {
             default:
                 throw new SearchException("Unsupported operator: " + op);
         }
+    }
+
+    /**
+     * Coerces a String value to the Java type of the given JPA expression.
+     * Fixes BUG-01: Boolean/numeric fields receive String values from the frontend
+     * (e.g. "true"/"false" for Boolean, "1" for Integer/Long) causing type mismatch
+     * when Oracle compares a NUMBER column with a VARCHAR literal.
+     */
+    private static Object coerceToFieldType(Expression<?> expression, Object value) {
+        if (!(value instanceof String)) {
+            return value;
+        }
+        String str = (String) value;
+        Class<?> javaType = expression.getJavaType();
+        if (javaType == null) {
+            return value;
+        }
+        if (Boolean.class.equals(javaType) || boolean.class.equals(javaType)) {
+            return Boolean.parseBoolean(str);
+        }
+        if (Integer.class.equals(javaType) || int.class.equals(javaType)) {
+            try { return Integer.parseInt(str); } catch (NumberFormatException e) { return value; }
+        }
+        if (Long.class.equals(javaType) || long.class.equals(javaType)) {
+            try { return Long.parseLong(str); } catch (NumberFormatException e) { return value; }
+        }
+        if (Double.class.equals(javaType) || double.class.equals(javaType)) {
+            try { return Double.parseDouble(str); } catch (NumberFormatException e) { return value; }
+        }
+        return value;
     }
 
     /**

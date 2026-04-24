@@ -473,6 +473,21 @@ public class BranchService {
         return ServiceResult.success(departmentMapper.toResponse(updated), Status.UPDATED);
     }
 
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAuthority(T(com.example.security.constants.SecurityPermissions).DEPARTMENT_VIEW)")
+    public ServiceResult<DepartmentResponse> getDepartmentById(Long id) {
+        log.debug("Getting department by ID: {}", id);
+
+        OrgDepartment entity = departmentRepository.findById(id)
+                .orElseThrow(() -> new LocalizedException(
+                        Status.NOT_FOUND,
+                        OrgErrorCodes.DEPARTMENT_NOT_FOUND,
+                        id
+                ));
+
+        return ServiceResult.success(departmentMapper.toResponse(entity));
+    }
+
     @Transactional
     @PreAuthorize("hasAuthority(T(com.example.security.constants.SecurityPermissions).DEPARTMENT_DELETE)")
     public void deleteDepartment(Long id) {

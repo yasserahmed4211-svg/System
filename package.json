@@ -2,7 +2,10 @@
   "name": "n-erp-system",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "trace:open": "npx playwright show-trace",
+    "mcp:playwright": "npx @playwright/mcp@latest"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/yasserahmed4211-svg/System.git"

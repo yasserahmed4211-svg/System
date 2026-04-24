@@ -99,7 +99,6 @@ public class PageService {
      */
     @Transactional
         @PreAuthorize("hasAuthority(T(com.example.security.constants.SecurityPermissions).PAGE_CREATE)")
-    // @CacheEvict(cacheNames = {"pages", "activePages"}, allEntries = true)
     public ServiceResult<PageResponse> createPage(CreatePageRequest request) {
         String tenantId = TenantHelper.requireTenant();
         
@@ -122,16 +121,9 @@ public class PageService {
             throw new LocalizedException(Status.ALREADY_EXISTS, SecurityErrorCodes.DUPLICATE_PAGE_CODE, pageCode);
         }
 
-        // ENHANCED VALIDATION: Route must start with /
+        // Validate route format
         String route = request.getRoute().trim();
-        if (!route.startsWith("/")) {
-            throw new LocalizedException(Status.BAD_REQUEST, SecurityErrorCodes.INVALID_ROUTE_FORMAT, route);
-        }
-
-        // ENHANCED VALIDATION: Route must be valid (no spaces, proper format)
-        if (!route.matches("^/[a-zA-Z0-9/_-]+$")) {
-            throw new LocalizedException(Status.BAD_REQUEST, SecurityErrorCodes.INVALID_ROUTE_FORMAT, route);
-        }
+        validateRouteFormat(route);
 
         // Check for duplicate route
         if (pageRepository.existsByRouteAndTenantId(route, tenantId)) {
@@ -180,7 +172,6 @@ public class PageService {
      */
     @Transactional
     @PreAuthorize("hasAuthority(T(com.example.security.constants.SecurityPermissions).PAGE_UPDATE)")
-    // @CacheEvict(cacheNames = {"pages", "activePages"}, allEntries = true)
     public ServiceResult<PageResponse> updatePage(Long id, UpdatePageRequest request) {
         String tenantId = TenantHelper.requireTenant();
 
@@ -189,16 +180,9 @@ public class PageService {
 
         log.info("Updating page ID: {} (code: {})", id, page.getPageCode());
 
-        // ENHANCED VALIDATION: Route must start with /
+        // Validate route format
         String route = request.getRoute().trim();
-        if (!route.startsWith("/")) {
-            throw new LocalizedException(Status.BAD_REQUEST, SecurityErrorCodes.INVALID_ROUTE_FORMAT, route);
-        }
-
-        // ENHANCED VALIDATION: Route must be valid (no spaces, proper format)
-        if (!route.matches("^/[a-zA-Z0-9/_-]+$")) {
-            throw new LocalizedException(Status.BAD_REQUEST, SecurityErrorCodes.INVALID_ROUTE_FORMAT, route);
-        }
+        validateRouteFormat(route);
 
         // Check route uniqueness (excluding this page)
         if (pageRepository.existsByRouteAndTenantIdAndIdNot(route, tenantId, id)) {
@@ -352,21 +336,8 @@ public class PageService {
      */
     @Transactional
     @PreAuthorize("hasAuthority(T(com.example.security.constants.SecurityPermissions).PAGE_UPDATE)")
-    // @CacheEvict(cacheNames = {"pages", "activePages"}, allEntries = true)
     public ServiceResult<PageResponse> deactivatePage(Long id) {
-        String tenantId = TenantHelper.requireTenant();
-
-        Page page = pageRepository.findByIdAndTenantId(id, tenantId)
-                .orElseThrow(() -> new LocalizedException(Status.NOT_FOUND, SecurityErrorCodes.PAGE_NOT_FOUND, id));
-
-        log.info("Deactivating page ID: {} (code: {})", id, page.getPageCode());
-
-        page.setActive(false);
-
-        Page updated = pageRepository.save(page);
-
-        Map<String, String> permissionKeys = buildPermissionKeys(page.getPageCode());
-        return ServiceResult.success(toResponse(updated, permissionKeys), Status.UPDATED);
+        return setPageActive(id, false);
     }
 
     /**
@@ -377,16 +348,19 @@ public class PageService {
      */
     @Transactional
     @PreAuthorize("hasAuthority(T(com.example.security.constants.SecurityPermissions).PAGE_UPDATE)")
-    // @CacheEvict(cacheNames = {"pages", "activePages"}, allEntries = true)
     public ServiceResult<PageResponse> reactivatePage(Long id) {
+        return setPageActive(id, true);
+    }
+
+    private ServiceResult<PageResponse> setPageActive(Long id, boolean active) {
         String tenantId = TenantHelper.requireTenant();
 
         Page page = pageRepository.findByIdAndTenantId(id, tenantId)
                 .orElseThrow(() -> new LocalizedException(Status.NOT_FOUND, SecurityErrorCodes.PAGE_NOT_FOUND, id));
 
-        log.info("Reactivating page ID: {} (code: {})", id, page.getPageCode());
+        log.info("{} page ID: {} (code: {})", active ? "Reactivating" : "Deactivating", id, page.getPageCode());
 
-        page.setActive(true);
+        page.setActive(active);
 
         Page updated = pageRepository.save(page);
 
@@ -510,5 +484,16 @@ public class PageService {
                 .updatedAt(page.getUpdatedAt())
                 .updatedBy(page.getUpdatedBy())
                 .build();
+    }
+
+    private static final String ROUTE_PATTERN = "^/[a-zA-Z0-9/_-]+$";
+
+    private void validateRouteFormat(String route) {
+        if (!route.startsWith("/")) {
+            throw new LocalizedException(Status.BAD_REQUEST, SecurityErrorCodes.INVALID_ROUTE_FORMAT, route);
+        }
+        if (!route.matches(ROUTE_PATTERN)) {
+            throw new LocalizedException(Status.BAD_REQUEST, SecurityErrorCodes.INVALID_ROUTE_FORMAT, route);
+        }
     }
 }

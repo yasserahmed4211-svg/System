@@ -57,6 +57,8 @@ public class AuthService {
     private final CookieProperties cookieProperties;
     private final TenantProperties tenantProperties;
 
+    private static final String REFRESH_COOKIE_NAME = "refresh_token";
+
     public record Tokens(String access, long accessExpSeconds, String refresh) {}
 
     @Transactional
@@ -176,8 +178,8 @@ public class AuthService {
             TenantContext.setTenantId(tenant);
             refreshTokenRepo.findByJtiAndTenantId(jti, tenant)
                 .ifPresent(rt -> { rt.setRevoked(true); refreshTokenRepo.save(rt); });
-        } catch (Exception ignored) {
-            // Best-effort revocation only; never fail logout.
+        } catch (Exception ex) {
+            log.debug("Best-effort refresh token revocation failed during logout", ex);
         } finally {
             TenantContext.clear();
             clearRefreshCookie(response);
@@ -185,15 +187,15 @@ public class AuthService {
     }
 
     private String resolveTenant(HttpServletRequest request) {
-        String t = request.getHeader(tenantProperties.headerName());
-        return (t == null || t.isBlank()) ? tenantProperties.defaultId() : t;
+        String headerTenant = request.getHeader(tenantProperties.headerName());
+        return (headerTenant == null || headerTenant.isBlank()) ? tenantProperties.defaultId() : headerTenant;
     }
 
     private void attachRefreshCookie(HttpServletResponse response, String token) {
         // Use header-based Set-Cookie to include SameSite attribute (Cookie API lacks SameSite)
         SameSite sameSite = "STRICT".equalsIgnoreCase(cookieProperties.sameSite()) ? SameSite.STRICT : 
                             "NONE".equalsIgnoreCase(cookieProperties.sameSite()) ? SameSite.NONE : SameSite.LAX;
-        CookieUtils.addCookie(response, "refresh_token", token, 
+        CookieUtils.addCookie(response, REFRESH_COOKIE_NAME, token, 
                             (int) jwtProperties.refreshExpirationSeconds(), 
                             cookieProperties.domain(), 
                             cookieProperties.path(), 
@@ -202,7 +204,7 @@ public class AuthService {
     }
 
     private void clearRefreshCookie(HttpServletResponse response) {
-        CookieUtils.deleteCookie(response, "refresh_token", 
+        CookieUtils.deleteCookie(response, REFRESH_COOKIE_NAME, 
                                 cookieProperties.domain(), 
                                 cookieProperties.path());
     }
@@ -210,7 +212,7 @@ public class AuthService {
     private String readRefreshCookie(HttpServletRequest request) {
     if (request.getCookies() == null) throw new LocalizedException(Status.UNAUTHORIZED, SecurityErrorCodes.NO_REFRESH_COOKIE);
         for (Cookie c : request.getCookies()) {
-            if ("refresh_token".equals(c.getName())) return c.getValue();
+            if (REFRESH_COOKIE_NAME.equals(c.getName())) return c.getValue();
         }
     throw new LocalizedException(Status.UNAUTHORIZED, SecurityErrorCodes.NO_REFRESH_COOKIE);
     }

@@ -29,10 +29,8 @@ public class MenuService {
     private final PageRepository pageRepository;
     private final UserAccountRepository userAccountRepository;
 
-    // Whitelist of allowed sort fields (Rule 17.3)
-    private static final Set<String> ALLOWED_MENU_SORT_FIELDS = Set.of(
-        "id", "nameEn", "nameAr", "displayOrder", "createdAt", "updatedAt"
-    );
+    private static final String PERM_PREFIX = "PERM_";
+    private static final String VIEW_SUFFIX = "_VIEW";
 
     /**
      * جلب القائمة الكاملة للمستخدم الحالي بناءً على صلاحيات VIEW من SEC_PAGES
@@ -88,11 +86,10 @@ public class MenuService {
         // 3. استخراج PAGE_CODES من صلاحيات VIEW فقط
         // Permission format: PERM_<CODE>_VIEW
         Set<String> allowedPageCodes = userPermissions.stream()
-                .filter(perm -> perm.startsWith("PERM_") && perm.endsWith("_VIEW"))
+                .filter(perm -> perm.startsWith(PERM_PREFIX) && perm.endsWith(VIEW_SUFFIX))
                 .map(perm -> {
-                    // Extract CODE from PERM_<CODE>_VIEW
-                    String withoutPrefix = perm.substring(5); // Remove "PERM_"
-                    String withoutSuffix = withoutPrefix.substring(0, withoutPrefix.length() - 5); // Remove "_VIEW"
+                    String withoutPrefix = perm.substring(PERM_PREFIX.length());
+                    String withoutSuffix = withoutPrefix.substring(0, withoutPrefix.length() - VIEW_SUFFIX.length());
                     return withoutSuffix;
                 })
                 .collect(Collectors.toSet());

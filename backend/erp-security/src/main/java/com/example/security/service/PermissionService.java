@@ -9,19 +9,16 @@ import com.erp.common.search.PageableBuilder;
 import com.erp.common.search.SearchRequest;
 import com.erp.common.search.SetAllowedFields;
 import com.erp.common.search.SpecBuilder;
-import com.example.security.constants.SecurityPermissions;
 import com.example.security.domain.Permission;
 import com.example.security.dto.CreatePermissionRequest;
 import com.example.security.dto.PermissionDto;
 import com.example.security.dto.UpdatePermissionRequest;
 import com.example.security.exception.SecurityErrorCodes;
 import com.example.security.mapper.PermissionMapper;
-import com.example.erp.common.multitenancy.TenantContext;
 import com.example.erp.common.multitenancy.TenantHelper;
 import com.example.security.repo.PermissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -29,7 +26,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Set;
 
 @Service

@@ -1,0 +1,466 @@
+﻿[
+    {
+        "tcId":  "TC-G1-01",
+        "group":  "G1",
+        "status":  "PASS",
+        "expected":  "201 created, key=TC122700_VALID",
+        "actual":  "status=201 id=71 key=TC122700_VALID",
+        "notes":  "Valid create all fields"
+    },
+    {
+        "tcId":  "TC-G1-02",
+        "group":  "G1",
+        "status":  "PASS",
+        "expected":  "409, errorCode=MASTER_LOOKUP_KEY_DUPLICATE",
+        "actual":  "status=409 errCode=MASTER_LOOKUP_KEY_DUPLICATE",
+        "notes":  "Duplicate lookupKey -\u003e 409"
+    },
+    {
+        "tcId":  "TC-G1-03",
+        "group":  "G1",
+        "status":  "PASS",
+        "expected":  "400 validation",
+        "actual":  "status=400",
+        "notes":  "Missing required lookupName -\u003e 400"
+    },
+    {
+        "tcId":  "TC-G1-04",
+        "group":  "G1",
+        "status":  "PASS",
+        "expected":  "201 key normalized to UPPER",
+        "actual":  "status=201 key=TC122700_LOWER",
+        "notes":  "Lowercase key normalization"
+    },
+    {
+        "tcId":  "TC-G1-05",
+        "group":  "G1",
+        "status":  "PASS",
+        "expected":  "400 @Size(max=50)",
+        "actual":  "status=400",
+        "notes":  "lookupKey max 50 chars"
+    },
+    {
+        "tcId":  "TC-G1-06",
+        "group":  "G1",
+        "status":  "PASS",
+        "expected":  "201 isActive defaults",
+        "actual":  "status=201 isActive=True",
+        "notes":  "isActive default behavior"
+    },
+    {
+        "tcId":  "TC-G1-07",
+        "group":  "G1",
+        "status":  "PASS",
+        "expected":  "201 isActive=false",
+        "actual":  "status=201 isActive=False",
+        "notes":  "Create with isActive=false"
+    },
+    {
+        "tcId":  "TC-G2-01",
+        "group":  "G2",
+        "status":  "PASS",
+        "expected":  "200 with id",
+        "actual":  "status=200 id=71",
+        "notes":  "Get by valid ID"
+    },
+    {
+        "tcId":  "TC-G2-02",
+        "group":  "G2",
+        "status":  "PASS",
+        "expected":  "404",
+        "actual":  "status=404",
+        "notes":  "Get by non-existent ID"
+    },
+    {
+        "tcId":  "TC-G2-03",
+        "group":  "G2",
+        "status":  "PASS",
+        "expected":  "detailCount field in response",
+        "actual":  "detailCount=0 present=True",
+        "notes":  "detailCount @Formula field"
+    },
+    {
+        "tcId":  "TC-G2-04",
+        "group":  "G2",
+        "status":  "PASS",
+        "expected":  "createdAt and createdBy present",
+        "actual":  "createdAt=2026-04-18T10:27:01.282Z createdBy=admin",
+        "notes":  "Audit fields in GET response"
+    },
+    {
+        "tcId":  "TC-G3-01",
+        "group":  "G3",
+        "status":  "PASS",
+        "expected":  "200 paginated",
+        "actual":  "status=200 total=35",
+        "notes":  "Search all no filters"
+    },
+    {
+        "tcId":  "TC-G3-02",
+        "group":  "G3",
+        "status":  "PASS",
+        "expected":  "200 totalElements=1",
+        "actual":  "status=200 total=1",
+        "notes":  "Filter EQUALS lookupKey"
+    },
+    {
+        "tcId":  "TC-G3-03",
+        "group":  "G3",
+        "status":  "FAIL",
+        "expected":  "200 filtered active",
+        "actual":  "status=500 total=",
+        "notes":  "Filter isActive=true"
+    },
+    {
+        "tcId":  "TC-G3-04",
+        "group":  "G3",
+        "status":  "PASS",
+        "expected":  "\u003e=3 results",
+        "actual":  "status=200 total=4",
+        "notes":  "CONTAINS filter"
+    },
+    {
+        "tcId":  "TC-G3-05",
+        "group":  "G3",
+        "status":  "FAIL",
+        "expected":  "400 or graceful",
+        "actual":  "status=422",
+        "notes":  "Invalid sort field"
+    },
+    {
+        "tcId":  "TC-G3-06",
+        "group":  "G3",
+        "status":  "PASS",
+        "expected":  "200 page size \u003c=2",
+        "actual":  "status=200 returned=2",
+        "notes":  "Pagination size respected"
+    },
+    {
+        "tcId":  "TC-G4-01",
+        "group":  "G4",
+        "status":  "PASS",
+        "expected":  "200 name updated",
+        "actual":  "status=200 name=Updated Name",
+        "notes":  "Update name fields"
+    },
+    {
+        "tcId":  "TC-G4-02",
+        "group":  "G4",
+        "status":  "PASS",
+        "expected":  "key unchanged",
+        "actual":  "key=TC122700_VALID",
+        "notes":  "lookupKey immutability"
+    },
+    {
+        "tcId":  "TC-G4-03",
+        "group":  "G4",
+        "status":  "PASS",
+        "expected":  "updatedAt populated",
+        "actual":  "updatedAt=2026-04-18T10:27:01.282Z",
+        "notes":  "updatedAt set after update"
+    },
+    {
+        "tcId":  "TC-G4-04",
+        "group":  "G4",
+        "status":  "PASS",
+        "expected":  "404",
+        "actual":  "status=404",
+        "notes":  "Update non-existent ID"
+    },
+    {
+        "tcId":  "TC-G5-01",
+        "group":  "G5",
+        "status":  "PASS",
+        "expected":  "200 deactivated",
+        "actual":  "status=200 isActive=False",
+        "notes":  "Deactivate lookup no active details"
+    },
+    {
+        "tcId":  "TC-G5-02",
+        "group":  "G5",
+        "status":  "PASS",
+        "expected":  "200 reactivated",
+        "actual":  "status=200 isActive=True",
+        "notes":  "Re-activate lookup"
+    },
+    {
+        "tcId":  "TC-G6-01",
+        "group":  "G6",
+        "status":  "PASS",
+        "expected":  "200 totalDetails=0 canDelete=true",
+        "actual":  "status=200 total=0 canDelete=True",
+        "notes":  "Usage no details"
+    },
+    {
+        "tcId":  "TC-G6-02",
+        "group":  "G6",
+        "status":  "PASS",
+        "expected":  "canDeactivate field present",
+        "actual":  "canDeactivate=True",
+        "notes":  "canDeactivate field in usage"
+    },
+    {
+        "tcId":  "TC-G7-01",
+        "group":  "G7",
+        "status":  "PASS",
+        "expected":  "204 deleted",
+        "actual":  "status=204",
+        "notes":  "Delete with no details"
+    },
+    {
+        "tcId":  "TC-G7-02",
+        "group":  "G7",
+        "status":  "PASS",
+        "expected":  "404 after delete",
+        "actual":  "status=404",
+        "notes":  "Verify deletion"
+    },
+    {
+        "tcId":  "TC-G8-01",
+        "group":  "G8",
+        "status":  "FAIL",
+        "expected":  "201 detail created",
+        "actual":  "status=409 id= code=",
+        "notes":  "Valid detail create"
+    },
+    {
+        "tcId":  "TC-G8-02",
+        "group":  "G8",
+        "status":  "PASS",
+        "expected":  "409 duplicate code",
+        "actual":  "status=409 err=DB_CONSTRAINT_VIOLATION",
+        "notes":  "Duplicate code same master"
+    },
+    {
+        "tcId":  "TC-G8-03",
+        "group":  "G8",
+        "status":  "PASS",
+        "expected":  "404/400",
+        "actual":  "status=404",
+        "notes":  "Non-existent masterLookupId"
+    },
+    {
+        "tcId":  "TC-G8-04",
+        "group":  "G8",
+        "status":  "PASS",
+        "expected":  "400 validation",
+        "actual":  "status=400",
+        "notes":  "Missing required nameAr"
+    },
+    {
+        "tcId":  "TC-G8-05",
+        "group":  "G8",
+        "status":  "FAIL",
+        "expected":  "201 sortOrder=0",
+        "actual":  "status=409 sortOrder=",
+        "notes":  "sortOrder default 0"
+    },
+    {
+        "tcId":  "TC-G8-06",
+        "group":  "G8",
+        "status":  "FAIL",
+        "expected":  "201 same code different master",
+        "actual":  "status=409",
+        "notes":  "Code uniqueness per master"
+    },
+    {
+        "tcId":  "TC-G8-07",
+        "group":  "G8",
+        "status":  "FAIL",
+        "expected":  "201 isActive=false",
+        "actual":  "status=409 isActive=",
+        "notes":  "Create detail isActive=false"
+    },
+    {
+        "tcId":  "TC-G9-01",
+        "group":  "G9",
+        "status":  "FAIL",
+        "expected":  "200 detail",
+        "actual":  "status=500 id=",
+        "notes":  "Get detail by ID"
+    },
+    {
+        "tcId":  "TC-G9-02",
+        "group":  "G9",
+        "status":  "PASS",
+        "expected":  "404",
+        "actual":  "status=404",
+        "notes":  "Get non-existent detail"
+    },
+    {
+        "tcId":  "TC-G9-03",
+        "group":  "G9",
+        "status":  "FAIL",
+        "expected":  "\u003e=2 details",
+        "actual":  "status=500 total=",
+        "notes":  "Search by masterLookupId"
+    },
+    {
+        "tcId":  "TC-G9-04",
+        "group":  "G9",
+        "status":  "PASS",
+        "expected":  "sortOrder ASC",
+        "actual":  "isSorted=True",
+        "notes":  "Default sort sortOrder ASC"
+    },
+    {
+        "tcId":  "TC-G9-05",
+        "group":  "G9",
+        "status":  "PASS",
+        "expected":  "200 options",
+        "actual":  "status=200 count=0",
+        "notes":  "Options endpoint by lookupKey"
+    },
+    {
+        "tcId":  "TC-G9-06",
+        "group":  "G9",
+        "status":  "PASS",
+        "expected":  "inactive detail excluded from options",
+        "actual":  "hasInactiveInOptions=False",
+        "notes":  "Options exclude inactive details"
+    },
+    {
+        "tcId":  "TC-G9-07",
+        "group":  "G9",
+        "status":  "FAIL",
+        "expected":  "200 usage",
+        "actual":  "status=401 canBeDeleted=",
+        "notes":  "Detail usage endpoint"
+    },
+    {
+        "tcId":  "TC-G10-01",
+        "group":  "G10",
+        "status":  "FAIL",
+        "expected":  "200 nameAr updated",
+        "actual":  "status=500 nameAr=",
+        "notes":  "Update detail fields"
+    },
+    {
+        "tcId":  "TC-G10-02",
+        "group":  "G10",
+        "status":  "FAIL",
+        "expected":  "code=CODE_01 unchanged",
+        "actual":  "code=",
+        "notes":  "Detail code immutability"
+    },
+    {
+        "tcId":  "TC-G10-03",
+        "group":  "G10",
+        "status":  "FAIL",
+        "expected":  "masterLookupId unchanged",
+        "actual":  "masterLookupId=",
+        "notes":  "Detail masterLookupId immutability"
+    },
+    {
+        "tcId":  "TC-G10-04",
+        "group":  "G10",
+        "status":  "FAIL",
+        "expected":  "updatedAt present",
+        "actual":  "updatedAt=",
+        "notes":  "Detail updatedAt set after update"
+    },
+    {
+        "tcId":  "TC-G10-05",
+        "group":  "G10",
+        "status":  "FAIL",
+        "expected":  "200 detail deactivated",
+        "actual":  "status=401 isActive=",
+        "notes":  "Toggle detail inactive"
+    },
+    {
+        "tcId":  "TC-G10-06",
+        "group":  "G10",
+        "status":  "FAIL",
+        "expected":  "409/400 blocked active details",
+        "actual":  "status=200 err=",
+        "notes":  "Deactivate lookup blocked by active details"
+    },
+    {
+        "tcId":  "TC-G10-07",
+        "group":  "G10",
+        "status":  "FAIL",
+        "expected":  "204 deleted",
+        "actual":  "status=500",
+        "notes":  "Delete detail"
+    },
+    {
+        "tcId":  "TC-G10-08",
+        "group":  "G10",
+        "status":  "FAIL",
+        "expected":  "409 blocked details exist",
+        "actual":  "status=204 err=",
+        "notes":  "Delete lookup with details blocked"
+    },
+    {
+        "tcId":  "TC-G10-09",
+        "group":  "G10",
+        "status":  "PASS",
+        "expected":  "404",
+        "actual":  "status=404",
+        "notes":  "Update non-existent detail"
+    },
+    {
+        "tcId":  "TC-G11-01",
+        "group":  "G11",
+        "status":  "FAIL",
+        "expected":  "200 list of values",
+        "actual":  "status=500 count=0",
+        "notes":  "Get seeded CURRENCY values"
+    },
+    {
+        "tcId":  "TC-G11-02",
+        "group":  "G11",
+        "status":  "FAIL",
+        "expected":  "200 same result as uppercase",
+        "actual":  "status=500 count=0",
+        "notes":  "Lowercase key normalization"
+    },
+    {
+        "tcId":  "TC-G11-03",
+        "group":  "G11",
+        "status":  "PASS",
+        "expected":  "401/403",
+        "actual":  "status=401",
+        "notes":  "Auth required on consumption endpoint"
+    },
+    {
+        "tcId":  "TC-G11-04",
+        "group":  "G11",
+        "status":  "FAIL",
+        "expected":  "404 or empty list",
+        "actual":  "status=500 count=0",
+        "notes":  "Non-existent lookup key behavior"
+    },
+    {
+        "tcId":  "TC-G11-05",
+        "group":  "G11",
+        "status":  "FAIL",
+        "expected":  "fields: code, label present",
+        "actual":  "code= label= labelEn=",
+        "notes":  "Response shape: code, label, labelEn"
+    },
+    {
+        "tcId":  "TC-G11-06",
+        "group":  "G11",
+        "status":  "PASS",
+        "expected":  "inactive detail not in consumption",
+        "actual":  "hasInact=False",
+        "notes":  "Inactive detail excluded from consumption"
+    },
+    {
+        "tcId":  "TC-G11-07",
+        "group":  "G11",
+        "status":  "FAIL",
+        "expected":  "both 200 same count",
+        "actual":  "first=0 second=0",
+        "notes":  "Cache: repeated call consistent"
+    },
+    {
+        "tcId":  "TC-G11-08",
+        "group":  "G11",
+        "status":  "FAIL",
+        "expected":  "200 GL_ACCOUNT_TYPE values",
+        "actual":  "status=500 count=0",
+        "notes":  "Seeded GL_ACCOUNT_TYPE consumption"
+    }
+]

@@ -4,13 +4,16 @@ import com.example.erp.common.domain.status.ServiceResult;
 import com.example.erp.common.domain.status.Status;
 import com.example.erp.common.exception.LocalizedException;
 import com.example.masterdata.api.LookupValidationApi;
+import com.example.masterdata.dto.LookupCacheEntry;
 import com.example.masterdata.dto.LookupValueResponse;
 import com.example.masterdata.exception.MasterDataErrorCodes;
 import com.example.masterdata.repository.MasterLookupRepository;
 import com.example.masterdata.repository.projection.LookupValueProjection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,43 +49,81 @@ public class LookupConsumptionService implements LookupValidationApi {
 
     private final MasterLookupRepository masterLookupRepository;
 
+    /**
+     * Self-reference via Spring proxy so @Cacheable is intercepted correctly.
+     * Injected lazily to avoid circular-dependency issues.
+     */
+    @Lazy
+    @Autowired
+    private LookupConsumptionService self;
+
     // ── Public API (LookupValidationApi) ─────────────────────────
 
     /**
      * Fetch all active lookup values for a lookup code.
      *
-     * <p>Uses a single native JOIN query for optimal performance.
-     * Results are cached per lookup code.</p>
+     * <p>Delegates to {@link #loadCachedEntry(String)} through the Spring
+     * proxy so that the {@code @Cacheable} annotation is actually intercepted.
+     * This avoids caching the {@code ServiceResult} wrapper (which Jackson
+     * cannot deserialize from Redis) and instead caches a plain
+     * {@link LookupCacheEntry} that is fully serializable.</p>
      *
      * @param lookupCode Master lookup key (case-insensitive)
      * @return ServiceResult with list of values, or NOT_FOUND on error
      */
     @Override
-    @Cacheable(cacheNames = "lookupValues", key = "#lookupCode?.toUpperCase()")
     public ServiceResult<List<LookupValueResponse>> fetchLookupValues(String lookupCode) {
         String key = normalize(lookupCode);
         log.debug("Fetching lookup values for key='{}'", key);
 
-        List<LookupValueProjection> rows = masterLookupRepository.findLookupValuesByKey(key, 1);
+        LookupCacheEntry cached = self.loadCachedEntry(key);
 
-        if (rows.isEmpty()) {
+        if (cached == null) {
             log.warn("Lookup not found: key='{}'", key);
             return ServiceResult.notFound("Lookup code does not exist: " + lookupCode);
         }
 
-        LookupValueProjection first = rows.get(0);
-        if (first.getMasterIsActive() == null || first.getMasterIsActive() != 1) {
+        if (cached.isInactive()) {
             log.warn("Lookup is inactive: key='{}'", key);
             return ServiceResult.notFound("Lookup code is inactive: " + lookupCode);
+        }
+
+        List<LookupValueResponse> values = cached.getValues();
+        log.debug("Returning {} active values for key='{}'", values.size(), key);
+        return ServiceResult.success(values, Status.SUCCESS);
+    }
+
+    /**
+     * Cache-layer helper — returns a {@link LookupCacheEntry} that Jackson can
+     * serialize/deserialize without issues.
+     *
+     * <p>States:</p>
+     * <ul>
+     *   <li>{@code null}                       – key not found (not cached)</li>
+     *   <li>{@code inactive=true, values=[]}   – master exists but is inactive</li>
+     *   <li>{@code inactive=false, values=[..]}– master active (list may be empty)</li>
+     * </ul>
+     *
+     * @param key Normalised (upper-case) lookup code
+     */
+    @Cacheable(cacheNames = "lookupValues", key = "#key")
+    public LookupCacheEntry loadCachedEntry(String key) {
+        List<LookupValueProjection> rows = masterLookupRepository.findLookupValuesByKey(key, 1);
+
+        if (rows.isEmpty()) {
+            return null; // not found — not stored in Redis (disableCachingNullValues)
+        }
+
+        LookupValueProjection first = rows.get(0);
+        if (first.getMasterIsActive() == null || first.getMasterIsActive() != 1) {
+            return new LookupCacheEntry(true, List.of()); // inactive
         }
 
         List<LookupValueResponse> values = rows.stream()
                 .filter(r -> r.getCode() != null)
                 .map(this::toResponse)
                 .toList();
-
-        log.debug("Returning {} active values for key='{}'", values.size(), key);
-        return ServiceResult.success(values, Status.SUCCESS);
+        return new LookupCacheEntry(false, values); // active
     }
 
     /**
@@ -155,6 +196,7 @@ public class LookupConsumptionService implements LookupValidationApi {
                 .code(row.getCode())
                 .label(row.getNameAr())
                 .labelEn(row.getNameEn())
+                .sortOrder(row.getSortOrder())
                 .build();
     }
 

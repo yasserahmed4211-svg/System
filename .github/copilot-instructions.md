@@ -22,6 +22,7 @@ When creating or modifying backend artifacts, read the matching skill BEFORE wri
 | Adding/reviewing caching | `.github/skills/backend/enforce-caching-rules/SKILL.md` |
 | Adding/reviewing error handling | `.github/skills/backend/enforce-error-handling/SKILL.md` |
 | Reviewing query/pagination performance | `.github/skills/backend/enforce-performance/SKILL.md` |
+| Reviewing clean code (DRY/KISS/YAGNI/null safety) | `.github/skills/backend/enforce-clean-code/SKILL.md` |
 | Upgrading Spring Boot / Java version | `.github/skills/backend/springboot-upgrade/SKILL.md` |
 | Validating a complete feature | `.github/skills/backend/validate-backend-feature/SKILL.md` |
 

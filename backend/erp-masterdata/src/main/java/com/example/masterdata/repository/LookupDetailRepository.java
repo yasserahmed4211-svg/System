@@ -84,8 +84,7 @@ public interface LookupDetailRepository extends JpaRepository<MdLookupDetail, Lo
      * @return Page of LookupDetails
      */
     @Query(value = "SELECT ld FROM MdLookupDetail ld " +
-           "JOIN FETCH ld.masterLookup ml " +
-           "WHERE ml.id = :masterLookupId",
+           "WHERE ld.masterLookup.id = :masterLookupId",
            countQuery = "SELECT COUNT(ld) FROM MdLookupDetail ld " +
            "WHERE ld.masterLookup.id = :masterLookupId")
     Page<MdLookupDetail> searchByMasterLookupId(
@@ -101,8 +100,7 @@ public interface LookupDetailRepository extends JpaRepository<MdLookupDetail, Lo
      * @return Page of LookupDetails
      */
     @Query(value = "SELECT ld FROM MdLookupDetail ld " +
-           "JOIN FETCH ld.masterLookup ml " +
-           "WHERE ml.id = :masterLookupId " +
+           "WHERE ld.masterLookup.id = :masterLookupId " +
            "AND ld.isActive = :isActive",
            countQuery = "SELECT COUNT(ld) FROM MdLookupDetail ld " +
            "WHERE ld.masterLookup.id = :masterLookupId " +

@@ -48,6 +48,7 @@ ERP-Local.postman_environment.json
 # Playwright
 node_modules/
 /test-results/
+.playwright-mcp/
 
 # Documentation and database migration files
 *.md

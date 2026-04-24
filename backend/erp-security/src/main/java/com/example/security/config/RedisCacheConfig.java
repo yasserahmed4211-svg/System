@@ -2,7 +2,9 @@ package com.example.security.config;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.interceptor.CacheErrorHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -78,7 +80,16 @@ import java.util.Map;
 @Configuration
 // @EnableCaching  // ❌ DISABLED: Redis caching disabled - will be enabled later
 @ConditionalOnProperty(name = "spring.cache.type", havingValue = "redis")
-public class RedisCacheConfig {
+public class RedisCacheConfig implements CachingConfigurer {
+
+    /**
+     * Provide a graceful fallback error handler so that Redis connection
+     * failures result in a DB query (cache miss) rather than a 500 error.
+     */
+    @Override
+    public CacheErrorHandler errorHandler() {
+        return new RedisFallbackCacheErrorHandler();
+    }
 
     /**
      * Configure Redis Cache Manager with TTLs for different cache regions

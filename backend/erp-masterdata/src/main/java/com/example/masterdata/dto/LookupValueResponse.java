@@ -31,4 +31,9 @@ public class LookupValueResponse {
      * Lookup detail label (English name)
      */
     private String labelEn;
+
+    /**
+     * Sort order for ordering lookup values
+     */
+    private Integer sortOrder;
 }

@@ -28,8 +28,6 @@ public class AuditEntityListener {
 
         entity.setCreatedAt(now);
         entity.setCreatedBy(user);
-        entity.setUpdatedAt(now);
-        entity.setUpdatedBy(user);
     }
 
     @PreUpdate

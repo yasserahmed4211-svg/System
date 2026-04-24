@@ -10,6 +10,7 @@ import com.example.erp.finance.gl.exception.GlErrorCodes;
 import com.example.erp.finance.gl.mapper.AccountsChartMapper;
 import com.example.erp.finance.gl.repository.AccountsChartRepository;
 import com.example.erp.finance.gl.repository.AccRuleHdrRepository;
+import com.example.erp.finance.gl.util.GlAccountTypeNormalizer;
 import com.example.masterdata.api.LookupValidationApi;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -76,10 +77,13 @@ public class AccountsChartService {
     @PreAuthorize("hasAnyAuthority(T(com.example.security.constants.SecurityPermissions).GL_ACCOUNT_CREATE, T(com.example.security.constants.SecurityPermissions).SYSTEM_ADMIN)")
     public ServiceResult<AccountsChartResponse> create(AccountsChartCreateRequest request) {
 
+        String normalizedAccountType = GlAccountTypeNormalizer.normalize(request.getAccountType());
+
         // Validate account type against lookup
-        lookupValidationApi.validateOrThrow(LK_GL_ACCOUNT_TYPE, request.getAccountType());
+        lookupValidationApi.validateOrThrow(LK_GL_ACCOUNT_TYPE, normalizedAccountType);
 
         AccountsChart entity = accountsChartMapper.toEntity(request);
+        entity.setAccountType(normalizedAccountType);
 
         // Determine parent and generate account number
         if (request.getAccountChartFk() != null) {
@@ -87,7 +91,9 @@ public class AccountsChartService {
             AccountsChart parent = treeValidator.validateParentExists(request.getAccountChartFk());
 
             // Child account type must match parent account type
-            treeValidator.validateTypeMatchesParent(request.getAccountType(), parent.getAccountType());
+                treeValidator.validateTypeMatchesParent(
+                    normalizedAccountType,
+                    GlAccountTypeNormalizer.normalize(parent.getAccountType()));
 
             entity.setParent(parent);
 
@@ -106,7 +112,7 @@ public class AccountsChartService {
         } else {
             // --- ROOT ACCOUNT ---
             String accountNo = numberGenerator.generateRootAccountNo(
-                    request.getOrganizationFk(), request.getAccountType());
+                    request.getOrganizationFk(), normalizedAccountType);
             entity.setAccountChartNo(accountNo);
         }
 
@@ -135,9 +141,10 @@ public class AccountsChartService {
     public ServiceResult<AccountsChartResponse> update(Long accountChartPk, AccountsChartUpdateRequest request) {
 
         AccountsChart entity = findAccountOrThrow(accountChartPk);
+        String normalizedAccountType = GlAccountTypeNormalizer.normalize(request.getAccountType());
 
         // Validate account type
-        lookupValidationApi.validateOrThrow(LK_GL_ACCOUNT_TYPE, request.getAccountType());
+        lookupValidationApi.validateOrThrow(LK_GL_ACCOUNT_TYPE, normalizedAccountType);
 
         // organizationFk is immutable
         if (!entity.getOrganizationFk().equals(request.getOrganizationFk())) {
@@ -146,7 +153,10 @@ public class AccountsChartService {
         }
 
         // Prevent account type change if children exist
-        treeValidator.validateAccountTypeChange(accountChartPk, entity.getAccountType(), request.getAccountType());
+        treeValidator.validateAccountTypeChange(
+            accountChartPk,
+            GlAccountTypeNormalizer.normalize(entity.getAccountType()),
+            normalizedAccountType);
 
         // Parent validation
         if (request.getAccountChartFk() != null) {
@@ -159,7 +169,9 @@ public class AccountsChartService {
             treeValidator.validateNoCircularReference(entity, newParent);
 
             // Child type must match parent type
-            treeValidator.validateTypeMatchesParent(request.getAccountType(), newParent.getAccountType());
+                treeValidator.validateTypeMatchesParent(
+                    normalizedAccountType,
+                    GlAccountTypeNormalizer.normalize(newParent.getAccountType()));
 
             entity.setParent(newParent);
         } else {
@@ -168,6 +180,7 @@ public class AccountsChartService {
 
         // Note: accountChartNo is NOT updated — it is auto-generated and immutable
         accountsChartMapper.updateEntity(entity, request);
+        entity.setAccountType(normalizedAccountType);
         AccountsChart updated = accountsChartRepository.save(entity);
         log.info("Account updated: pk={}, code={}", accountChartPk, updated.getAccountChartNo());
         return ServiceResult.success(accountsChartMapper.toResponse(updated), Status.UPDATED);
@@ -239,16 +252,21 @@ public class AccountsChartService {
     @PreAuthorize("hasAnyAuthority(T(com.example.security.constants.SecurityPermissions).GL_ACCOUNT_VIEW, T(com.example.security.constants.SecurityPermissions).SYSTEM_ADMIN)")
     public ServiceResult<List<AccountsChartTreeNode>> getTree(Long organizationFk, String accountType) {
 
+        String normalizedAccountType = GlAccountTypeNormalizer.normalize(accountType);
+
         // Single query to fetch ALL accounts (flat list) — avoids N+1
         List<AccountsChart> allAccounts;
-        if (organizationFk != null && accountType != null) {
-            allAccounts = accountsChartRepository.findAllForTreeByOrganizationAndType(organizationFk, accountType);
-        } else if (organizationFk != null) {
+        if (organizationFk != null) {
             allAccounts = accountsChartRepository.findAllForTreeByOrganization(organizationFk);
-        } else if (accountType != null) {
-            allAccounts = accountsChartRepository.findAllForTreeByType(accountType);
         } else {
             allAccounts = accountsChartRepository.findAllForTree();
+        }
+
+        // Filter by canonical account type in-memory to support mixed legacy data.
+        if (normalizedAccountType != null && !normalizedAccountType.isBlank()) {
+            allAccounts = allAccounts.stream()
+                    .filter(a -> normalizedAccountType.equals(GlAccountTypeNormalizer.normalize(a.getAccountType())))
+                    .collect(Collectors.toList());
         }
 
         // Build parent→children map in memory
@@ -393,7 +411,7 @@ public class AccountsChartService {
                 .accountChartPk(account.getAccountChartPk())
                 .accountChartNo(account.getAccountChartNo())
                 .accountChartName(account.getAccountChartName())
-                .accountType(account.getAccountType())
+            .accountType(GlAccountTypeNormalizer.normalize(account.getAccountType()))
                 .level(level)
                 .isActive(Boolean.TRUE.equals(account.getIsActive()))
                 .isLeaf(childNodes.isEmpty())
@@ -458,7 +476,7 @@ public class AccountsChartService {
                 .display(entity.getAccountChartNo() + " - " + entity.getAccountChartName())
                 .code(entity.getAccountChartNo())
                 .name(entity.getAccountChartName())
-                .type(entity.getAccountType())
+            .type(GlAccountTypeNormalizer.normalize(entity.getAccountType()))
                 .isActive(Boolean.TRUE.equals(entity.getIsActive()))
                 .build();
     }

@@ -9,15 +9,12 @@ import com.erp.common.search.PageableBuilder;
 import com.erp.common.search.SearchRequest;
 import com.erp.common.search.SetAllowedFields;
 import com.erp.common.search.SpecBuilder;
-import com.example.security.constants.SecurityPermissions;
-import com.example.security.domain.Permission;
 import com.example.security.domain.Role;
 import com.example.security.dto.CreateRoleRequest;
 import com.example.security.dto.RoleDto;
 import com.example.security.dto.UpdateRoleRequest;
 import com.example.security.exception.SecurityErrorCodes;
 import com.example.security.mapper.RoleMapper;
-import com.example.erp.common.multitenancy.TenantContext;
 import com.example.erp.common.multitenancy.TenantHelper;
 import com.example.security.repo.PermissionRepository;
 import com.example.security.repo.RoleRepository;
@@ -33,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 

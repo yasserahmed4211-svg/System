@@ -11,7 +11,9 @@
     "lint": "ng lint",
     "lint:fix": "ng lint --fix",
     "prettier": "npx prettier . --write src",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "trace:open": "npx playwright show-trace",
+    "mcp:playwright": "npx @playwright/mcp@latest"
   },
   "private": true,
   "dependencies": {

@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -42,6 +43,9 @@ class LookupConsumptionServiceTest {
 
     @BeforeEach
     void setUp() {
+        // The service uses @Lazy @Autowired self-injection for @Cacheable interception.
+        // In unit tests, inject the service itself as 'self' so calls bypass the proxy.
+        ReflectionTestUtils.setField(service, "self", service);
         activeRow1 = mockProjection("ENTRY_SIDE", 1, "DEBIT", "مدين", "Debit", 1);
         activeRow2 = mockProjection("ENTRY_SIDE", 1, "CREDIT", "دائن", "Credit", 2);
     }
